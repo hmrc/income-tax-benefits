@@ -1,7 +1,7 @@
 
 # income-tax-benefits
 
-This is a placeholder README.md for a new repository
+This is a placeholder README.md for the income-tax-benefits repository
 
 ### License
 
