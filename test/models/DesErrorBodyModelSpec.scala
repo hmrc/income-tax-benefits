@@ -39,17 +39,6 @@ class DesErrorBodyModelSpec extends TestUtils {
     )
   )
 
-  "submittedDividendsExceptionModel" should {
-
-    "parse to json" in {
-      Json.toJson(model) mustBe jsonModel
-    }
-
-    "parse from Json" in {
-      jsonModel.as[EmploymentBenefits]
-    }
-  }
-
   "The DesErrorModel" should {
 
     val model = DesErrorModel(SERVICE_UNAVAILABLE, DesErrorBodyModel("SERVER_ERROR","Service is unavailable"))

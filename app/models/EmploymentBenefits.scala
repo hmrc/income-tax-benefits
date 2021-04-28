@@ -89,7 +89,7 @@ object Benefits {
       (__ \ "nonCash").formatNullable[BigDecimal]
     ).tupled
 
-  implicit val hugeCaseClassReads: OFormat[Benefits] = {
+  implicit val format: OFormat[Benefits] = {
     (firstSetOfFields and secondSetOfFields).apply({
       case (
         (accommodation, assets, assetTransfer, beneficialLoan, car, carFuel, educationalServices, entertaining,

@@ -20,6 +20,7 @@ import connectors.httpParsers.GetEmploymentBenefitsHttpParser.GetEmploymentBenef
 import models.{DesErrorBodyModel, DesErrorModel}
 import org.scalamock.handlers.CallHandler4
 import play.api.http.Status._
+import play.api.libs.json.Json
 import play.api.test.FakeRequest
 import services.GetEmploymentBenefitsService
 import uk.gov.hmrc.http.HeaderCarrier
@@ -87,7 +88,43 @@ class GetEmploymentBenefitsControllerSpec extends TestUtils {
           getEmploymentListController.getEmploymentBenefits(nino, taxYear, view)(fakeGetRequest)
         }
         status(result) mustBe OK
-        bodyOf(result) mustBe ""
+        Json.parse(bodyOf(result)) mustBe
+          Json.parse("""{
+            |	"submittedOn": "2020-01-04T05:01:01Z",
+            |	"customerAdded": "2020-04-04T01:01:01Z",
+            |	"employment": {
+            |		"benefitsInKind": {
+            |			"accommodation": 455.67,
+            |			"assets": 435.54,
+            |			"assetTransfer": 24.58,
+            |			"beneficialLoan": 33.89,
+            |			"car": 3434.78,
+            |			"carFuel": 34.56,
+            |			"educationalServices": 445.67,
+            |			"entertaining": 434.45,
+            |			"expenses": 3444.32,
+            |			"medicalInsurance": 4542.47,
+            |			"telephone": 243.43,
+            |			"service": 45.67,
+            |			"taxableExpenses": 24.56,
+            |			"van": 56.29,
+            |			"vanFuel": 14.56,
+            |			"mileage": 34.23,
+            |			"nonQualifyingRelocationExpenses": 54.62,
+            |			"nurseryPlaces": 84.29,
+            |			"otherItems": 67.67,
+            |			"paymentsOnEmployeesBehalf": 67.23,
+            |			"personalIncidentalExpenses": 74.29,
+            |			"qualifyingRelocationExpenses": 78.24,
+            |			"employerProvidedProfessionalSubscriptions": 84.56,
+            |			"employerProvidedServices": 56.34,
+            |			"incomeTaxPaidByDirector": 67.34,
+            |			"travelAndSubsistence": 56.89,
+            |			"vouchersAndCreditCards": 34.9,
+            |			"nonCash": 23.89
+            |		}
+            |	}
+            |}""".stripMargin)
       }
 
       "return an OK 200 response when called as an agent" in {
@@ -97,7 +134,43 @@ class GetEmploymentBenefitsControllerSpec extends TestUtils {
           getEmploymentListController.getEmploymentBenefits(nino, taxYear, view)(fakeGetRequest)
         }
         status(result) mustBe OK
-        bodyOf(result) mustBe ""
+        Json.parse(bodyOf(result)) mustBe
+          Json.parse("""{
+                       |	"submittedOn": "2020-01-04T05:01:01Z",
+                       |	"customerAdded": "2020-04-04T01:01:01Z",
+                       |	"employment": {
+                       |		"benefitsInKind": {
+                       |			"accommodation": 455.67,
+                       |			"assets": 435.54,
+                       |			"assetTransfer": 24.58,
+                       |			"beneficialLoan": 33.89,
+                       |			"car": 3434.78,
+                       |			"carFuel": 34.56,
+                       |			"educationalServices": 445.67,
+                       |			"entertaining": 434.45,
+                       |			"expenses": 3444.32,
+                       |			"medicalInsurance": 4542.47,
+                       |			"telephone": 243.43,
+                       |			"service": 45.67,
+                       |			"taxableExpenses": 24.56,
+                       |			"van": 56.29,
+                       |			"vanFuel": 14.56,
+                       |			"mileage": 34.23,
+                       |			"nonQualifyingRelocationExpenses": 54.62,
+                       |			"nurseryPlaces": 84.29,
+                       |			"otherItems": 67.67,
+                       |			"paymentsOnEmployeesBehalf": 67.23,
+                       |			"personalIncidentalExpenses": 74.29,
+                       |			"qualifyingRelocationExpenses": 78.24,
+                       |			"employerProvidedProfessionalSubscriptions": 84.56,
+                       |			"employerProvidedServices": 56.34,
+                       |			"incomeTaxPaidByDirector": 67.34,
+                       |			"travelAndSubsistence": 56.89,
+                       |			"vouchersAndCreditCards": 34.9,
+                       |			"nonCash": 23.89
+                       |		}
+                       |	}
+                       |}""".stripMargin)
       }
     }
 
@@ -110,7 +183,8 @@ class GetEmploymentBenefitsControllerSpec extends TestUtils {
           getEmploymentListController.getEmploymentBenefits(nino, taxYear, view)(fakeGetRequest)
         }
         status(result) mustBe NOT_FOUND
-        bodyOf(result) mustBe ""
+        Json.parse(bodyOf(result)) mustBe
+          Json.parse("""{"code":"NOT_FOUND_INCOME_SOURCE","reason":"Can't find income source"}""".stripMargin)
       }
 
       "return an NotFound response when called as an agent" in {
@@ -120,7 +194,9 @@ class GetEmploymentBenefitsControllerSpec extends TestUtils {
           getEmploymentListController.getEmploymentBenefits(nino, taxYear, view)(fakeGetRequest)
         }
         status(result) mustBe NOT_FOUND
-        bodyOf(result) mustBe ""
+        Json.parse(bodyOf(result)) mustBe
+          Json.parse("""{"code":"NOT_FOUND_INCOME_SOURCE","reason":"Can't find income source"}""".stripMargin)
+
       }
 
     }
@@ -134,7 +210,8 @@ class GetEmploymentBenefitsControllerSpec extends TestUtils {
           getEmploymentListController.getEmploymentBenefits(nino, taxYear, view)(fakeGetRequest)
         }
         status(result) mustBe BAD_REQUEST
-        bodyOf(result) mustBe ""
+        Json.parse(bodyOf(result)) mustBe
+          Json.parse("""{"code":"INVALID_NINO","reason":"Nino is invalid"}""".stripMargin)
       }
 
       "return an BadRequest response when called as an agent" in {
@@ -144,7 +221,8 @@ class GetEmploymentBenefitsControllerSpec extends TestUtils {
           getEmploymentListController.getEmploymentBenefits(nino, taxYear, view)(fakeGetRequest)
         }
         status(result) mustBe BAD_REQUEST
-        bodyOf(result) mustBe ""
+        Json.parse(bodyOf(result)) mustBe
+          Json.parse("""{"code":"INVALID_NINO","reason":"Nino is invalid"}""".stripMargin)
       }
     }
     "with an invalid view" should {
@@ -152,11 +230,11 @@ class GetEmploymentBenefitsControllerSpec extends TestUtils {
       "return an BadRequest response when called as an individual" in {
         val result = {
           mockAuth()
-          mockGetEmploymentListBadRequest()
           getEmploymentListController.getEmploymentBenefits(nino, taxYear, "view")(fakeGetRequest)
         }
         status(result) mustBe BAD_REQUEST
-        bodyOf(result) mustBe ""
+        Json.parse(bodyOf(result)) mustBe
+          Json.parse("""{"code":"INVALID_VIEW","reason":"Submission has not passed validation. Invalid query parameter view."}""".stripMargin)
       }
     }
 
@@ -169,7 +247,8 @@ class GetEmploymentBenefitsControllerSpec extends TestUtils {
           getEmploymentListController.getEmploymentBenefits(nino, taxYear, view)(fakeGetRequest)
         }
         status(result) mustBe INTERNAL_SERVER_ERROR
-        bodyOf(result) mustBe ""
+        Json.parse(bodyOf(result)) mustBe
+          Json.parse("""{"code":"SERVER_ERROR","reason":"Internal server error"}""".stripMargin)
       }
 
       "return an BadRequest response when called as an agent" in {
@@ -179,7 +258,8 @@ class GetEmploymentBenefitsControllerSpec extends TestUtils {
           getEmploymentListController.getEmploymentBenefits(nino, taxYear, view)(fakeGetRequest)
         }
         status(result) mustBe INTERNAL_SERVER_ERROR
-        bodyOf(result) mustBe ""
+        Json.parse(bodyOf(result)) mustBe
+          Json.parse("""{"code":"SERVER_ERROR","reason":"Internal server error"}""".stripMargin)
       }
     }
 
@@ -192,7 +272,8 @@ class GetEmploymentBenefitsControllerSpec extends TestUtils {
           getEmploymentListController.getEmploymentBenefits(nino, taxYear, view)(fakeGetRequest)
         }
         status(result) mustBe SERVICE_UNAVAILABLE
-        bodyOf(result) mustBe ""
+        Json.parse(bodyOf(result)) mustBe
+          Json.parse("""{"code":"SERVICE_UNAVAILABLE","reason":"Service is unavailable"}""".stripMargin)
       }
 
       "return an Service_Unavailable response when called as an agent" in {
@@ -202,7 +283,8 @@ class GetEmploymentBenefitsControllerSpec extends TestUtils {
           getEmploymentListController.getEmploymentBenefits(nino, taxYear, view)(fakeGetRequest)
         }
         status(result) mustBe SERVICE_UNAVAILABLE
-        bodyOf(result) mustBe ""
+        Json.parse(bodyOf(result)) mustBe
+          Json.parse("""{"code":"SERVICE_UNAVAILABLE","reason":"Service is unavailable"}""".stripMargin)
       }
     }
 
