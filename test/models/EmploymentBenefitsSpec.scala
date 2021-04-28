@@ -20,23 +20,25 @@ import com.codahale.metrics.SharedMetricRegistries
 import play.api.libs.json.{JsObject, Json}
 import utils.TestUtils
 
-class SubmittedDividendsModelSpec extends TestUtils {
+class EmploymentBenefitsSpec extends TestUtils {
   SharedMetricRegistries.clear()
 
-  val model: SubmittedDividendsModel = SubmittedDividendsModel(Some(123456.78),Some(123456.78))
+  val model: EmploymentBenefits = EmploymentBenefits("", employment = Employment())
   val jsonModel: JsObject = Json.obj(
-    "ukDividends" -> 123456.78,
-    "otherUkDividends" -> 123456.78
+    "submittedOn" -> "",
+    "employment" -> Json.obj(
+
+    )
   )
 
-  "submittedDividends" should {
+  "EmploymentBenefits" should {
 
     "parse to Json" in {
       Json.toJson(model) mustBe jsonModel
     }
 
     "parse from Json" in {
-      jsonModel.as[SubmittedDividendsModel]
+      jsonModel.as[EmploymentBenefits]
     }
   }
 

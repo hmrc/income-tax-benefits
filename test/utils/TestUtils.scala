@@ -22,6 +22,7 @@ import com.codahale.metrics.SharedMetricRegistries
 import common.{EnrolmentIdentifiers, EnrolmentKeys}
 import config.AppConfig
 import controllers.predicates.AuthorisedAction
+import models.{Benefits, Employment, EmploymentBenefits}
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.play.PlaySpec
@@ -40,7 +41,6 @@ import scala.concurrent.duration.Duration
 import scala.concurrent.{Await, Awaitable, ExecutionContext, Future}
 
 trait TestUtils extends PlaySpec with MockFactory with GuiceOneAppPerSuite with BeforeAndAfterEach {
-
   override def beforeEach(): Unit = {
     super.beforeEach()
     SharedMetricRegistries.clear()
@@ -110,5 +110,125 @@ trait TestUtils extends PlaySpec with MockFactory with GuiceOneAppPerSuite with 
       .expects(*, *, *, *)
       .returning(Future.failed(exception))
   }
+
+  val customerExample: EmploymentBenefits = EmploymentBenefits(
+    "2020-01-04T05:01:01Z",
+    Some("2020-04-04T01:01:01Z"),
+    None,
+    employment = Employment(
+      Some(
+        Benefits(
+          accommodation = Some(455.67),
+          assets = Some(435.54),
+          assetTransfer = Some(24.58),
+          beneficialLoan = Some(33.89),
+          car = Some(3434.78),
+          carFuel = Some(34.56),
+          educationalServices = Some(445.67),
+          entertaining = Some(434.45),
+          expenses = Some(3444.32),
+          medicalInsurance = Some(4542.47),
+          telephone = Some(243.43),
+          service = Some(45.67),
+          taxableExpenses = Some(24.56),
+          van = Some(56.29),
+          vanFuel = Some(14.56),
+          mileage = Some(34.23),
+          nonQualifyingRelocationExpenses = Some(54.62),
+          nurseryPlaces = Some(84.29),
+          otherItems = Some(67.67),
+          paymentsOnEmployeesBehalf = Some(67.23),
+          personalIncidentalExpenses = Some(74.29),
+          qualifyingRelocationExpenses = Some(78.24),
+          employerProvidedProfessionalSubscriptions = Some(84.56),
+          employerProvidedServices = Some(56.34),
+          incomeTaxPaidByDirector = Some(67.34),
+          travelAndSubsistence = Some(56.89),
+          vouchersAndCreditCards = Some(34.90),
+          nonCash = Some(23.89)
+        )
+      )
+    )
+  )
+
+  val hmrcExample: EmploymentBenefits = EmploymentBenefits(
+    "2020-01-04T05:01:01Z",
+    None,
+    None,
+    employment = Employment(
+      Some(
+        Benefits(
+          accommodation = Some(455.67),
+          assets = Some(435.54),
+          assetTransfer = Some(24.58),
+          beneficialLoan = Some(33.89),
+          car = Some(3434.78),
+          carFuel = Some(34.56),
+          educationalServices = Some(445.67),
+          entertaining = Some(434.45),
+          expenses = Some(3444.32),
+          medicalInsurance = Some(4542.47),
+          telephone = Some(243.43),
+          service = Some(45.67),
+          taxableExpenses = Some(24.56),
+          van = Some(56.29),
+          vanFuel = Some(14.56),
+          mileage = Some(34.23),
+          nonQualifyingRelocationExpenses = Some(54.62),
+          nurseryPlaces = Some(84.29),
+          otherItems = Some(67.67),
+          paymentsOnEmployeesBehalf = Some(67.23),
+          personalIncidentalExpenses = Some(74.29),
+          qualifyingRelocationExpenses = Some(78.24),
+          employerProvidedProfessionalSubscriptions = Some(84.56),
+          employerProvidedServices = Some(56.34),
+          incomeTaxPaidByDirector = Some(67.34),
+          travelAndSubsistence = Some(56.89),
+          vouchersAndCreditCards = Some(34.90),
+          nonCash = Some(23.89)
+        )
+      )
+    )
+  )
+
+  val latestExample: EmploymentBenefits = EmploymentBenefits(
+    "2020-01-04T05:01:01Z",
+    None,
+    Some("CUSTOMER"),
+    employment = Employment(
+      Some(
+        Benefits(
+          accommodation = Some(455.67),
+          assets = Some(435.54),
+          assetTransfer = Some(24.58),
+          beneficialLoan = Some(33.89),
+          car = Some(3434.78),
+          carFuel = Some(34.56),
+          educationalServices = Some(445.67),
+          entertaining = Some(434.45),
+          expenses = Some(3444.32),
+          medicalInsurance = Some(4542.47),
+          telephone = Some(243.43),
+          service = Some(45.67),
+          taxableExpenses = Some(24.56),
+          van = Some(56.29),
+          vanFuel = Some(14.56),
+          mileage = Some(34.23),
+          nonQualifyingRelocationExpenses = Some(54.62),
+          nurseryPlaces = Some(84.29),
+          otherItems = Some(67.67),
+          paymentsOnEmployeesBehalf = Some(67.23),
+          personalIncidentalExpenses = Some(74.29),
+          qualifyingRelocationExpenses = Some(78.24),
+          employerProvidedProfessionalSubscriptions = Some(84.56),
+          employerProvidedServices = Some(56.34),
+          incomeTaxPaidByDirector = Some(67.34),
+          travelAndSubsistence = Some(56.89),
+          vouchersAndCreditCards = Some(34.90),
+          nonCash = Some(23.89)
+        )
+      )
+    )
+  )
 }
 

@@ -46,7 +46,7 @@ class DesErrorBodyModelSpec extends TestUtils {
     }
 
     "parse from Json" in {
-      jsonModel.as[SubmittedDividendsModel]
+      jsonModel.as[EmploymentBenefits]
     }
   }
 
