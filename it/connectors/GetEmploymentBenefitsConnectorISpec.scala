@@ -50,7 +50,7 @@ class GetEmploymentBenefitsConnectorISpec extends PlaySpec with WiremockSpec {
 
   "GetEmploymentBenefitsConnector" should {
     "return a GetEmploymentBenefitsModel" when {
-      "nino, taxYear & view are present" in {
+      "nino, employmentId, taxYear & view are present" in {
         val expectedResult = Json.parse(expectedResponseBody).as[EmploymentBenefits]
 
         stubGetWithResponseBody(s"/income-tax/income/employments/$nino/${desTaxYearConverter(taxYear)}/$id\\?view=$view", OK, expectedResponseBody)
@@ -61,7 +61,7 @@ class GetEmploymentBenefitsConnectorISpec extends PlaySpec with WiremockSpec {
         result mustBe expectedResult
         expectedResult mustBe model
       }
-      "nino, taxYear & view are present for hmrc held" in {
+      ": nino, employmentId, taxYear & view are present for hmrc held" in {
         val expectedResult = Json.parse(expectedResponseBodyHMRC).as[EmploymentBenefits]
 
         stubGetWithResponseBody(s"/income-tax/income/employments/$nino/${desTaxYearConverter(taxYear)}/$id\\?view=HMRC-HELD", OK, expectedResponseBodyHMRC)

@@ -30,8 +30,8 @@ import scala.concurrent.Future
 
 class GetEmploymentBenefitsControllerSpec extends TestUtils {
 
-  val getEmploymentListService: GetEmploymentBenefitsService = mock[GetEmploymentBenefitsService]
-  val getEmploymentListController = new GetEmploymentBenefitsController(getEmploymentListService,authorisedAction, mockControllerComponents)
+  val getEmploymentBenefitsService: GetEmploymentBenefitsService = mock[GetEmploymentBenefitsService]
+  val getEmploymentBenefitsController = new GetEmploymentBenefitsController(getEmploymentBenefitsService,authorisedAction, mockControllerComponents)
   val nino :String = "123456789"
   val mtdItID :String = "123123123"
   val taxYear: Int = 1234
@@ -43,37 +43,37 @@ class GetEmploymentBenefitsControllerSpec extends TestUtils {
   val serviceUnavailableErrorModel: DesErrorBodyModel = DesErrorBodyModel("SERVICE_UNAVAILABLE", "Service is unavailable")
   private val fakeGetRequest = FakeRequest("GET", "/").withHeaders("MTDITID" -> "1234567890")
 
-  def mockGetEmploymentListValid(): CallHandler5[String, String, Int, String, HeaderCarrier, Future[GetEmploymentBenefitsResponse]] = {
+  def mockGetEmploymentBenefitsValid(): CallHandler5[String, String, Int, String, HeaderCarrier, Future[GetEmploymentBenefitsResponse]] = {
     val customerExampleResponse: GetEmploymentBenefitsResponse = Right(customerExample)
-    (getEmploymentListService.getEmploymentBenefits(_: String, _: String, _: Int, _:String)(_: HeaderCarrier))
+    (getEmploymentBenefitsService.getEmploymentBenefits(_: String, _: String, _: Int, _:String)(_: HeaderCarrier))
       .expects(*, *, *, *, *)
       .returning(Future.successful(customerExampleResponse))
   }
 
-  def mockGetEmploymentListBadRequest(): CallHandler5[String, String, Int, String, HeaderCarrier, Future[GetEmploymentBenefitsResponse]] = {
+  def mockGetEmploymentBenefitsBadRequest(): CallHandler5[String, String, Int, String, HeaderCarrier, Future[GetEmploymentBenefitsResponse]] = {
     val invalidEmploymentList: GetEmploymentBenefitsResponse = Left(DesErrorModel(BAD_REQUEST, badRequestModel))
-    (getEmploymentListService.getEmploymentBenefits(_: String, _:String, _: Int, _:String)(_: HeaderCarrier))
+    (getEmploymentBenefitsService.getEmploymentBenefits(_: String, _:String, _: Int, _:String)(_: HeaderCarrier))
       .expects(*, *, *, *, *)
       .returning(Future.successful(invalidEmploymentList))
   }
 
-  def mockGetEmploymentListNotFound(): CallHandler5[String, String, Int, String, HeaderCarrier, Future[GetEmploymentBenefitsResponse]] = {
+  def mockGetEmploymentBenefitsNotFound(): CallHandler5[String, String, Int, String, HeaderCarrier, Future[GetEmploymentBenefitsResponse]] = {
     val invalidEmploymentList: GetEmploymentBenefitsResponse = Left(DesErrorModel(NOT_FOUND, notFoundModel))
-    (getEmploymentListService.getEmploymentBenefits(_: String, _:String, _: Int, _:String)(_: HeaderCarrier))
+    (getEmploymentBenefitsService.getEmploymentBenefits(_: String, _:String, _: Int, _:String)(_: HeaderCarrier))
       .expects(*, *, *, *, *)
       .returning(Future.successful(invalidEmploymentList))
   }
 
-  def mockGetEmploymentListServerError(): CallHandler5[String, String, Int, String, HeaderCarrier, Future[GetEmploymentBenefitsResponse]] = {
+  def mockGetEmploymentBenefitsServerError(): CallHandler5[String, String, Int, String, HeaderCarrier, Future[GetEmploymentBenefitsResponse]] = {
     val invalidEmploymentList: GetEmploymentBenefitsResponse = Left(DesErrorModel(INTERNAL_SERVER_ERROR, serverErrorModel))
-    (getEmploymentListService.getEmploymentBenefits(_: String, _:String, _: Int, _:String)(_: HeaderCarrier))
+    (getEmploymentBenefitsService.getEmploymentBenefits(_: String, _:String, _: Int, _:String)(_: HeaderCarrier))
       .expects(*, *, *, *, *)
       .returning(Future.successful(invalidEmploymentList))
   }
 
-  def mockGetEmploymentListServiceUnavailable(): CallHandler5[String, String, Int, String, HeaderCarrier, Future[GetEmploymentBenefitsResponse]] = {
+  def mockGetEmploymentBenefitsServiceUnavailable(): CallHandler5[String, String, Int, String, HeaderCarrier, Future[GetEmploymentBenefitsResponse]] = {
     val invalidEmploymentList: GetEmploymentBenefitsResponse = Left(DesErrorModel(SERVICE_UNAVAILABLE, serviceUnavailableErrorModel))
-    (getEmploymentListService.getEmploymentBenefits(_: String, _:String, _: Int, _:String)(_: HeaderCarrier))
+    (getEmploymentBenefitsService.getEmploymentBenefits(_: String, _:String, _: Int, _:String)(_: HeaderCarrier))
       .expects(*, *, *, *, *)
       .returning(Future.successful(invalidEmploymentList))
   }
@@ -85,8 +85,8 @@ class GetEmploymentBenefitsControllerSpec extends TestUtils {
       "return an OK 200 response when called as an individual" in {
         val result = {
           mockAuth()
-          mockGetEmploymentListValid()
-          getEmploymentListController.getEmploymentBenefits(nino, id, taxYear, view)(fakeGetRequest)
+          mockGetEmploymentBenefitsValid()
+          getEmploymentBenefitsController.getEmploymentBenefits(nino, id, taxYear, view)(fakeGetRequest)
         }
         status(result) mustBe OK
         Json.parse(bodyOf(result)) mustBe
@@ -131,8 +131,8 @@ class GetEmploymentBenefitsControllerSpec extends TestUtils {
       "return an OK 200 response when called as an agent" in {
         val result = {
           mockAuthAsAgent()
-          mockGetEmploymentListValid()
-          getEmploymentListController.getEmploymentBenefits(nino, id, taxYear, view)(fakeGetRequest)
+          mockGetEmploymentBenefitsValid()
+          getEmploymentBenefitsController.getEmploymentBenefits(nino, id, taxYear, view)(fakeGetRequest)
         }
         status(result) mustBe OK
         Json.parse(bodyOf(result)) mustBe
@@ -180,8 +180,8 @@ class GetEmploymentBenefitsControllerSpec extends TestUtils {
       "return an NotFound response when called as an individual" in {
         val result = {
           mockAuth()
-          mockGetEmploymentListNotFound()
-          getEmploymentListController.getEmploymentBenefits(nino, id, taxYear, view)(fakeGetRequest)
+          mockGetEmploymentBenefitsNotFound()
+          getEmploymentBenefitsController.getEmploymentBenefits(nino, id, taxYear, view)(fakeGetRequest)
         }
         status(result) mustBe NOT_FOUND
         Json.parse(bodyOf(result)) mustBe
@@ -191,8 +191,8 @@ class GetEmploymentBenefitsControllerSpec extends TestUtils {
       "return an NotFound response when called as an agent" in {
         val result = {
           mockAuthAsAgent()
-          mockGetEmploymentListNotFound()
-          getEmploymentListController.getEmploymentBenefits(nino, id, taxYear, view)(fakeGetRequest)
+          mockGetEmploymentBenefitsNotFound()
+          getEmploymentBenefitsController.getEmploymentBenefits(nino, id, taxYear, view)(fakeGetRequest)
         }
         status(result) mustBe NOT_FOUND
         Json.parse(bodyOf(result)) mustBe
@@ -207,8 +207,8 @@ class GetEmploymentBenefitsControllerSpec extends TestUtils {
       "return an BadRequest response when called as an individual" in {
         val result = {
           mockAuth()
-          mockGetEmploymentListBadRequest()
-          getEmploymentListController.getEmploymentBenefits(nino, id, taxYear, view)(fakeGetRequest)
+          mockGetEmploymentBenefitsBadRequest()
+          getEmploymentBenefitsController.getEmploymentBenefits(nino, id, taxYear, view)(fakeGetRequest)
         }
         status(result) mustBe BAD_REQUEST
         Json.parse(bodyOf(result)) mustBe
@@ -218,8 +218,8 @@ class GetEmploymentBenefitsControllerSpec extends TestUtils {
       "return an BadRequest response when called as an agent" in {
         val result = {
           mockAuthAsAgent()
-          mockGetEmploymentListBadRequest()
-          getEmploymentListController.getEmploymentBenefits(nino, id, taxYear, view)(fakeGetRequest)
+          mockGetEmploymentBenefitsBadRequest()
+          getEmploymentBenefitsController.getEmploymentBenefits(nino, id, taxYear, view)(fakeGetRequest)
         }
         status(result) mustBe BAD_REQUEST
         Json.parse(bodyOf(result)) mustBe
@@ -231,7 +231,7 @@ class GetEmploymentBenefitsControllerSpec extends TestUtils {
       "return an BadRequest response when called as an individual" in {
         val result = {
           mockAuth()
-          getEmploymentListController.getEmploymentBenefits(nino, id, taxYear, "view")(fakeGetRequest)
+          getEmploymentBenefitsController.getEmploymentBenefits(nino, id, taxYear, "view")(fakeGetRequest)
         }
         status(result) mustBe BAD_REQUEST
         Json.parse(bodyOf(result)) mustBe
@@ -244,8 +244,8 @@ class GetEmploymentBenefitsControllerSpec extends TestUtils {
       "return an BadRequest response when called as an individual" in {
         val result = {
           mockAuth()
-          mockGetEmploymentListServerError()
-          getEmploymentListController.getEmploymentBenefits(nino, id, taxYear, view)(fakeGetRequest)
+          mockGetEmploymentBenefitsServerError()
+          getEmploymentBenefitsController.getEmploymentBenefits(nino, id, taxYear, view)(fakeGetRequest)
         }
         status(result) mustBe INTERNAL_SERVER_ERROR
         Json.parse(bodyOf(result)) mustBe
@@ -255,8 +255,8 @@ class GetEmploymentBenefitsControllerSpec extends TestUtils {
       "return an BadRequest response when called as an agent" in {
         val result = {
           mockAuthAsAgent()
-          mockGetEmploymentListServerError()
-          getEmploymentListController.getEmploymentBenefits(nino, id, taxYear, view)(fakeGetRequest)
+          mockGetEmploymentBenefitsServerError()
+          getEmploymentBenefitsController.getEmploymentBenefits(nino, id, taxYear, view)(fakeGetRequest)
         }
         status(result) mustBe INTERNAL_SERVER_ERROR
         Json.parse(bodyOf(result)) mustBe
@@ -269,8 +269,8 @@ class GetEmploymentBenefitsControllerSpec extends TestUtils {
       "return an Service_Unavailable response when called as an individual" in {
         val result = {
           mockAuth()
-          mockGetEmploymentListServiceUnavailable()
-          getEmploymentListController.getEmploymentBenefits(nino, id, taxYear, view)(fakeGetRequest)
+          mockGetEmploymentBenefitsServiceUnavailable()
+          getEmploymentBenefitsController.getEmploymentBenefits(nino, id, taxYear, view)(fakeGetRequest)
         }
         status(result) mustBe SERVICE_UNAVAILABLE
         Json.parse(bodyOf(result)) mustBe
@@ -280,8 +280,8 @@ class GetEmploymentBenefitsControllerSpec extends TestUtils {
       "return an Service_Unavailable response when called as an agent" in {
         val result = {
           mockAuthAsAgent()
-          mockGetEmploymentListServiceUnavailable()
-          getEmploymentListController.getEmploymentBenefits(nino, id, taxYear, view)(fakeGetRequest)
+          mockGetEmploymentBenefitsServiceUnavailable()
+          getEmploymentBenefitsController.getEmploymentBenefits(nino, id, taxYear, view)(fakeGetRequest)
         }
         status(result) mustBe SERVICE_UNAVAILABLE
         Json.parse(bodyOf(result)) mustBe
