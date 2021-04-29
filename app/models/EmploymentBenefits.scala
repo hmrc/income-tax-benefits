@@ -128,6 +128,7 @@ object Employment {
 
 case class EmploymentBenefits(submittedOn: String,
                               customerAdded: Option[String] = None,
+                              dateIgnored: Option[String] = None,
                               source: Option[String] = None,
                               employment: Employment)
 

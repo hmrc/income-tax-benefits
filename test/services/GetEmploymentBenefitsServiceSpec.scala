@@ -41,12 +41,13 @@ class GetEmploymentBenefitsServiceSpec extends TestUtils {
       val taxYear = 2022
       val nino = "AA123456A"
       val view = "CUSTOMER"
+      val id = "a1e8057e-fbbc-47a8-a8b4-78d9f015c934"
 
-      (connector.getEmploymentBenefits(_: String, _: Int, _:String)(_: HeaderCarrier))
-        .expects(nino, taxYear, view, *)
+      (connector.getEmploymentBenefits(_: String,_: String, _: Int, _:String)(_: HeaderCarrier))
+        .expects(nino, id, taxYear, view, *)
         .returning(Future.successful(expectedResult))
 
-      val result = await(service.getEmploymentBenefits(nino, taxYear, view))
+      val result = await(service.getEmploymentBenefits(nino, id, taxYear, view))
 
       result mustBe expectedResult
 
@@ -59,11 +60,13 @@ class GetEmploymentBenefitsServiceSpec extends TestUtils {
       val nino = "AA123456A"
       val view = "HMRC-HELD"
 
-      (connector.getEmploymentBenefits(_: String, _: Int, _:String)(_: HeaderCarrier))
-        .expects(nino, taxYear, view, *)
+      val id = "a1e8057e-fbbc-47a8-a8b4-78d9f015c934"
+
+      (connector.getEmploymentBenefits(_: String, _: String, _: Int, _:String)(_: HeaderCarrier))
+        .expects(nino, id, taxYear, view, *)
         .returning(Future.successful(expectedResult))
 
-      val result = await(service.getEmploymentBenefits(nino, taxYear, view))
+      val result = await(service.getEmploymentBenefits(nino, id, taxYear, view))
 
       result mustBe expectedResult
 
@@ -76,11 +79,12 @@ class GetEmploymentBenefitsServiceSpec extends TestUtils {
       val nino = "AA123456A"
       val view = "LATEST"
 
-      (connector.getEmploymentBenefits(_: String, _: Int, _:String)(_: HeaderCarrier))
-        .expects(nino, taxYear, view, *)
+      val id = "a1e8057e-fbbc-47a8-a8b4-78d9f015c934"
+      (connector.getEmploymentBenefits(_: String,_: String, _: Int, _:String)(_: HeaderCarrier))
+        .expects(nino, id, taxYear, view, *)
         .returning(Future.successful(expectedResult))
 
-      val result = await(service.getEmploymentBenefits(nino, taxYear, view))
+      val result = await(service.getEmploymentBenefits(nino, id, taxYear, view))
 
       result mustBe expectedResult
 
@@ -109,11 +113,12 @@ class GetEmploymentBenefitsServiceSpec extends TestUtils {
           val nino = "AA123456A"
           val view = "CUSTOMER"
 
-          (connector.getEmploymentBenefits(_: String, _: Int, _:String)(_: HeaderCarrier))
-            .expects(nino, taxYear, view, *)
+          val id = "a1e8057e-fbbc-47a8-a8b4-78d9f015c934"
+          (connector.getEmploymentBenefits(_: String, _: String, _: Int, _:String)(_: HeaderCarrier))
+            .expects(nino, id, taxYear, view, *)
             .returning(Future.successful(expectedResult))
 
-          val result = await(service.getEmploymentBenefits(nino, taxYear, view))
+          val result = await(service.getEmploymentBenefits(nino, id, taxYear, view))
 
           result mustBe expectedResult
 

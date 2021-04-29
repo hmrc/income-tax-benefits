@@ -27,13 +27,16 @@ import scala.concurrent.{ExecutionContext, Future}
 class GetEmploymentBenefitsConnector @Inject()(val http: HttpClient,
                                                val appConfig: AppConfig)(implicit ec:ExecutionContext) extends DesConnector {
 
-  def getEmploymentBenefits(nino: String, taxYear: Int, view: String)(implicit hc: HeaderCarrier): Future[GetEmploymentBenefitsResponse] = {
+  def getEmploymentBenefits(nino: String, employmentId: String, taxYear: Int, view: String)
+                           (implicit hc: HeaderCarrier): Future[GetEmploymentBenefitsResponse] = {
     val incomeSourcesUri: String =
-      appConfig.desBaseUrl + s"/income-tax/income/employments/$nino/${desTaxYearConverter(taxYear)}?view=$view"
+      appConfig.desBaseUrl + s"/income-tax/income/employments/$nino/${desTaxYearConverter(taxYear)}/$employmentId?view=$view"
 
     def desCall(implicit hc: HeaderCarrier): Future[GetEmploymentBenefitsResponse] = {
       http.GET[GetEmploymentBenefitsResponse](incomeSourcesUri)
     }
+
+    println(incomeSourcesUri)
 
     desCall(desHeaderCarrier)
   }

@@ -41,7 +41,7 @@ trait WiremockSpec extends BeforeAndAfterEach with BeforeAndAfterAll with GuiceO
 
   val wireMockServer: WireMockServer = new WireMockServer(wireMockConfig().port(wireMockPort))
 
-  lazy val connectedServices: Seq[String] = Seq("des")
+  lazy val connectedServices: Seq[String] = Seq("auth","des")
 
   def servicesToUrlConfig: Seq[(String, String)] = connectedServices
     .flatMap(service => Seq(s"microservice.services.$service.host" -> s"localhost", s"microservice.services.$service.port" -> wireMockPort.toString))
@@ -70,8 +70,12 @@ trait WiremockSpec extends BeforeAndAfterEach with BeforeAndAfterAll with GuiceO
     reset()
   }
 
-  def buildClient(urlandUri: String, port: Int = port): WSRequest = ws
-    .url(s"http://localhost:$port$urlandUri")
-    .withFollowRedirects(false)
+  def buildClient(urlandUri: String, port: Int = port): WSRequest = {
+
+    println(urlandUri)
+    ws
+      .url(s"http://localhost:$port$urlandUri")
+      .withFollowRedirects(false)
+  }
 
 }

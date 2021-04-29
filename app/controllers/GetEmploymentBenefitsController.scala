@@ -33,10 +33,14 @@ class GetEmploymentBenefitsController @Inject()(service: GetEmploymentBenefitsSe
                                                 cc: ControllerComponents)
                                                (implicit ec: ExecutionContext) extends BackendController(cc) with Logging {
 
-  def getEmploymentBenefits(nino: String, taxYear: Int, view: String): Action[AnyContent] = auth.async { implicit user =>
+  def getEmploymentBenefits(nino: String, employmentId: String, taxYear: Int, view: String): Action[AnyContent] = auth.async { implicit user =>
+
+    println(45345345)
+    println(45345345)
+    println(45345345)
 
     if(isValid(view)){
-      service.getEmploymentBenefits(nino, taxYear, view).map {
+      service.getEmploymentBenefits(nino, employmentId, taxYear, view).map {
         case Right(model) => Ok(Json.toJson(model))
         case Left(errorModel) => Status(errorModel.status)(errorModel.toJson)
       }

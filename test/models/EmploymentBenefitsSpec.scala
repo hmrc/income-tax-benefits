@@ -28,6 +28,7 @@ class EmploymentBenefitsSpec extends TestUtils {
   val model: EmploymentBenefits = EmploymentBenefits(
     "2020-01-04T05:01:01Z",
     Some("2020-01-04T05:01:01Z"),
+    Some("2020-01-04T05:01:01Z"),
     Some("CUSTOMER"),
     employment = Employment(
       Some(Benefits(
@@ -40,6 +41,7 @@ class EmploymentBenefitsSpec extends TestUtils {
   val jsonModel: JsValue = Json.obj(
     "submittedOn" -> "2020-01-04T05:01:01Z",
     "customerAdded" -> "2020-01-04T05:01:01Z",
+    "dateIgnored" -> "2020-01-04T05:01:01Z",
     "source" -> "CUSTOMER",
     "employment" -> Json.obj(
       "benefitsInKind" -> Json.obj(

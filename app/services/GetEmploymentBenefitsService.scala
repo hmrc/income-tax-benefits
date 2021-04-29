@@ -25,7 +25,7 @@ import scala.concurrent.Future
 
 class GetEmploymentBenefitsService @Inject()(connector: GetEmploymentBenefitsConnector) {
 
-  def getEmploymentBenefits(nino: String, taxYear: Int, view: String)
+  def getEmploymentBenefits(nino: String, employmentId: String, taxYear: Int, view: String)
                            (implicit hc: HeaderCarrier): Future[GetEmploymentBenefitsResponse] =
-    connector.getEmploymentBenefits(nino, taxYear, view)
+    connector.getEmploymentBenefits(nino, employmentId, taxYear, view)
 }
