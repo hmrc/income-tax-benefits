@@ -43,11 +43,39 @@ class GetEmploymentBenefitsITest extends PlaySpec with WiremockSpec with ScalaFu
     """
       |{
       |	"submittedOn": "2020-12-12T12:12:12Z",
+      |	"customerAdded": "2020-12-11T12:12:12Z",
       |	"dateIgnored": "2020-12-11T12:12:12Z",
       |	"source": "CUSTOMER",
       |	"employment": {
       |		"benefitsInKind": {
-      |
+      |        "accommodation": 100,
+      |        "assets": 100,
+      |        "assetTransfer": 100,
+      |        "beneficialLoan": 100,
+      |        "car": 100,
+      |        "carFuel": 100,
+      |        "educationalServices": 100,
+      |        "entertaining": 100,
+      |        "expenses": 100,
+      |        "medicalInsurance": 100,
+      |        "telephone": 100,
+      |        "service": 100,
+      |        "taxableExpenses": 100,
+      |        "van": 100,
+      |        "vanFuel": 100,
+      |        "mileage": 100,
+      |        "nonQualifyingRelocationExpenses": 100,
+      |        "nurseryPlaces": 100,
+      |        "otherItems": 100,
+      |        "paymentsOnEmployeesBehalf": 100,
+      |        "personalIncidentalExpenses": 100,
+      |        "qualifyingRelocationExpenses": 100,
+      |        "employerProvidedProfessionalSubscriptions": 100,
+      |        "employerProvidedServices": 100,
+      |        "incomeTaxPaidByDirector": 100,
+      |        "travelAndSubsistence": 100,
+      |        "vouchersAndCreditCards": 100,
+      |        "nonCash": 100
       |   }
       |	}
       |}
