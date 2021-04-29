@@ -34,18 +34,13 @@ class GetEmploymentBenefitsController @Inject()(service: GetEmploymentBenefitsSe
                                                (implicit ec: ExecutionContext) extends BackendController(cc) with Logging {
 
   def getEmploymentBenefits(nino: String, employmentId: String, taxYear: Int, view: String): Action[AnyContent] = auth.async { implicit user =>
-
-    println(45345345)
-    println(45345345)
-    println(45345345)
-
     if(isValid(view)){
       service.getEmploymentBenefits(nino, employmentId, taxYear, view).map {
         case Right(model) => Ok(Json.toJson(model))
         case Left(errorModel) => Status(errorModel.status)(errorModel.toJson)
       }
     } else {
-      logger.error(s"[GetEmploymentBenefitsController][getEmploymentExpenses] Supplied view is invalid. View: $view")
+      logger.error(s"[GetEmploymentBenefitsController][getEmploymentBenefits] Supplied view is invalid. View: $view")
       Future(BadRequest(Json.toJson(invalidView)))
     }
   }
