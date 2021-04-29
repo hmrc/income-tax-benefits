@@ -14,30 +14,22 @@
  * limitations under the License.
  */
 
-package models
+package utils
 
-import com.codahale.metrics.SharedMetricRegistries
-import play.api.libs.json.{JsObject, Json}
-import utils.TestUtils
+class DESTaxYearHelperSpec extends TestUtils {
 
-class SubmittedDividendsModelSpec extends TestUtils {
-  SharedMetricRegistries.clear()
+  "DESTaxYearHelper" should {
 
-  val model: SubmittedDividendsModel = SubmittedDividendsModel(Some(123456.78),Some(123456.78))
-  val jsonModel: JsObject = Json.obj(
-    "ukDividends" -> 123456.78,
-    "otherUkDividends" -> 123456.78
-  )
-
-  "submittedDividends" should {
-
-    "parse to Json" in {
-      Json.toJson(model) mustBe jsonModel
+    "return a string containing the last year and the last two digits of this year" in {
+      val taxYear = 2020
+      val result = DESTaxYearHelper.desTaxYearConverter(taxYear)
+      result mustBe "2019-20"
     }
 
-    "parse from Json" in {
-      jsonModel.as[SubmittedDividendsModel]
+    "return a string containing the last year and the last two digits of this year for a tax year ending in 00" in {
+      val taxYear = 2100
+      val result = DESTaxYearHelper.desTaxYearConverter(taxYear)
+      result mustBe "2099-00"
     }
   }
-
 }

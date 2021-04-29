@@ -33,15 +33,11 @@ import scala.concurrent.ExecutionContext
 trait WiremockSpec extends BeforeAndAfterEach with BeforeAndAfterAll with GuiceOneServerPerSuite
   with FutureAwaits with DefaultAwaitTimeout with WiremockStubHelpers {
   self: PlaySpec =>
-
-  val wireMockPort = 11111
-
   lazy val ws: WSClient = app.injector.instanceOf(classOf[WSClient])
+  lazy val connectedServices: Seq[String] = Seq("auth", "des")
   implicit val ec: ExecutionContext = ExecutionContext.global
-
+  val wireMockPort = 11111
   val wireMockServer: WireMockServer = new WireMockServer(wireMockConfig().port(wireMockPort))
-
-  lazy val connectedServices: Seq[String] = Seq("des")
 
   def servicesToUrlConfig: Seq[(String, String)] = connectedServices
     .flatMap(service => Seq(s"microservice.services.$service.host" -> s"localhost", s"microservice.services.$service.port" -> wireMockPort.toString))

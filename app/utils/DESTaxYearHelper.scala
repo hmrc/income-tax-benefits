@@ -14,13 +14,17 @@
  * limitations under the License.
  */
 
-package models
+package utils
 
-import play.api.libs.json.{Json, OFormat}
-
-case class SubmittedDividendsModel (ukDividends: Option[BigDecimal],
-                                   otherUkDividends: Option[BigDecimal])
-
-object SubmittedDividendsModel{
-  implicit val formats: OFormat[SubmittedDividendsModel] = Json.format[SubmittedDividendsModel]
+/**
+ * Represents a tax year for DES
+ *
+ * Calculating the tax year string (where 2018 represents 2017-18)
+ */
+object DESTaxYearHelper {
+  def desTaxYearConverter(taxYear:Int): String = {
+    val lastYear = taxYear -1
+    val endOfTaxYear = taxYear.toString.takeRight(2)
+    s"$lastYear-$endOfTaxYear"
+  }
 }
