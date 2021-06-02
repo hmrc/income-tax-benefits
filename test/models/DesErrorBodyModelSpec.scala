@@ -20,8 +20,10 @@ import com.codahale.metrics.SharedMetricRegistries
 import play.api.libs.json.{JsObject, Json}
 import utils.TestUtils
 import controllers.Assets.SERVICE_UNAVAILABLE
+import org.scalatest.matchers.must.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 
-class DesErrorBodyModelSpec extends TestUtils {
+class DesErrorBodyModelSpec extends AnyWordSpec with TestUtils with Matchers {
   SharedMetricRegistries.clear()
 
   val model: DesErrorBodyModel = DesErrorBodyModel("SERVER_ERROR", "Service is unavailable")

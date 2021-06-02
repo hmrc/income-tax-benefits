@@ -16,13 +16,17 @@
 
 package connectors
 
+import com.github.tomakehurst.wiremock.http.HttpHeader
+import config.AppConfig
 import connectors.getEmploymentBenefitsConnectorSpec.{expectedResponseBody, expectedResponseBodyHMRC, latestWithAllFields}
 import helpers.WiremockSpec
 import models.{Benefits, DesErrorBodyModel, DesErrorModel, Employment, EmploymentBenefits}
 import org.scalatestplus.play.PlaySpec
+import play.api.Configuration
 import play.api.http.Status._
 import play.api.libs.json.Json
-import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.{HeaderCarrier, HeaderNames, HttpClient, SessionId}
+import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import utils.DESTaxYearHelper.desTaxYearConverter
 
 class GetEmploymentBenefitsConnectorISpec extends PlaySpec with WiremockSpec {
@@ -47,6 +51,12 @@ class GetEmploymentBenefitsConnectorISpec extends PlaySpec with WiremockSpec {
         Some(amount), Some(amount), Some(amount), Some(amount), Some(amount), Some(amount), Some(amount), Some(amount)
       ))
     ))
+
+  lazy val httpClient: HttpClient = app.injector.instanceOf[HttpClient]
+
+  def appConfig(desHost: String): AppConfig = new AppConfig(app.injector.instanceOf[Configuration], app.injector.instanceOf[ServicesConfig]) {
+    override val desBaseUrl: String = s"http://$desHost:$wireMockPort"
+  }
 
   "GetEmploymentBenefitsConnector" should {
     "return a GetEmploymentBenefitsModel" when {
@@ -83,6 +93,44 @@ class GetEmploymentBenefitsConnectorISpec extends PlaySpec with WiremockSpec {
         result mustBe expectedResult
         expectedResult.source mustBe Some("CUSTOMER")
         expectedResult.employment.benefitsInKind.get.employerProvidedProfessionalSubscriptions mustBe Some(84.56)
+      }
+    }
+
+    "include internal headers" when {
+
+      val headersSentToDes = Seq(
+        new HttpHeader(HeaderNames.authorisation, "Bearer secret"),
+        new HttpHeader(HeaderNames.xSessionId, "sessionIdValue")
+      )
+
+      val internalHost = "localhost"
+      val externalHost = "127.0.0.1"
+
+      "the host for DES is 'Internal'" in {
+
+        implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId("sessionIdValue")))
+        val connector = new GetEmploymentBenefitsConnector(httpClient, appConfig(internalHost))(ec)
+
+        val expectedResult = Json.parse(expectedResponseBody).as[EmploymentBenefits]
+
+        stubGetWithResponseBody(s"/income-tax/income/employments/$nino/${desTaxYearConverter(taxYear)}/$id\\?view=$view", OK, expectedResponseBody, headersSentToDes)
+
+        val result = await(connector.getEmploymentBenefits(nino, id, taxYear, view)(hc))
+
+        result mustBe Right(expectedResult)
+      }
+
+      "the host for DES is 'External'" in {
+        implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId("sessionIdValue")))
+        val connector = new GetEmploymentBenefitsConnector(httpClient, appConfig(externalHost))(ec)
+
+        val expectedResult = Json.parse(expectedResponseBody).as[EmploymentBenefits]
+
+        stubGetWithResponseBody(s"/income-tax/income/employments/$nino/${desTaxYearConverter(taxYear)}/$id\\?view=$view", OK, expectedResponseBody, headersSentToDes)
+
+        val result = await(connector.getEmploymentBenefits(nino, id, taxYear, view)(hc))
+
+        result mustBe Right(expectedResult)
       }
     }
 

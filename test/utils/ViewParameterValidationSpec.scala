@@ -16,9 +16,10 @@
 
 package utils
 
-import org.scalatestplus.play.PlaySpec
+import org.scalatest.matchers.must.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 
-class ViewParameterValidationSpec extends PlaySpec {
+class ViewParameterValidationSpec extends AnyWordSpec with TestUtils with Matchers {
 
   "ViewParameterValidation" should {
 

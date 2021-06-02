@@ -17,10 +17,12 @@
 package models
 
 import com.codahale.metrics.SharedMetricRegistries
+import org.scalatest.matchers.must.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 import play.api.libs.json.{JsValue, Json}
 import utils.TestUtils
 
-class EmploymentBenefitsSpec extends TestUtils {
+class EmploymentBenefitsSpec extends AnyWordSpec with TestUtils with Matchers {
   SharedMetricRegistries.clear()
 
   val amount: BigDecimal = 100

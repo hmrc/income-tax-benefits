@@ -18,6 +18,8 @@ package controllers.predicates
 
 import common.{EnrolmentIdentifiers, EnrolmentKeys}
 import models.User
+import org.scalatest.matchers.must.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 import play.api.http.Status._
 import play.api.mvc.Results._
 import play.api.mvc.{AnyContent, Result}
@@ -32,7 +34,7 @@ import utils.TestUtils
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class AuthorisedActionSpec extends TestUtils {
+class AuthorisedActionSpec extends AnyWordSpec with TestUtils with Matchers {
 
   val auth: AuthorisedAction = authorisedAction
 

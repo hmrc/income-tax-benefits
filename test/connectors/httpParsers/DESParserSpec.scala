@@ -18,11 +18,13 @@ package connectors.httpParsers
 
 import controllers.Assets.INTERNAL_SERVER_ERROR
 import models.{DesErrorBodyModel, DesErrorModel, DesErrorsBodyModel}
+import org.scalatest.matchers.must.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 import play.api.libs.json.{JsValue, Json}
 import uk.gov.hmrc.http.HttpResponse
 import utils.TestUtils
 
-class DESParserSpec extends TestUtils{
+class DESParserSpec extends AnyWordSpec with TestUtils with Matchers {
 
   object FakeParser extends DESParser {
     override val parserName: String = "TestParser"

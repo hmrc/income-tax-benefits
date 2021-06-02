@@ -16,9 +16,11 @@
 
 package utils
 
+import org.scalatest.matchers.must.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 import uk.gov.hmrc.http.HttpResponse
 
-class PagerDutyHelperTest extends TestUtils {
+class PagerDutyHelperTest extends AnyWordSpec with TestUtils with Matchers {
 
   "PagerDutyHelper" should {
 
