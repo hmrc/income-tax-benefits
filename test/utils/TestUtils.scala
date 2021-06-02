@@ -17,7 +17,6 @@
 package utils
 
 import akka.actor.ActorSystem
-import akka.stream.{ActorMaterializer, Materializer}
 import com.codahale.metrics.SharedMetricRegistries
 import common.{EnrolmentIdentifiers, EnrolmentKeys}
 import config.AppConfig
@@ -46,7 +45,6 @@ trait TestUtils extends MockFactory with GuiceOneAppPerSuite with BeforeAndAfter
   }
 
   implicit val actorSystem: ActorSystem = ActorSystem()
-  implicit val materializer: Materializer = ActorMaterializer()
 
   def await[T](awaitable: Awaitable[T]): T = Await.result(awaitable, Duration.Inf)
 

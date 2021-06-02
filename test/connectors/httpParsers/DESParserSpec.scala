@@ -16,7 +16,7 @@
 
 package connectors.httpParsers
 
-import controllers.Assets.INTERNAL_SERVER_ERROR
+import play.api.http.Status.INTERNAL_SERVER_ERROR
 import models.{DesErrorBodyModel, DesErrorModel, DesErrorsBodyModel}
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.wordspec.AnyWordSpec
