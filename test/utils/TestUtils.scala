@@ -24,6 +24,8 @@ import controllers.predicates.AuthorisedAction
 import models.{Benefits, Employment, EmploymentBenefits}
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.BeforeAndAfterEach
+import org.scalatest.matchers.must.Matchers
+import org.scalatest.wordspec.AnyWordSpecLike
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.mvc.{AnyContentAsEmpty, ControllerComponents, DefaultActionBuilder, Result}
 import play.api.test.{FakeRequest, Helpers}
@@ -38,7 +40,7 @@ import uk.gov.hmrc.http.HeaderCarrier
 import scala.concurrent.duration.Duration
 import scala.concurrent.{Await, Awaitable, ExecutionContext, Future}
 
-trait TestUtils extends MockFactory with GuiceOneAppPerSuite with BeforeAndAfterEach {
+trait TestUtils extends AnyWordSpecLike with Matchers with MockFactory with GuiceOneAppPerSuite with BeforeAndAfterEach {
   override def beforeEach(): Unit = {
     super.beforeEach()
     SharedMetricRegistries.clear()

@@ -16,13 +16,11 @@
 
 package models
 
-import org.scalatest.matchers.must.Matchers
-import org.scalatest.wordspec.AnyWordSpec
 import play.api.mvc.AnyContent
 import play.api.test.FakeRequest
 import utils.TestUtils
 
-class UserSpec extends AnyWordSpec with TestUtils with Matchers {
+class UserSpec extends TestUtils {
 
   ".isAgent" should {
 

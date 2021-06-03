@@ -20,15 +20,13 @@ import com.codahale.metrics.SharedMetricRegistries
 import connectors.GetEmploymentBenefitsConnector
 import connectors.httpParsers.GetEmploymentBenefitsHttpParser.GetEmploymentBenefitsResponse
 import models.{DesErrorBodyModel, DesErrorModel}
-import org.scalatest.matchers.must.Matchers
-import org.scalatest.wordspec.AnyWordSpec
 import play.api.http.Status._
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.TestUtils
 
 import scala.concurrent.Future
 
-class GetEmploymentBenefitsServiceSpec extends AnyWordSpec with TestUtils with Matchers {
+class GetEmploymentBenefitsServiceSpec extends TestUtils {
   SharedMetricRegistries.clear()
 
   val connector: GetEmploymentBenefitsConnector = mock[GetEmploymentBenefitsConnector]

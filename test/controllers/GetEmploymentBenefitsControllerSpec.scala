@@ -19,8 +19,6 @@ package controllers
 import connectors.httpParsers.GetEmploymentBenefitsHttpParser.GetEmploymentBenefitsResponse
 import models.{DesErrorBodyModel, DesErrorModel}
 import org.scalamock.handlers.CallHandler5
-import org.scalatest.matchers.must.Matchers
-import org.scalatest.wordspec.AnyWordSpec
 import play.api.http.Status._
 import play.api.libs.json.Json
 import play.api.test.FakeRequest
@@ -30,7 +28,7 @@ import utils.TestUtils
 
 import scala.concurrent.Future
 
-class GetEmploymentBenefitsControllerSpec extends AnyWordSpec with TestUtils with Matchers {
+class GetEmploymentBenefitsControllerSpec extends TestUtils {
 
   val getEmploymentBenefitsService: GetEmploymentBenefitsService = mock[GetEmploymentBenefitsService]
   val getEmploymentBenefitsController = new GetEmploymentBenefitsController(getEmploymentBenefitsService,authorisedAction, mockControllerComponents)

@@ -16,10 +16,8 @@
 
 package utils
 
-import org.scalatest.matchers.must.Matchers
-import org.scalatest.wordspec.AnyWordSpec
 
-class ViewParameterValidationSpec extends AnyWordSpec with TestUtils with Matchers {
+class ViewParameterValidationSpec extends TestUtils {
 
   "ViewParameterValidation" should {
 

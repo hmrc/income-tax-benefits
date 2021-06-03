@@ -16,10 +16,8 @@
 
 package utils
 
-import org.scalatest.matchers.must.Matchers
-import org.scalatest.wordspec.AnyWordSpec
 
-class DESTaxYearHelperSpec extends AnyWordSpec with TestUtils with Matchers {
+class DESTaxYearHelperSpec extends TestUtils {
 
   "DESTaxYearHelper" should {
 

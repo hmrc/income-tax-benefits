@@ -17,13 +17,11 @@
 package connectors
 
 import config.AppConfig
-import org.scalatest.matchers.must.Matchers
-import org.scalatest.wordspec.AnyWordSpec
 import uk.gov.hmrc.http.{Authorization, HeaderCarrier, SessionId}
 import uk.gov.hmrc.http.HeaderNames.{authorisation, xRequestChain, xSessionId}
 import utils.TestUtils
 
-class DesConnectorSpec extends AnyWordSpec with TestUtils with Matchers {
+class DesConnectorSpec extends TestUtils {
 
   class FakeConnector(override val appConfig: AppConfig) extends DesConnector {
     def headerCarrierTest(url: String)(hc: HeaderCarrier): HeaderCarrier = desHeaderCarrier(url)(hc)
