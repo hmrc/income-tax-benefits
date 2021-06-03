@@ -24,7 +24,6 @@ import play.api.libs.json.JsValue
 
 trait WiremockStubHelpers {
 
-
   def stubGetWithoutResponseBody(url: String, status: Int): StubMapping =
     stubFor(get(urlMatching(url))
       .willReturn(
@@ -39,8 +38,10 @@ trait WiremockStubHelpers {
     stubFor(mappingWithHeaders
       .willReturn(
         aResponse()
+          .withStatus(status)
           .withBody(response)
-          .withStatus(status)))
+          .withHeader("Content-Type", "application/json; charset=utf-8"))
+    )
   }
 
   def stubPostWithoutResponseBody(url: String, status: Int, requestBody: String, requestHeaders: Seq[HttpHeader] = Seq.empty): StubMapping = {
