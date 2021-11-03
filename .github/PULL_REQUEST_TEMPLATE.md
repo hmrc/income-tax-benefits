@@ -27,7 +27,7 @@ Add a link to the relevant story in Jira
 - [ ]  Have you run the tests?
 - [ ]  Have you run the journey tests? (where applicable)
 - [ ]  Have you addressed warnings where appropriate?
-- [ ]  Have you rebased against the current version of master?
+- [ ]  Have you rebased against the current version of main?
 - [ ]  Have you checked code coverage isn’t lower than previously?
 
 ##### After PRs been raised
