@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 HM Revenue & Customs
+ * Copyright 2022 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -94,6 +94,30 @@ trait WiremockStubHelpers {
     verify(times, postRequestedFor(urlEqualTo(url))
       .withRequestBody(equalToJson(body.toString(), true, true))
     )
+
+  def stubDeleteWithoutResponseBody(url: String, status: Int, requestHeaders: Seq[HttpHeader] = Seq.empty): StubMapping = {
+    val mappingWithHeaders: MappingBuilder = requestHeaders.foldLeft(delete(urlMatching(url))) { (result, nxt) =>
+      result.withHeader(nxt.key(), equalTo(nxt.firstValue()))
+    }
+
+    stubFor(mappingWithHeaders
+      .willReturn(
+        aResponse()
+          .withStatus(status)))
+  }
+
+  def stubDeleteWithResponseBody(url: String, status: Int, response: String, requestHeaders: Seq[HttpHeader] = Seq.empty): StubMapping = {
+    val mappingWithHeaders: MappingBuilder = requestHeaders.foldLeft(delete(urlMatching(url))) { (result, nxt) =>
+      result.withHeader(nxt.key(), equalTo(nxt.firstValue()))
+    }
+
+    stubFor(mappingWithHeaders
+      .willReturn(
+        aResponse()
+          .withStatus(status)
+          .withBody(response)
+      ))
+  }
 
   def auditStubs(): Unit = {
     val auditResponseCode = 204

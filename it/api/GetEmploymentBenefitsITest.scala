@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 HM Revenue & Customs
+ * Copyright 2022 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,14 +32,14 @@ class GetEmploymentBenefitsITest extends PlaySpec with WiremockSpec with ScalaFu
     val successNino: String = "AA123123A"
     val taxYear = 2021
     val agentClientCookie: Map[String, String] = Map("MTDITID" -> "555555555")
-    val mtditidHeader = ("mtditid", "555555555")
+    val mtditidHeader: (String, String) = ("mtditid", "555555555")
     val requestHeaders: Seq[HttpHeader] = Seq(new HttpHeader("mtditid", "555555555"))
     val view = "LATEST"
     val id = "a1e8057e-fbbc-47a8-a8b4-78d9f015c934"
     auditStubs()
   }
 
-  val GetEmploymentBenefitsDesResponseBody =
+  val GetEmploymentBenefitsDesResponseBody: String =
     """
       |{
       |	"submittedOn": "2020-12-12T12:12:12Z",

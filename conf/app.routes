@@ -1,3 +1,10 @@
 # microservice specific routes
 
 GET /income-tax/nino/:nino/sources/:employmentId    controllers.GetEmploymentBenefitsController.getEmploymentBenefits(nino: String, employmentId: String, taxYear: Int, view: String)
+
+#State Benefits
+GET     /state-benefits/nino/:nino/taxYear/:taxYear                                   controllers.StateBenefitsController.getStateBenefits(nino: String, taxYear: Int, benefitId: Option[String])
+
+DELETE  /state-benefits-override/nino/:nino/taxYear/:taxYear/benefitId/:benefitId     controllers.StateBenefitsController.deleteOverrideStateBenefit(nino: String, taxYear: Int, benefitId: String)
+
+DELETE  /state-benefits/nino/:nino/taxYear/:taxYear/benefitId/:benefitId              controllers.StateBenefitsController.deleteStateBenefit(nino: String, taxYear: Int, benefitId: String)

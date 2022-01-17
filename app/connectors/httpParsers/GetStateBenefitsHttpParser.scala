@@ -16,23 +16,25 @@
 
 package connectors.httpParsers
 
-import models.{DesErrorModel, EmploymentBenefits}
+import models.{DesErrorBodyModel, DesErrorModel, GetStateBenefitsModel}
 import play.api.http.Status._
 import uk.gov.hmrc.http.{HttpReads, HttpResponse}
 import utils.PagerDutyHelper.PagerDutyKeys._
 import utils.PagerDutyHelper.pagerDutyLog
 
-object GetEmploymentBenefitsHttpParser extends DESParser {
-  type GetEmploymentBenefitsResponse = Either[DesErrorModel, EmploymentBenefits]
+object GetStateBenefitsHttpParser extends DESParser {
+  type GetStateBenefitsResponse = Either[DesErrorModel, GetStateBenefitsModel]
 
-  override val parserName: String = "GetEmploymentBenefitsHttpParser"
+  override val parserName: String = "GetStateBenefitsHttpParser"
 
-  implicit object GetEmploymentExpensesHttpReads extends HttpReads[GetEmploymentBenefitsResponse] {
-
-    override def read(method: String, url: String, response: HttpResponse): GetEmploymentBenefitsResponse = {
+  implicit object GetStateBenefitsHttpReads extends HttpReads[GetStateBenefitsResponse] {
+    override def read(method: String, url: String, response: HttpResponse): GetStateBenefitsResponse = {
       response.status match {
-        case OK => response.json.validate[EmploymentBenefits].fold[GetEmploymentBenefitsResponse](
-          _ => badSuccessJsonFromDES,
+        case OK => response.json.validate[GetStateBenefitsModel].fold[GetStateBenefitsResponse](
+          jsonErrors => {
+            pagerDutyLog(BAD_SUCCESS_JSON_FROM_DES, s"[GetStateBenefitsHttpParser][read] Invalid Json from DES.")
+            Left(DesErrorModel(INTERNAL_SERVER_ERROR, DesErrorBodyModel.parsingError))
+          },
           parsedModel => Right(parsedModel)
         )
         case INTERNAL_SERVER_ERROR =>
@@ -50,5 +52,4 @@ object GetEmploymentBenefitsHttpParser extends DESParser {
       }
     }
   }
-
 }
