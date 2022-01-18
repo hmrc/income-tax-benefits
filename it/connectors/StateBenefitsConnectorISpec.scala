@@ -20,7 +20,7 @@ import com.github.tomakehurst.wiremock.http.HttpHeader
 import config.{AppConfig, BackendAppConfig}
 import connectors.StateBenefitsConnectorISpec.expectedResponseBody
 import helpers.WiremockSpec
-import models._
+import models.{CreateUpdateOverrideStateBenefit, _}
 import org.scalatestplus.play.PlaySpec
 import play.api.Configuration
 import play.api.http.Status._
@@ -42,18 +42,19 @@ class StateBenefitsConnectorISpec extends PlaySpec with WiremockSpec {
   val taxYear: Int = 2021
   val benefitId: String = "a111111a-abcd-111a-123a-11a1a111a1"
 
+  lazy val headersSentToDes = Seq(
+    new HttpHeader(HeaderNames.authorisation, "Bearer secret"),
+    new HttpHeader(HeaderNames.xSessionId, "sessionIdValue")
+  )
+
+  lazy val internalHost = "localhost"
+  lazy val externalHost = "127.0.0.1"
+
   ".deleteOverrideStateBenefit" should {
 
     val deleteOverrideUrl: String = s"/income-tax/income/state-benefits/$nino/${desTaxYearConverter(taxYear)}/$benefitId"
 
     "include internal headers" when {
-      val headersSentToDes = Seq(
-        new HttpHeader(HeaderNames.authorisation, "Bearer secret"),
-        new HttpHeader(HeaderNames.xSessionId, "sessionIdValue")
-      )
-
-      lazy val internalHost = "localhost"
-      lazy val externalHost = "127.0.0.1"
 
       "the host for DES is 'Internal'" in {
         implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId("sessionIdValue")))
@@ -138,19 +139,11 @@ class StateBenefitsConnectorISpec extends PlaySpec with WiremockSpec {
     }
   }
 
-  ".GetStateBenefitsConnector" should {
+  ".getStateBenefits" should {
 
     val desUrl = s"/income-tax/income/state-benefits/$nino/${desTaxYearConverter(taxYear)}\\?benefitId=$benefitId"
 
     "include internal headers" when {
-
-      val headersSentToDes = Seq(
-        new HttpHeader(HeaderNames.authorisation, "Bearer secret"),
-        new HttpHeader(HeaderNames.xSessionId, "sessionIdValue")
-      )
-
-      lazy val internalHost = "localhost"
-      lazy val externalHost = "127.0.0.1"
 
       "the host for DES is 'Internal'" in {
         implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId("sessionIdValue")))
@@ -267,18 +260,11 @@ class StateBenefitsConnectorISpec extends PlaySpec with WiremockSpec {
     }
   }
 
-  ".deleteStateBenefit" should {
+  ".deleteStateBenefitEndOfYear" should {
 
     val deleteUrl: String = s"/income-tax/income/state-benefits/$nino/${desTaxYearConverter(taxYear)}/custom/$benefitId"
 
     "include internal headers" when {
-      val headersSentToDes = Seq(
-        new HttpHeader(HeaderNames.authorisation, "Bearer secret"),
-        new HttpHeader(HeaderNames.xSessionId, "sessionIdValue")
-      )
-
-      val internalHost = "localhost"
-      val externalHost = "127.0.0.1"
 
       "the host for DES is 'Internal'" in {
         implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId("sessionIdValue")))
@@ -361,6 +347,100 @@ class StateBenefitsConnectorISpec extends PlaySpec with WiremockSpec {
         result mustBe Left(expectedResult)
 
       }
+    }
+  }
+
+  ".createUpdateOverrideStateBenefit" should {
+
+    val createUpdateDesUrl: String = s"/income-tax/income/state-benefits/$nino/${desTaxYearConverter(taxYear)}/$benefitId"
+
+    val createUpdateOverrideStateBenefit: CreateUpdateOverrideStateBenefit = CreateUpdateOverrideStateBenefit(
+        amount = 21.22, taxPaid = Some(0.50))
+
+    val createUpdatePensionChargesRequestBody = Json.toJson(createUpdateOverrideStateBenefit)
+
+    "include internal headers" when {
+
+      "the host for DES is 'Internal'" in {
+        implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId("sessionIdValue")))
+        val connector = new StateBenefitsConnector(httpClient, appConfig(internalHost))
+
+        stubPutWithoutResponseBody(createUpdateDesUrl, createUpdatePensionChargesRequestBody.toString(), NO_CONTENT, headersSentToDes)
+
+        val result = await(connector.createUpdateStateBenefitOverride(nino, taxYear,benefitId, createUpdateOverrideStateBenefit)(hc))
+
+        result mustBe Right(())
+      }
+
+      "the host for DES is 'External'" in {
+        implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId("sessionIdValue")))
+        val connector = new StateBenefitsConnector(httpClient, appConfig(externalHost))
+
+        stubPutWithoutResponseBody(createUpdateDesUrl, createUpdatePensionChargesRequestBody.toString(), NO_CONTENT, headersSentToDes)
+
+        val result = await(connector.createUpdateStateBenefitOverride(nino, taxYear, benefitId, createUpdateOverrideStateBenefit)(hc))
+
+        result mustBe Right(())
+      }
+    }
+
+    "return a Right when there is a valid request body" in {
+      stubPutWithoutResponseBody(createUpdateDesUrl, createUpdatePensionChargesRequestBody.toString(), NO_CONTENT)
+
+      implicit val hc: HeaderCarrier = HeaderCarrier()
+      val result = await(connector.createUpdateStateBenefitOverride(nino, taxYear, benefitId, createUpdateOverrideStateBenefit)(hc))
+
+      result mustBe Right(())
+    }
+
+    "return a Left error" when {
+
+      Seq(INTERNAL_SERVER_ERROR, SERVICE_UNAVAILABLE, BAD_REQUEST, UNPROCESSABLE_ENTITY).foreach { errorStatus =>
+
+        val desResponseBody = Json.obj(
+          "code" -> "SOME_DES_ERROR_CODE",
+          "reason" -> "SOME_DES_ERROR_REASON"
+        ).toString
+
+        s"Des returns $errorStatus" in {
+          val expectedResult = DesErrorModel(errorStatus, DesErrorBodyModel("SOME_DES_ERROR_CODE", "SOME_DES_ERROR_REASON"))
+
+          implicit val hc: HeaderCarrier = HeaderCarrier()
+          stubPutWithResponseBody(createUpdateDesUrl, createUpdatePensionChargesRequestBody.toString(), desResponseBody, errorStatus)
+
+          val result = await(connector.createUpdateStateBenefitOverride(nino, taxYear, benefitId, createUpdateOverrideStateBenefit)(hc))
+
+          result mustBe Left(expectedResult)
+        }
+
+        s"DES returns $errorStatus response that does not have a parsable error body" in {
+          val expectedResult = DesErrorModel(errorStatus, DesErrorBodyModel.parsingError)
+
+          stubPutWithResponseBody(createUpdateDesUrl, createUpdatePensionChargesRequestBody.toString, "UNEXPECTED RESPONSE BODY", errorStatus)
+
+          implicit val hc: HeaderCarrier = HeaderCarrier()
+          val result = await(connector.createUpdateStateBenefitOverride(nino, taxYear, benefitId, createUpdateOverrideStateBenefit)(hc))
+
+          result mustBe Left(expectedResult)
+        }
+      }
+
+      "DES returns an unexpected http response that is parsable" in {
+
+        val responseBody = Json.obj(
+          "code" -> "NOT_FOUND",
+          "reason" -> "not found"
+        )
+
+        val expectedResult = DesErrorModel(INTERNAL_SERVER_ERROR, DesErrorBodyModel("NOT_FOUND", "not found"))
+
+        stubPutWithResponseBody(createUpdateDesUrl, createUpdatePensionChargesRequestBody.toString(), responseBody.toString(), NOT_FOUND)
+        implicit val hc: HeaderCarrier = HeaderCarrier()
+        val result = await(connector.createUpdateStateBenefitOverride(nino, taxYear, benefitId, createUpdateOverrideStateBenefit)(hc))
+
+        result mustBe Left(expectedResult)
+      }
+
     }
   }
 

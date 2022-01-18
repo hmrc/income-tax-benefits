@@ -17,9 +17,11 @@
 package connectors
 
 import config.AppConfig
+import connectors.httpParsers.CreateUpdateOverrideStateBenefitHttpParser._
 import connectors.httpParsers.DeleteOverrideStateBenefitHttpParser.{DeleteOverrideStateBenefitHttpReads, DeleteStateBenefitOverrideResponse}
 import connectors.httpParsers.DeleteStateBenefitsHttpParser.{DeleteStateBenefitsHttpReads, DeleteStateBenefitsResponse}
 import connectors.httpParsers.GetStateBenefitsHttpParser.{GetStateBenefitsHttpReads, GetStateBenefitsResponse}
+import models.CreateUpdateOverrideStateBenefit
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
 import utils.DESTaxYearHelper.desTaxYearConverter
 
@@ -28,6 +30,10 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class StateBenefitsConnector @Inject()(val http: HttpClient,
                                        val appConfig: AppConfig)(implicit ec: ExecutionContext) extends DesConnector {
+
+  def overrideStateBenefitUri(nino: String, taxYear: Int, benefitId: String): String = {
+    appConfig.desBaseUrl + s"/income-tax/income/state-benefits/$nino/${desTaxYearConverter(taxYear)}/$benefitId"
+  }
 
   def getStateBenefits(nino: String, taxYear: Int, benefitId: Option[String])(implicit hc: HeaderCarrier): Future[GetStateBenefitsResponse] = {
 
@@ -56,10 +62,24 @@ class StateBenefitsConnector @Inject()(val http: HttpClient,
   }
 
   def deleteOverrideStateBenefit(nino: String, taxYear: Int, benefitId: String)(implicit hc: HeaderCarrier): Future[DeleteStateBenefitOverrideResponse] = {
-    val incomeSourceUri: String = appConfig.desBaseUrl + s"/income-tax/income/state-benefits/$nino/${desTaxYearConverter(taxYear)}/$benefitId"
+
+    val incomeSourceUri: String = overrideStateBenefitUri(nino, taxYear, benefitId)
 
     def desCall(implicit hc: HeaderCarrier): Future[DeleteStateBenefitOverrideResponse] = {
       http.DELETE[DeleteStateBenefitOverrideResponse](incomeSourceUri)(DeleteOverrideStateBenefitHttpReads, hc, ec)
+    }
+
+    desCall(desHeaderCarrier(incomeSourceUri))
+  }
+
+  def createUpdateStateBenefitOverride(nino: String, taxYear: Int, benefitId: String, model: CreateUpdateOverrideStateBenefit)
+                                      (implicit hc: HeaderCarrier): Future[CreateUpdateOverrideStateBenefitResponse] = {
+
+    val incomeSourceUri: String = overrideStateBenefitUri(nino, taxYear, benefitId)
+
+    def desCall(implicit hc: HeaderCarrier): Future[CreateUpdateOverrideStateBenefitResponse] = {
+      http.PUT[CreateUpdateOverrideStateBenefit, CreateUpdateOverrideStateBenefitResponse](
+        incomeSourceUri, model)(CreateUpdateOverrideStateBenefit.format.writes, CreateUpdateOverrideStateBenefitResponseHttpReads, hc, ec)
     }
 
     desCall(desHeaderCarrier(incomeSourceUri))
