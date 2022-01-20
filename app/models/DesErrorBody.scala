@@ -50,6 +50,14 @@ object DesErrorBodyModel {
     "INVALID_BENEFIT_ID", "Submission has not passed validation. Invalid parameter benefitId.")
   val serviceUnavailable: DesErrorBodyModel = DesErrorBodyModel("SERVICE_UNAVAILABLE", "Dependent systems are currently not responding.")
   val serverError: DesErrorBodyModel = DesErrorBodyModel("SERVER_ERROR", "DES is currently experiencing problems that require live service intervention.")
+  val invalidDateRange: DesErrorBodyModel = DesErrorBodyModel(
+    "INVALID_DATE_RANGE", "The remote endpoint has indicated that tax year requested exceeds CY-4.")
+  val taxYearNotSupported: DesErrorBodyModel = DesErrorBodyModel(
+    "TAX_YEAR_NOT_SUPPORTED", "The remote endpoint has indicated that requested tax year is not supported.")
+  val deleteForbidden: DesErrorBodyModel = DesErrorBodyModel(
+    "DELETE_FORBIDDEN", "The remote endpoint has indicated that HMRC held State Benefit cannot be deleted.")
+  val requestBeforeTaxYear: DesErrorBodyModel = DesErrorBodyModel(
+    "INVALID_REQUEST_BEFORE_TAX_YEAR", "The remote endpoint has indicated that submission is provided before the tax year has ended.")
 }
 
 /** Multiple DES Errors **/
