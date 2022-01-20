@@ -23,8 +23,8 @@ import play.api.libs.json.{JsSuccess, Json}
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import services.StateBenefitsService
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
-
 import javax.inject.Inject
+import models.UpdateStateBenefitModel
 import scala.concurrent.{ExecutionContext, Future}
 
 class StateBenefitsController @Inject()(service: StateBenefitsService,
@@ -95,5 +95,20 @@ class StateBenefitsController @Inject()(service: StateBenefitsService,
         logger.warn("[StateBenefitsController][addStateBenefit] The AddStateBenefit request body is invalid")
         Future.successful(BadRequest)
     }
+  }
+  def updateStateBenefit(nino: String, taxYear: Int, benefitId: String): Action[AnyContent] = auth.async { implicit user =>
+    user.request.body.asJson.map(_.validate[UpdateStateBenefitModel]) match {
+      case Some(JsSuccess(model@UpdateStateBenefitModel(_, _), _)) => {
+        service.updateStateBenefit(nino, taxYear, benefitId, model).map {
+          case Right(_) => NoContent
+          case Left(errorModel) => Status(errorModel.status)(Json.toJson(errorModel.toJson))
+        }
+      }
+      case _ => {
+        logger.warn("[StateBenefitsController][updateStateBenefit] Update state benefit request is invalid")
+        Future.successful(BadRequest)
+      }
+    }
+    Future.successful(BadRequest)
   }
 }

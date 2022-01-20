@@ -24,11 +24,12 @@ import connectors.httpParsers.DeleteOverrideStateBenefitHttpParser.{DeleteOverri
 import connectors.httpParsers.DeleteStateBenefitsHttpParser.{DeleteStateBenefitsHttpReads, DeleteStateBenefitsResponse}
 import connectors.httpParsers.GetStateBenefitsHttpParser.{GetStateBenefitsHttpReads, GetStateBenefitsResponse}
 import connectors.httpParsers.IgnoreStateBenefitHttpParser.{IgnoreStateBenefitResponse, IgnoreStateBenefitResponseHttpReads}
-import models.{AddStateBenefitRequestModel, CreateUpdateOverrideStateBenefit, IgnoreStateBenefit}
+import models.{AddStateBenefitRequestModel, CreateUpdateOverrideStateBenefit, IgnoreStateBenefit, UpdateStateBenefitModel}
+import connectors.httpParsers.UpdateStateBenefitHttpParser.{UpdateStateBenefitHttpReads, UpdateStateBenefitResponse}
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
 import utils.DESTaxYearHelper.desTaxYearConverter
-
 import javax.inject.Inject
+
 import scala.concurrent.{ExecutionContext, Future}
 
 class StateBenefitsConnector @Inject()(val http: HttpClient,
@@ -125,4 +126,15 @@ class StateBenefitsConnector @Inject()(val http: HttpClient,
     desCall(desHeaderCarrier(incomeSourceUri))
   }
 
+  def updateStateBenefit(nino: String, taxYear: Int, benefitId: String, benefitUpdateData: UpdateStateBenefitModel)
+                        (implicit hc: HeaderCarrier): Future[UpdateStateBenefitResponse] = {
+
+    val uri: String = appConfig.desBaseUrl + s"/income-tax/income/state-benefits/$nino/${desTaxYearConverter(taxYear)}/custom/$benefitId"
+
+    def desCall(implicit hc: HeaderCarrier): Future[UpdateStateBenefitResponse] = {
+      http.PUT[UpdateStateBenefitModel, UpdateStateBenefitResponse](uri, benefitUpdateData)(UpdateStateBenefitModel.format, UpdateStateBenefitHttpReads, hc, ec)
+    }
+
+    desCall(desHeaderCarrier(uri))
+  }
 }

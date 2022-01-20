@@ -17,3 +17,5 @@ PUT     /state-benefits/nino/:nino/taxYear/:taxYear/benefitId/:benefitId/ignoreB
 DELETE /state-benefits/nino/:nino/taxYear/:taxYear/ignore/benefitId/:benefitId        controllers.StateBenefitsController.unignoreStateBenefit(nino: String, taxYear: Int, benefitId)
 
 POST    /state-benefits/nino/:nino/taxYear/:taxYear                                   controllers.StateBenefitsController.addStateBenefit(nino: String, taxYear: Int)
+
+PUT    /state-benefits/nino/:nino/taxYear/:taxYear/benefitId/:benefitId               controllers.StateBenefitsController.updateStateBenefit(nino: String, taxYear: Int, benefitId: String)
