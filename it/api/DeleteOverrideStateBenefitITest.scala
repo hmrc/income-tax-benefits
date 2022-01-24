@@ -37,7 +37,7 @@ class DeleteOverrideStateBenefitITest extends PlaySpec with WiremockSpec with Sc
     val mtditidHeader: (String, String) = ("mtditid", "555555555")
     val requestHeaders: Seq[HttpHeader] = Seq(new HttpHeader("mtditid", "555555555"))
     val desUrl: String = s"/income-tax/income/state-benefits/$nino/${desTaxYearConverter(taxYear)}/$benefitId"
-    val serviceUrl: String = s"/income-tax-benefits/state-benefits-override/nino/$nino/taxYear/$taxYear/benefitId/$benefitId"
+    val serviceUrl: String = s"/income-tax-benefits/state-benefits/override/nino/$nino/taxYear/$taxYear/benefitId/$benefitId"
     auditStubs()
   }
 

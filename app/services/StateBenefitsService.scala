@@ -21,6 +21,7 @@ import connectors.httpParsers.CreateUpdateOverrideStateBenefitHttpParser.CreateU
 import connectors.httpParsers.DeleteOverrideStateBenefitHttpParser.DeleteStateBenefitOverrideResponse
 import connectors.httpParsers.DeleteStateBenefitsHttpParser.DeleteStateBenefitsResponse
 import connectors.httpParsers.GetStateBenefitsHttpParser.GetStateBenefitsResponse
+import connectors.httpParsers.IgnoreStateBenefitHttpParser.IgnoreStateBenefitResponse
 import models.CreateUpdateOverrideStateBenefit
 import uk.gov.hmrc.http.HeaderCarrier
 
@@ -42,4 +43,8 @@ class StateBenefitsService @Inject()(connector: StateBenefitsConnector) {
   def createUpdateStateBenefitOverride(nino: String, taxYear: Int, benefitId: String, model: CreateUpdateOverrideStateBenefit)
                                       (implicit hc: HeaderCarrier): Future[CreateUpdateOverrideStateBenefitResponse] =
     connector.createUpdateStateBenefitOverride(nino, taxYear, benefitId, model)
+
+  def ignoreStateBenefit(nino: String, taxYear: Int, benefitId: String, ignoreBenefit: Boolean)
+                        (implicit hc: HeaderCarrier): Future[IgnoreStateBenefitResponse] =
+    connector.ignoreStateBenefit(nino, taxYear, benefitId, ignoreBenefit)
 }
