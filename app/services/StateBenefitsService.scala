@@ -18,6 +18,7 @@ package services
 
 import connectors.StateBenefitsConnector
 import connectors.httpParsers.CreateUpdateOverrideStateBenefitHttpParser.CreateUpdateOverrideStateBenefitResponse
+import connectors.httpParsers.UnignoreStateBenefitHttpParser.UnignoreStateBenefitHttpParserResponse
 import connectors.httpParsers.DeleteOverrideStateBenefitHttpParser.DeleteStateBenefitOverrideResponse
 import connectors.httpParsers.DeleteStateBenefitsHttpParser.DeleteStateBenefitsResponse
 import connectors.httpParsers.GetStateBenefitsHttpParser.GetStateBenefitsResponse
@@ -47,4 +48,8 @@ class StateBenefitsService @Inject()(connector: StateBenefitsConnector) {
   def ignoreStateBenefit(nino: String, taxYear: Int, benefitId: String, ignoreBenefit: Boolean)
                         (implicit hc: HeaderCarrier): Future[IgnoreStateBenefitResponse] =
     connector.ignoreStateBenefit(nino, taxYear, benefitId, ignoreBenefit)
+
+  def unignoreStateBenefit(nino: String, taxYear: Int, benefitId: String)(implicit hc: HeaderCarrier): Future[UnignoreStateBenefitHttpParserResponse] =
+    connector.unignoreStateBenefit(nino, taxYear, benefitId)
+
 }

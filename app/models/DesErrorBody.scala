@@ -62,6 +62,11 @@ object DesErrorBodyModel {
     "IGNORE_FORBIDDEN", "The remote endpoint has indicated that HMRC held State Benefit cannot be ignored.")
   val notSupportedTaxYear: DesErrorBodyModel = DesErrorBodyModel(
     "NOT_SUPPORTED_TAX_YEAR", "The remote endpoint has indicated that submission is provided before the tax year has ended.")
+  val forbiddenUnignore: DesErrorBodyModel = DesErrorBodyModel(
+    "CUSTOMER_ADDED", "The remote endpoint has indicated you Cannot un-ignore customer added State Benefit.")
+  val beforeTaxYear: DesErrorBodyModel = DesErrorBodyModel(
+    "BEFORE_TAX_YEAR_ENDED", "Submission is provided before the tax year has ended.")
+
 }
 
 /** Multiple DES Errors **/

@@ -18,6 +18,7 @@ package connectors
 
 import config.AppConfig
 import connectors.httpParsers.CreateUpdateOverrideStateBenefitHttpParser._
+import connectors.httpParsers.UnignoreStateBenefitHttpParser.{UnignoreStateBenefitHttpParserResponse, UnignoreStateBenefitHttpReads}
 import connectors.httpParsers.DeleteOverrideStateBenefitHttpParser.{DeleteOverrideStateBenefitHttpReads, DeleteStateBenefitOverrideResponse}
 import connectors.httpParsers.DeleteStateBenefitsHttpParser.{DeleteStateBenefitsHttpReads, DeleteStateBenefitsResponse}
 import connectors.httpParsers.GetStateBenefitsHttpParser.{GetStateBenefitsHttpReads, GetStateBenefitsResponse}
@@ -97,6 +98,17 @@ class StateBenefitsConnector @Inject()(val http: HttpClient,
     def desCall(implicit hc: HeaderCarrier): Future[IgnoreStateBenefitResponse] = {
       http.PUT[IgnoreStateBenefit, IgnoreStateBenefitResponse](
         incomeSourceUri, model)(IgnoreStateBenefit.format.writes, IgnoreStateBenefitResponseHttpReads, hc, ec)
+    }
+
+    desCall(desHeaderCarrier(incomeSourceUri))
+  }
+
+  def unignoreStateBenefit(nino: String, taxYear: Int, benefitId: String)(implicit hc: HeaderCarrier): Future[UnignoreStateBenefitHttpParserResponse] = {
+
+    val incomeSourceUri: String = appConfig.desBaseUrl + s"/income-tax/state-benefits/$nino/${desTaxYearConverter(taxYear)}/ignore/$benefitId"
+
+    def desCall(implicit hc: HeaderCarrier): Future[UnignoreStateBenefitHttpParserResponse] = {
+      http.DELETE[UnignoreStateBenefitHttpParserResponse](incomeSourceUri)(UnignoreStateBenefitHttpReads, hc, ec)
     }
 
     desCall(desHeaderCarrier(incomeSourceUri))
