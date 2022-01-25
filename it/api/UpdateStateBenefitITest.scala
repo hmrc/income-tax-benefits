@@ -80,6 +80,24 @@ class UpdateStateBenefitITest extends PlaySpec with WiremockSpec with ScalaFutur
       }
     }
 
+    "return a 403 if the update is forbidden" in new Setup {
+      val errorResponseBody: String = Json.toJson(DesErrorBodyModel(
+        "UPDATE_FORBIDDEN", "The remote endpoint has indicated that HMRC held State Benefit cannot be updated."
+      )).toString()
+
+      stubPutWithResponseBody(desUrl, Json.toJson(fullUpdateStateBenefitJson).toString(), errorResponseBody, FORBIDDEN)
+      authorised()
+
+      whenReady(buildClient(serviceUrl)
+        .withHttpHeaders(mtditidHeader)
+        .put(fullUpdateStateBenefitJson)) {
+        result =>
+          result.status mustBe FORBIDDEN
+          Json.parse(result.body) mustBe Json.obj(
+            "code" -> "UPDATE_FORBIDDEN", "reason" -> "The remote endpoint has indicated that HMRC held State Benefit cannot be updated.")
+      }
+    }
+
     "return a 404 if no data is found to update" in new Setup {
       val errorResponseBody: String = Json.toJson(DesErrorBodyModel(
         "NO_DATA_FOUND", "The remote endpoint has indicated that the requested resource could not be found."
@@ -95,6 +113,24 @@ class UpdateStateBenefitITest extends PlaySpec with WiremockSpec with ScalaFutur
           result.status mustBe NOT_FOUND
           Json.parse(result.body) mustBe Json.obj(
             "code" -> "NO_DATA_FOUND", "reason" -> "The remote endpoint has indicated that the requested resource could not be found.")
+      }
+    }
+
+    "return a 422 if the start date is invalid" in new Setup {
+      val errorResponseBody: String = Json.toJson(DesErrorBodyModel(
+        "INVALID_START_DATE", "The remote endpoint has indicated that start date is after the end of the tax year."
+      )).toString()
+
+      stubPutWithResponseBody(desUrl, Json.toJson(fullUpdateStateBenefitJson).toString(), errorResponseBody, UNPROCESSABLE_ENTITY)
+      authorised()
+
+      whenReady(buildClient(serviceUrl)
+        .withHttpHeaders(mtditidHeader)
+        .put(fullUpdateStateBenefitJson)) {
+        result =>
+          result.status mustBe UNPROCESSABLE_ENTITY
+          Json.parse(result.body) mustBe Json.obj(
+            "code" -> "INVALID_START_DATE", "reason" -> "The remote endpoint has indicated that start date is after the end of the tax year.")
       }
     }
 
