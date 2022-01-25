@@ -63,4 +63,11 @@ class StateBenefitsController @Inject()(service: StateBenefitsService,
     }
   }
 
+  def ignoreStateBenefit(nino: String, taxYear: Int, benefitId: String, ignoreBenefit: Boolean): Action[AnyContent] = auth.async { implicit user =>
+    service.ignoreStateBenefit(nino, taxYear, benefitId, ignoreBenefit).map {
+      case Right(_) => NoContent
+      case Left(errorModel) => Status(errorModel.status)(errorModel.toJson)
+    }
+  }
+
 }

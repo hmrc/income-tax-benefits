@@ -58,6 +58,10 @@ object DesErrorBodyModel {
     "DELETE_FORBIDDEN", "The remote endpoint has indicated that HMRC held State Benefit cannot be deleted.")
   val requestBeforeTaxYear: DesErrorBodyModel = DesErrorBodyModel(
     "INVALID_REQUEST_BEFORE_TAX_YEAR", "The remote endpoint has indicated that submission is provided before the tax year has ended.")
+  val ignoreForbidden: DesErrorBodyModel = DesErrorBodyModel(
+    "IGNORE_FORBIDDEN", "The remote endpoint has indicated that HMRC held State Benefit cannot be ignored.")
+  val notSupportedTaxYear: DesErrorBodyModel = DesErrorBodyModel(
+    "NOT_SUPPORTED_TAX_YEAR", "The remote endpoint has indicated that submission is provided before the tax year has ended.")
 }
 
 /** Multiple DES Errors **/
