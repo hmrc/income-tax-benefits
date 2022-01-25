@@ -97,11 +97,11 @@ class StateBenefitsController @Inject()(service: StateBenefitsService,
     }
   }
   def updateStateBenefit(nino: String, taxYear: Int, benefitId: String): Action[AnyContent] = auth.async { implicit user =>
-    user.request.body.asJson.map(_.validate[UpdateStateBenefitModel]) match {
+    user.body.asJson.map(_.validate[UpdateStateBenefitModel]) match {
       case Some(JsSuccess(model@UpdateStateBenefitModel(_, _), _)) => {
         service.updateStateBenefit(nino, taxYear, benefitId, model).map {
           case Right(_) => NoContent
-          case Left(errorModel) => Status(errorModel.status)(Json.toJson(errorModel.toJson))
+          case Left(errorModel) => Status(errorModel.status)(errorModel.toJson)
         }
       }
       case _ => {
@@ -109,6 +109,5 @@ class StateBenefitsController @Inject()(service: StateBenefitsService,
         Future.successful(BadRequest)
       }
     }
-    Future.successful(BadRequest)
   }
 }
