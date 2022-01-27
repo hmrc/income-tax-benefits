@@ -13,3 +13,4 @@ PUT    /state-benefits/override/nino/:nino/taxYear/:taxYear/benefitId/:benefitId
 
 PUT    /state-benefits/nino/:nino/taxYear/:taxYear/benefitId/:benefitId/ignoreBenefit/:ignoreBenefit    controllers.StateBenefitsController.ignoreStateBenefit(nino: String, taxYear: Int, benefitId: String, ignoreBenefit: Boolean)
 
+DELETE /state-benefits/nino/:nino/taxYear/:taxYear/ignore/benefitId/:benefitId        controllers.StateBenefitsController.unignoreStateBenefit(nino: String, taxYear: Int, benefitId)
