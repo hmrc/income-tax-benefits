@@ -1,6 +1,7 @@
 # microservice specific routes
 
-GET /income-tax/nino/:nino/sources/:employmentId    controllers.GetEmploymentBenefitsController.getEmploymentBenefits(nino: String, employmentId: String, taxYear: Int, view: String)
+#Employment
+GET /income-tax/nino/:nino/sources/:employmentId                                      controllers.GetEmploymentBenefitsController.getEmploymentBenefits(nino: String, employmentId: String, taxYear: Int, view: String)
 
 #State Benefits
 GET     /state-benefits/nino/:nino/taxYear/:taxYear                                   controllers.StateBenefitsController.getStateBenefits(nino: String, taxYear: Int, benefitId: Option[String])
@@ -9,8 +10,10 @@ DELETE  /state-benefits/override/nino/:nino/taxYear/:taxYear/benefitId/:benefitI
 
 DELETE  /state-benefits/nino/:nino/taxYear/:taxYear/benefitId/:benefitId              controllers.StateBenefitsController.deleteStateBenefit(nino: String, taxYear: Int, benefitId: String)
 
-PUT    /state-benefits/override/nino/:nino/taxYear/:taxYear/benefitId/:benefitId      controllers.StateBenefitsController.createUpdateOverrideStateBenefit(nino: String, taxYear: Int, benefitId: String)
+PUT     /state-benefits/override/nino/:nino/taxYear/:taxYear/benefitId/:benefitId     controllers.StateBenefitsController.createUpdateOverrideStateBenefit(nino: String, taxYear: Int, benefitId: String)
 
-PUT    /state-benefits/nino/:nino/taxYear/:taxYear/benefitId/:benefitId/ignoreBenefit/:ignoreBenefit    controllers.StateBenefitsController.ignoreStateBenefit(nino: String, taxYear: Int, benefitId: String, ignoreBenefit: Boolean)
+PUT     /state-benefits/nino/:nino/taxYear/:taxYear/benefitId/:benefitId/ignoreBenefit/:ignoreBenefit    controllers.StateBenefitsController.ignoreStateBenefit(nino: String, taxYear: Int, benefitId: String, ignoreBenefit: Boolean)
 
 DELETE /state-benefits/nino/:nino/taxYear/:taxYear/ignore/benefitId/:benefitId        controllers.StateBenefitsController.unignoreStateBenefit(nino: String, taxYear: Int, benefitId)
+
+POST    /state-benefits/nino/:nino/taxYear/:taxYear                                   controllers.StateBenefitsController.addStateBenefit(nino: String, taxYear: Int)

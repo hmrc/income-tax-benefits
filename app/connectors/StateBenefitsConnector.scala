@@ -17,13 +17,14 @@
 package connectors
 
 import config.AppConfig
+import connectors.httpParsers.AddStateBenefitHttpParser.{AddStateBenefitHttpReads, AddStateBenefitResponse}
 import connectors.httpParsers.CreateUpdateOverrideStateBenefitHttpParser._
 import connectors.httpParsers.UnignoreStateBenefitHttpParser.{UnignoreStateBenefitHttpParserResponse, UnignoreStateBenefitHttpReads}
 import connectors.httpParsers.DeleteOverrideStateBenefitHttpParser.{DeleteOverrideStateBenefitHttpReads, DeleteStateBenefitOverrideResponse}
 import connectors.httpParsers.DeleteStateBenefitsHttpParser.{DeleteStateBenefitsHttpReads, DeleteStateBenefitsResponse}
 import connectors.httpParsers.GetStateBenefitsHttpParser.{GetStateBenefitsHttpReads, GetStateBenefitsResponse}
 import connectors.httpParsers.IgnoreStateBenefitHttpParser.{IgnoreStateBenefitResponse, IgnoreStateBenefitResponseHttpReads}
-import models.{CreateUpdateOverrideStateBenefit, IgnoreStateBenefit}
+import models.{AddStateBenefitRequestModel, CreateUpdateOverrideStateBenefit, IgnoreStateBenefit}
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
 import utils.DESTaxYearHelper.desTaxYearConverter
 
@@ -109,6 +110,16 @@ class StateBenefitsConnector @Inject()(val http: HttpClient,
 
     def desCall(implicit hc: HeaderCarrier): Future[UnignoreStateBenefitHttpParserResponse] = {
       http.DELETE[UnignoreStateBenefitHttpParserResponse](incomeSourceUri)(UnignoreStateBenefitHttpReads, hc, ec)
+    }
+
+    desCall(desHeaderCarrier(incomeSourceUri))
+  }
+
+  def addStateBenefit(nino: String, taxYear: Int, model: AddStateBenefitRequestModel)(implicit hc: HeaderCarrier): Future[AddStateBenefitResponse] = {
+    val incomeSourceUri: String = appConfig.desBaseUrl + s"/income-tax/income/state-benefits/$nino/${desTaxYearConverter(taxYear)}/custom"
+
+    def desCall(implicit hc: HeaderCarrier): Future[AddStateBenefitResponse] = {
+      http.POST[AddStateBenefitRequestModel, AddStateBenefitResponse](incomeSourceUri, model)
     }
 
     desCall(desHeaderCarrier(incomeSourceUri))

@@ -622,6 +622,105 @@ class StateBenefitsConnectorISpec extends PlaySpec with WiremockSpec {
     }
   }
 
+  ".addStateBenefit" should {
+
+    val requestModel = AddStateBenefitRequestModel("statePension", "2020-08-03", Some("2020-12-03"))
+    val responseModel = AddStateBenefitResponseModel(benefitId)
+    val requestBody = Json.toJson(requestModel).toString
+    val responseBody = Json.toJson(responseModel).toString
+
+    val desAddUrl: String = s"/income-tax/income/state-benefits/$nino/${desTaxYearConverter(taxYear)}/custom"
+
+    "include internal headers" when {
+
+      "the host for DES is 'Internal'" in {
+        implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId("sessionIdValue")))
+        val connector = new StateBenefitsConnector(httpClient, appConfig(internalHost))
+
+        stubPostWithResponseBody(desAddUrl, OK, requestBody, responseBody, headersSentToDes)
+        val result = await(connector.addStateBenefit(nino, taxYear, requestModel)(hc))
+
+        result mustBe Right(responseModel)
+      }
+
+      "the host for DES is 'External'" in {
+        implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId("sessionIdValue")))
+        val connector = new StateBenefitsConnector(httpClient, appConfig(externalHost))
+
+        stubPostWithResponseBody(desAddUrl, OK, requestBody, responseBody, headersSentToDes)
+        val result = await(connector.addStateBenefit(nino, taxYear, requestModel)(hc))
+
+        result mustBe Right(responseModel)
+      }
+    }
+
+    "return AddStateBenefitResponseModel when nino and tax year present" in {
+      stubPostWithResponseBody(desAddUrl, OK, requestBody, responseBody)
+
+      implicit val hc: HeaderCarrier = HeaderCarrier()
+      val result = await(connector.addStateBenefit(nino, taxYear, requestModel)(hc))
+
+      result mustBe Right(responseModel)
+    }
+
+    "handle a Left error" when {
+
+      val desErrorBodyModel = DesErrorBodyModel("DES_CODE", "DES_REASON")
+
+      Seq(INTERNAL_SERVER_ERROR, SERVICE_UNAVAILABLE, BAD_REQUEST, UNPROCESSABLE_ENTITY).foreach { errorStatus =>
+
+        s"DES returns expected error $errorStatus" in {
+          val desError = DesErrorModel(errorStatus, desErrorBodyModel)
+          implicit val hc: HeaderCarrier = HeaderCarrier()
+
+          stubPostWithResponseBody(desAddUrl, errorStatus, requestBody, desError.toJson.toString())
+
+          val result = await(connector.addStateBenefit(nino, taxYear, requestModel)(hc))
+
+          result mustBe Left(desError)
+        }
+      }
+
+      "DES returns a non parsable response" in {
+        val errorResponseBody = "a non parsable body"
+        val expectedResult = DesErrorModel(INTERNAL_SERVER_ERROR, DesErrorBodyModel.parsingError)
+
+        stubPostWithResponseBody(desAddUrl, INTERNAL_SERVER_ERROR, requestBody, errorResponseBody)
+        implicit val hc: HeaderCarrier = HeaderCarrier()
+        val result = await(connector.addStateBenefit(nino, taxYear, requestModel)(hc))
+
+        result mustBe Left(expectedResult)
+      }
+
+      "DES returns an unexpected http response that is parsable" in {
+
+        val errorResponseBody = Json.obj(
+          "code" -> "SERVER_ERROR",
+          "reason" -> "DES is currently experiencing problems that require live service intervention."
+        )
+
+        val expectedResult = DesErrorModel(INTERNAL_SERVER_ERROR, DesErrorBodyModel(
+          "SERVER_ERROR", "DES is currently experiencing problems that require live service intervention."))
+
+        stubPostWithResponseBody(desAddUrl, BAD_GATEWAY, requestBody, errorResponseBody.toString())
+        implicit val hc: HeaderCarrier = HeaderCarrier()
+        val result = await(connector.addStateBenefit(nino, taxYear, requestModel)(hc))
+
+        result mustBe Left(expectedResult)
+      }
+
+      "DES returns a bad success Json" in {
+        lazy val invalidJson = Json.obj("benfitId" -> false)
+        val expectedResult = DesErrorModel(INTERNAL_SERVER_ERROR, DesErrorBodyModel.parsingError)
+
+        stubPostWithResponseBody(desAddUrl, OK, requestBody, invalidJson.toString())
+        implicit val hc: HeaderCarrier = HeaderCarrier()
+        val result = await(connector.addStateBenefit(nino, taxYear, requestModel)(hc))
+
+        result mustBe (Left(expectedResult))
+      }
+    }
+  }
 }
 
 object StateBenefitsConnectorISpec {

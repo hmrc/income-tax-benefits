@@ -66,7 +66,12 @@ object DesErrorBodyModel {
     "CUSTOMER_ADDED", "The remote endpoint has indicated you Cannot un-ignore customer added State Benefit.")
   val beforeTaxYear: DesErrorBodyModel = DesErrorBodyModel(
     "BEFORE_TAX_YEAR_ENDED", "Submission is provided before the tax year has ended.")
-
+  val invalidRequestTaxYear: DesErrorBodyModel = DesErrorBodyModel(
+    "INVALID_REQUEST_TAX_YEAR", "The remote endpoint has indicated that tax year provided is invalid.")
+  val invalidStartDate: DesErrorBodyModel = DesErrorBodyModel(
+    "INVALID_START_DATE", "The remote endpoint has indicated that start date is after the end of the tax year.")
+  val invalidCessationDate: DesErrorBodyModel = DesErrorBodyModel(
+    "INVALID_CESSATION_DATE", "The remote endpoint has indicated that cessation date is before the start of the tax year.")
 }
 
 /** Multiple DES Errors **/

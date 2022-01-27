@@ -17,7 +17,7 @@
 package controllers
 
 import controllers.predicates.AuthorisedAction
-import models.CreateUpdateOverrideStateBenefit
+import models.{AddStateBenefitRequestModel, CreateUpdateOverrideStateBenefit, StateBenefitTypes}
 import play.api.Logging
 import play.api.libs.json.{JsSuccess, Json}
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
@@ -74,6 +74,26 @@ class StateBenefitsController @Inject()(service: StateBenefitsService,
     service.unignoreStateBenefit(nino, taxYear, benefitId).map {
       case Right(_) => NoContent
       case Left(errorModel) => Status(errorModel.status)(errorModel.toJson)
+    }
+  }
+
+  def addStateBenefit(nino: String, taxYear: Int): Action[AnyContent] = auth.async { implicit user =>
+
+    user.body.asJson.map(_.validate[AddStateBenefitRequestModel]) match {
+      case Some(JsSuccess(model, _)) =>
+        if (StateBenefitTypes(model.benefitType).isDefined) {
+
+          service.addStateBenefit(nino, taxYear, model).map {
+            case Right(responseModel) => Ok(Json.toJson(responseModel))
+            case Left(errorModel) => Status(errorModel.status)(errorModel.toJson)
+          }
+        } else {
+          logger.warn("[StateBenefitsController][addStateBenefit] The AddStateBenefit request body has an invalid benefit type")
+          Future.successful(BadRequest)
+        }
+      case _ =>
+        logger.warn("[StateBenefitsController][addStateBenefit] The AddStateBenefit request body is invalid")
+        Future.successful(BadRequest)
     }
   }
 }
