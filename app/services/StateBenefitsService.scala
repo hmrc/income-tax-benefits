@@ -23,11 +23,12 @@ import connectors.httpParsers.DeleteOverrideStateBenefitHttpParser.DeleteStateBe
 import connectors.httpParsers.DeleteStateBenefitsHttpParser.DeleteStateBenefitsResponse
 import connectors.httpParsers.GetStateBenefitsHttpParser.GetStateBenefitsResponse
 import connectors.httpParsers.IgnoreStateBenefitHttpParser.IgnoreStateBenefitResponse
+import connectors.httpParsers.UpdateStateBenefitHttpParser.UpdateStateBenefitResponse
 import connectors.httpParsers.UnignoreStateBenefitHttpParser.UnignoreStateBenefitHttpParserResponse
-import models.{AddStateBenefitRequestModel, CreateUpdateOverrideStateBenefit}
+import models.{AddStateBenefitRequestModel, CreateUpdateOverrideStateBenefit, UpdateStateBenefitModel}
 import uk.gov.hmrc.http.HeaderCarrier
-
 import javax.inject.Inject
+
 import scala.concurrent.Future
 
 class StateBenefitsService @Inject()(connector: StateBenefitsConnector) {
@@ -56,4 +57,7 @@ class StateBenefitsService @Inject()(connector: StateBenefitsConnector) {
   def addStateBenefit(nino: String, taxYear: Int, requestModel: AddStateBenefitRequestModel)(implicit hc: HeaderCarrier): Future[AddStateBenefitResponse] =
     connector.addStateBenefit(nino, taxYear, requestModel)
 
+  def updateStateBenefit(nino: String, taxYear: Int, benefitId: String, benefitUpdateData: UpdateStateBenefitModel)
+                        (implicit hc: HeaderCarrier): Future[UpdateStateBenefitResponse] =
+    connector.updateStateBenefit(nino, taxYear, benefitId, benefitUpdateData)
 }

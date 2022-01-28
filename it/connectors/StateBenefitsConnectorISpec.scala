@@ -547,7 +547,6 @@ class StateBenefitsConnectorISpec extends PlaySpec with WiremockSpec {
           NO_CONTENT, headersSentToDes)
 
         val result = await(connector.unignoreStateBenefit(nino, taxYear, benefitId)(hc))
-
         result mustBe Right(())
       }
 
@@ -586,7 +585,6 @@ class StateBenefitsConnectorISpec extends PlaySpec with WiremockSpec {
           stubDeleteWithResponseBody(deleteIgnoreUrl, errorStatus, desError.toJson.toString())
 
           val result = await(connector.unignoreStateBenefit(nino, taxYear, benefitId)(hc))
-
           result mustBe Left(desError)
         }
       }
@@ -718,6 +716,70 @@ class StateBenefitsConnectorISpec extends PlaySpec with WiremockSpec {
         val result = await(connector.addStateBenefit(nino, taxYear, requestModel)(hc))
 
         result mustBe (Left(expectedResult))
+      }
+    }
+  }
+
+
+  ".updateStateBenefit" should {
+
+    val updateUrl: String = s"/income-tax/income/state-benefits/$nino/${desTaxYearConverter(taxYear)}/custom/$benefitId"
+
+    val appConfigWithInternalHost = appConfig("localhost")
+    val appConfigWithExternalHost = appConfig("127.0.0.1")
+
+    val updatedStateBenefitModel = UpdateStateBenefitModel("startDate", Some("endDate"))
+
+    "include internal headers" when {
+      val headersSentToDes = Seq(
+        new HttpHeader(HeaderNames.authorisation, "Bearer secret"),
+        new HttpHeader(HeaderNames.xSessionId, "sessionIdValue")
+      )
+
+      "the host for DES is 'Internal'" in {
+        implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId("sessionIdValue")))
+        val connector = new StateBenefitsConnector(httpClient, appConfigWithInternalHost)
+
+        stubPutWithoutResponseBody(
+          updateUrl, Json.toJson(updatedStateBenefitModel).toString(), NO_CONTENT, headersSentToDes)
+
+        val result = await(connector.updateStateBenefit(nino, taxYear, benefitId, updatedStateBenefitModel)(hc))
+        result mustBe Right(())
+      }
+
+      "the host for DES is 'External'" in {
+        implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId("sessionIdValue")))
+        val connector = new StateBenefitsConnector(httpClient, appConfigWithExternalHost)
+
+        stubPutWithoutResponseBody(
+          updateUrl, Json.toJson(updatedStateBenefitModel).toString(), NO_CONTENT)
+
+        val result = await(connector.updateStateBenefit(nino, taxYear, benefitId, updatedStateBenefitModel)(hc))
+        result mustBe Right(())
+      }
+    }
+    "handle error" when {
+      val desErrorBodyModel = DesErrorBodyModel("DES_CODE", "DES_REASON")
+
+      Seq(BAD_REQUEST, UNPROCESSABLE_ENTITY, NOT_FOUND, FORBIDDEN, INTERNAL_SERVER_ERROR, SERVICE_UNAVAILABLE).foreach { status =>
+        s"DES returns $status" in {
+          val desError = DesErrorModel(status, desErrorBodyModel)
+          implicit val hc: HeaderCarrier = HeaderCarrier()
+
+          stubPutWithResponseBody(updateUrl, Json.toJson(updatedStateBenefitModel).toString(), desError.toJson.toString(), status)
+          val result = await(connector.updateStateBenefit(nino, taxYear, benefitId, updatedStateBenefitModel))
+          result mustBe Left(desError)
+        }
+      }
+      s"DES returns unexpected error code - BAD_GATEWAY (502)" in {
+        val desError = DesErrorModel(INTERNAL_SERVER_ERROR, desErrorBodyModel)
+        implicit val hc: HeaderCarrier = HeaderCarrier()
+
+        stubPutWithResponseBody(updateUrl, Json.toJson(updatedStateBenefitModel).toString(), desError.toJson.toString(), BAD_GATEWAY)
+
+        val result = await(connector.updateStateBenefit(nino, taxYear, benefitId, updatedStateBenefitModel))
+
+        result mustBe Left(desError)
       }
     }
   }
