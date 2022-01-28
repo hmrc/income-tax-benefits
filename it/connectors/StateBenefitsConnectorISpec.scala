@@ -761,7 +761,7 @@ class StateBenefitsConnectorISpec extends PlaySpec with WiremockSpec {
     "handle error" when {
       val desErrorBodyModel = DesErrorBodyModel("DES_CODE", "DES_REASON")
 
-      Seq(BAD_REQUEST, UNPROCESSABLE_ENTITY, NOT_FOUND, INTERNAL_SERVER_ERROR, SERVICE_UNAVAILABLE).foreach { status =>
+      Seq(BAD_REQUEST, UNPROCESSABLE_ENTITY, NOT_FOUND, FORBIDDEN, INTERNAL_SERVER_ERROR, SERVICE_UNAVAILABLE).foreach { status =>
         s"DES returns $status" in {
           val desError = DesErrorModel(status, desErrorBodyModel)
           implicit val hc: HeaderCarrier = HeaderCarrier()
