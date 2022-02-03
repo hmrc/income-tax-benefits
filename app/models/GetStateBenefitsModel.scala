@@ -31,18 +31,6 @@ object StateBenefit {
   implicit val format: OFormat[StateBenefit] = Json.format[StateBenefit]
 }
 
-case class CustomerStateBenefit(benefitId: String,
-                                startDate: String,
-                                submittedOn: Option[String],
-                                endDate: Option[String],
-                                amount: Option[BigDecimal],
-                                taxPaid: Option[BigDecimal]
-                               )
-
-object CustomerStateBenefit {
-  implicit val format: OFormat[CustomerStateBenefit] = Json.format[CustomerStateBenefit]
-}
-
 case class StateBenefits(
                           incapacityBenefit: Option[Seq[StateBenefit]],
                           statePension: Option[StateBenefit],
@@ -57,23 +45,8 @@ object StateBenefits {
   implicit val format: OFormat[StateBenefits] = Json.format[StateBenefits]
 }
 
-case class CustomerStateBenefits(
-                                  incapacityBenefit: Option[Seq[CustomerStateBenefit]],
-                                  statePension: Option[CustomerStateBenefit],
-                                  statePensionLumpSum: Option[CustomerStateBenefit],
-                                  employmentSupportAllowance: Option[Seq[CustomerStateBenefit]],
-                                  jobSeekersAllowance: Option[Seq[CustomerStateBenefit]],
-                                  bereavementAllowance: Option[CustomerStateBenefit],
-                                  otherStateBenefits: Option[CustomerStateBenefit]
-
-                                )
-
-object CustomerStateBenefits {
-  implicit val format: OFormat[CustomerStateBenefits] = Json.format[CustomerStateBenefits]
-}
-
 case class GetStateBenefitsModel(stateBenefits: Option[StateBenefits],
-                                 customerAddedStateBenefits: Option[CustomerStateBenefits])
+                                 customerAddedStateBenefits: Option[StateBenefits])
 
 object GetStateBenefitsModel {
   implicit val format: OFormat[GetStateBenefitsModel] = Json.format[GetStateBenefitsModel]

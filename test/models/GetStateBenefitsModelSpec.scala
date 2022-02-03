@@ -37,10 +37,11 @@ class GetStateBenefitsModelSpec extends TestUtils {
       taxPaid = Some(22323.23)
     )
 
-  val defaultFullCustomerAddedStateBenefit: CustomerStateBenefit =
-    CustomerStateBenefit(
+  val defaultFullCustomerAddedStateBenefit: StateBenefit =
+    StateBenefit(
       benefitId = benefitId,
       startDate = "2018-07-17",
+      dateIgnored = None,
       endDate = Some("2020-09-23"),
       amount = Some(45646.78),
       submittedOn = Some("2020-11-17T19:23:00Z"),
@@ -358,7 +359,7 @@ class GetStateBenefitsModelSpec extends TestUtils {
   val minimalCustomerStateBenefits: GetStateBenefitsModel =
     GetStateBenefitsModel(
       None,
-      Some(CustomerStateBenefits(None,
+      Some(StateBenefits(None,
         Some(defaultFullCustomerAddedStateBenefit.copy(submittedOn = None,
           endDate = None, amount = None, taxPaid = None))
         , None, None, None, None, None)))
@@ -376,8 +377,8 @@ class GetStateBenefitsModelSpec extends TestUtils {
   )
 
   "The GetStateBenefitsModel" should {
-    val fullCustomerStateBenefitsModel: CustomerStateBenefits =
-      CustomerStateBenefits(
+    val fullCustomerStateBenefitsModel: StateBenefits =
+      StateBenefits(
         Some(List(defaultFullCustomerAddedStateBenefit)),
         Some(defaultFullCustomerAddedStateBenefit),
         Some(defaultFullCustomerAddedStateBenefit),
