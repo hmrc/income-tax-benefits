@@ -39,7 +39,7 @@ This service runs on port: `localhost:9319`
 
 - **DELETE /state-benefits/nino/:nino/taxYear/:taxYear/ignore/benefitId/:benefitId** (Unignores a hmrc state benefit)
 
-###Downstream services
+### Downstream services
 All benefits data is retrieved / updated via one of two downstream systems.
 - DES (Data Exchange Service)
 - IF (Integration Framework)
