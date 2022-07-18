@@ -22,6 +22,7 @@ import models.{DesErrorBodyModel, DesErrorModel}
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.time.{Seconds, Span}
 import org.scalatestplus.play.PlaySpec
+import play.api.http.HeaderNames
 import play.api.http.Status._
 import play.api.libs.json.{JsValue, Json}
 import utils.DESTaxYearHelper.desTaxYearConverter
@@ -35,6 +36,7 @@ class DeleteStateBenefitITest extends PlaySpec with WiremockSpec with ScalaFutur
     val taxYear: Int = 2021
     val benefitId: String = "a111111a-abcd-111a-123a-11a1a111a1"
     val mtditidHeader: (String, String) = ("mtditid", "555555555")
+    val authorization: (String, String) = HeaderNames.AUTHORIZATION -> "mock-bearer-token"
     val requestHeaders: Seq[HttpHeader] = Seq(new HttpHeader("mtditid", "555555555"))
     val desUrl: String = s"/income-tax/income/state-benefits/$nino/${desTaxYearConverter(taxYear)}/custom/$benefitId"
     val serviceUrl: String = s"/income-tax-benefits/state-benefits/nino/$nino/taxYear/$taxYear/benefitId/$benefitId"
@@ -48,7 +50,7 @@ class DeleteStateBenefitITest extends PlaySpec with WiremockSpec with ScalaFutur
       authorised()
 
       whenReady(buildClient(serviceUrl)
-        .withHttpHeaders(mtditidHeader)
+        .withHttpHeaders(mtditidHeader, authorization)
         .delete) {
         result =>
           result.status mustBe NO_CONTENT
@@ -66,7 +68,7 @@ class DeleteStateBenefitITest extends PlaySpec with WiremockSpec with ScalaFutur
       authorised()
 
       whenReady(buildClient(serviceUrl)
-        .withHttpHeaders(mtditidHeader)
+        .withHttpHeaders(mtditidHeader, authorization)
         .delete()) {
         result =>
           result.status mustBe BAD_REQUEST
@@ -83,7 +85,7 @@ class DeleteStateBenefitITest extends PlaySpec with WiremockSpec with ScalaFutur
       authorised()
 
       whenReady(buildClient(serviceUrl)
-        .withHttpHeaders(mtditidHeader)
+        .withHttpHeaders(mtditidHeader, authorization)
         .delete()) {
         result =>
           result.status mustBe NOT_FOUND
@@ -101,7 +103,7 @@ class DeleteStateBenefitITest extends PlaySpec with WiremockSpec with ScalaFutur
       authorised()
 
       whenReady(buildClient(serviceUrl)
-        .withHttpHeaders(mtditidHeader)
+        .withHttpHeaders(mtditidHeader, authorization)
         .delete()) {
         result =>
           result.status mustBe FORBIDDEN
@@ -120,7 +122,7 @@ class DeleteStateBenefitITest extends PlaySpec with WiremockSpec with ScalaFutur
       authorised()
 
       whenReady(buildClient(serviceUrl)
-        .withHttpHeaders(mtditidHeader)
+        .withHttpHeaders(mtditidHeader, authorization)
         .delete()) {
         result =>
           result.status mustBe INTERNAL_SERVER_ERROR
@@ -139,7 +141,7 @@ class DeleteStateBenefitITest extends PlaySpec with WiremockSpec with ScalaFutur
       authorised()
 
       whenReady(buildClient(serviceUrl)
-        .withHttpHeaders(mtditidHeader)
+        .withHttpHeaders(mtditidHeader, authorization)
         .delete()) {
         result =>
           result.status mustBe SERVICE_UNAVAILABLE
