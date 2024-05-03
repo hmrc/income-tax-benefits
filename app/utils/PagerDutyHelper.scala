@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,22 +21,20 @@ import uk.gov.hmrc.http.HttpResponse
 
 object PagerDutyHelper extends Logging {
 
+  def pagerDutyLog(pagerDutyKey: PagerDutyKeys.Value, otherDetail: String = ""): Unit =
+    logger.error(s"$pagerDutyKey $otherDetail")
+
+  def getCorrelationId(response: HttpResponse): String =
+    response.header("CorrelationId") match {
+      case Some(id) => s" CorrelationId: $id"
+      case _        => ""
+    }
+
   object PagerDutyKeys extends Enumeration {
     val BAD_SUCCESS_JSON_FROM_DES: PagerDutyKeys.Value = Value
     val SERVICE_UNAVAILABLE_FROM_DES: PagerDutyKeys.Value = Value
     val INTERNAL_SERVER_ERROR_FROM_DES: PagerDutyKeys.Value = Value
     val UNEXPECTED_RESPONSE_FROM_DES: PagerDutyKeys.Value = Value
     val FOURXX_RESPONSE_FROM_DES: PagerDutyKeys.Value = Value
-  }
-
-  def pagerDutyLog(pagerDutyKey: PagerDutyKeys.Value, otherDetail: String = ""): Unit = {
-    logger.error(s"$pagerDutyKey $otherDetail")
-  }
-
-  def getCorrelationId(response:HttpResponse): String ={
-    response.header("CorrelationId") match {
-      case Some(id) => s" CorrelationId: $id"
-      case _ => ""
-    }
   }
 }

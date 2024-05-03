@@ -62,7 +62,7 @@ class DeleteOverrideStateBenefitITest extends PlaySpec with WiremockSpec with Sc
         "INVALID_BENEFIT_ID", "Submission has not passed validation. Invalid parameter benefitId."
       )).toString()
 
-      val expectedResult: JsValue =  DesErrorModel(BAD_REQUEST, DesErrorBodyModel.invalidBenefitId).toJson
+      val expectedResult: JsValue = DesErrorModel(BAD_REQUEST, DesErrorBodyModel.invalidBenefitId).toJson
 
       stubDeleteWithResponseBody(desUrl, BAD_REQUEST, errorResponseBody)
       authorised()

@@ -62,7 +62,7 @@ class UnignoreStateBenefitITest extends PlaySpec with WiremockSpec with ScalaFut
         "CUSTOMER_ADDED", "The remote endpoint has indicated you Cannot un-ignore customer added State Benefit."
       )).toString()
 
-      val expectedResult: JsValue =  DesErrorModel(FORBIDDEN, DesErrorBodyModel.forbiddenUnignore).toJson
+      val expectedResult: JsValue = DesErrorModel(FORBIDDEN, DesErrorBodyModel.forbiddenUnignore).toJson
 
       stubDeleteWithResponseBody(desUrl, FORBIDDEN, errorResponseBody)
       authorised()
@@ -81,7 +81,7 @@ class UnignoreStateBenefitITest extends PlaySpec with WiremockSpec with ScalaFut
         "BEFORE_TAX_YEAR_ENDED", "Submission is provided before the tax year has ended."
       )).toString()
 
-      val expectedResult: JsValue =  DesErrorModel(UNPROCESSABLE_ENTITY, DesErrorBodyModel.beforeTaxYear).toJson
+      val expectedResult: JsValue = DesErrorModel(UNPROCESSABLE_ENTITY, DesErrorBodyModel.beforeTaxYear).toJson
 
       stubDeleteWithResponseBody(desUrl, UNPROCESSABLE_ENTITY, errorResponseBody)
       authorised()
@@ -100,7 +100,7 @@ class UnignoreStateBenefitITest extends PlaySpec with WiremockSpec with ScalaFut
         "INVALID_BENEFIT_ID", "Submission has not passed validation. Invalid parameter benefitId."
       )).toString()
 
-      val expectedResult: JsValue =  DesErrorModel(BAD_REQUEST, DesErrorBodyModel.invalidBenefitId).toJson
+      val expectedResult: JsValue = DesErrorModel(BAD_REQUEST, DesErrorBodyModel.invalidBenefitId).toJson
 
       stubDeleteWithResponseBody(desUrl, BAD_REQUEST, errorResponseBody)
       authorised()
@@ -121,7 +121,7 @@ class UnignoreStateBenefitITest extends PlaySpec with WiremockSpec with ScalaFut
         "NO_DATA_FOUND", "The remote endpoint has indicated that the requested resource could not be found."
       )).toString()
 
-      val expectedResult: JsValue =  DesErrorModel(NOT_FOUND, DesErrorBodyModel.noDataFound).toJson
+      val expectedResult: JsValue = DesErrorModel(NOT_FOUND, DesErrorBodyModel.noDataFound).toJson
 
       stubDeleteWithResponseBody(desUrl, NOT_FOUND, errorResponseBody)
       authorised()
@@ -143,7 +143,7 @@ class UnignoreStateBenefitITest extends PlaySpec with WiremockSpec with ScalaFut
       stubDeleteWithResponseBody(desUrl, INTERNAL_SERVER_ERROR, errorResponseBody)
       authorised()
 
-      val expectedResult: JsValue =  DesErrorModel(INTERNAL_SERVER_ERROR, DesErrorBodyModel.serverError).toJson
+      val expectedResult: JsValue = DesErrorModel(INTERNAL_SERVER_ERROR, DesErrorBodyModel.serverError).toJson
 
       whenReady(buildClient(serviceUrl)
         .withHttpHeaders(mtditidHeader, authorization)
@@ -160,7 +160,7 @@ class UnignoreStateBenefitITest extends PlaySpec with WiremockSpec with ScalaFut
         "SERVICE_UNAVAILABLE", "Dependent systems are currently not responding.")).toString()
 
       stubDeleteWithResponseBody(desUrl, SERVICE_UNAVAILABLE, errorResponseBody)
-      val expectedResult: JsValue =  DesErrorModel(SERVICE_UNAVAILABLE, DesErrorBodyModel.serviceUnavailable).toJson
+      val expectedResult: JsValue = DesErrorModel(SERVICE_UNAVAILABLE, DesErrorBodyModel.serviceUnavailable).toJson
 
       authorised()
 

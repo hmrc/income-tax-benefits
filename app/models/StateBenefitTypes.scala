@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,15 +28,7 @@ object StateBenefitTypes {
   private val bereavementAllowance = "bereavementAllowance"
   private val otherStateBenefits = "otherStateBenefits"
 
-  case object StatePension extends StateBenefitTypes(statePension)
-  case object IncapacityBenefit extends StateBenefitTypes(incapacityBenefit)
-  case object StatePensionLumpSum extends StateBenefitTypes(statePensionLumpSum)
-  case object EmploymentSupportAll extends StateBenefitTypes(employmentSupportAllowance)
-  case object JobSeekersAllowance extends StateBenefitTypes(jobSeekersAllowance)
-  case object BereavementAllowance extends StateBenefitTypes(bereavementAllowance)
-  case object OtherStateBenefits extends StateBenefitTypes(otherStateBenefits)
-
-  def apply(string: String): Option[StateBenefitTypes] = {
+  def apply(string: String): Option[StateBenefitTypes] =
     string match {
       case `statePension`               => Some(StatePension)
       case `incapacityBenefit`          => Some(IncapacityBenefit)
@@ -45,7 +37,20 @@ object StateBenefitTypes {
       case `jobSeekersAllowance`        => Some(JobSeekersAllowance)
       case `bereavementAllowance`       => Some(BereavementAllowance)
       case `otherStateBenefits`         => Some(OtherStateBenefits)
-      case _ => None
+      case _                            => None
     }
-  }
+
+  case object StatePension extends StateBenefitTypes(statePension)
+
+  case object IncapacityBenefit extends StateBenefitTypes(incapacityBenefit)
+
+  case object StatePensionLumpSum extends StateBenefitTypes(statePensionLumpSum)
+
+  case object EmploymentSupportAll extends StateBenefitTypes(employmentSupportAllowance)
+
+  case object JobSeekersAllowance extends StateBenefitTypes(jobSeekersAllowance)
+
+  case object BereavementAllowance extends StateBenefitTypes(bereavementAllowance)
+
+  case object OtherStateBenefits extends StateBenefitTypes(otherStateBenefits)
 }

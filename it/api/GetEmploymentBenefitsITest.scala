@@ -28,19 +28,6 @@ import utils.DESTaxYearHelper.desTaxYearConverter
 
 class GetEmploymentBenefitsITest extends PlaySpec with WiremockSpec with ScalaFutures with AuthStub {
 
-  trait Setup {
-    implicit val patienceConfig: PatienceConfig = PatienceConfig(Span(5, Seconds))
-    val successNino: String = "AA123123A"
-    val taxYear = 2021
-    val agentClientCookie: Map[String, String] = Map("MTDITID" -> "555555555")
-    val mtditidHeader: (String, String) = ("mtditid", "555555555")
-    val authorization: (String, String) = HeaderNames.AUTHORIZATION -> "mock-bearer-token"
-    val requestHeaders: Seq[HttpHeader] = Seq(new HttpHeader("mtditid", "555555555"))
-    val view = "LATEST"
-    val id = "a1e8057e-fbbc-47a8-a8b4-78d9f015c934"
-    auditStubs()
-  }
-
   val GetEmploymentBenefitsDesResponseBody: String =
     """
       |{
@@ -82,6 +69,19 @@ class GetEmploymentBenefitsITest extends PlaySpec with WiremockSpec with ScalaFu
       |	}
       |}
       |""".stripMargin
+
+  trait Setup {
+    implicit val patienceConfig: PatienceConfig = PatienceConfig(Span(5, Seconds))
+    val successNino: String = "AA123123A"
+    val taxYear = 2021
+    val agentClientCookie: Map[String, String] = Map("MTDITID" -> "555555555")
+    val mtditidHeader: (String, String) = ("mtditid", "555555555")
+    val authorization: (String, String) = HeaderNames.AUTHORIZATION -> "mock-bearer-token"
+    val requestHeaders: Seq[HttpHeader] = Seq(new HttpHeader("mtditid", "555555555"))
+    val view = "LATEST"
+    val id = "a1e8057e-fbbc-47a8-a8b4-78d9f015c934"
+    auditStubs()
+  }
 
   "get employment benefits" when {
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,14 +16,13 @@
 
 package utils
 
-/**
- * Represents a tax year for DES
- *
- * Calculating the tax year string (where 2018 represents 2017-18)
- */
+/** Represents a tax year for DES
+  *
+  * Calculating the tax year string (where 2018 represents 2017-18)
+  */
 object DESTaxYearHelper {
-  def desTaxYearConverter(taxYear:Int): String = {
-    val lastYear = taxYear -1
+  def desTaxYearConverter(taxYear: Int): String = {
+    val lastYear = taxYear - 1
     val endOfTaxYear = taxYear.toString.takeRight(2)
     s"$lastYear-$endOfTaxYear"
   }
