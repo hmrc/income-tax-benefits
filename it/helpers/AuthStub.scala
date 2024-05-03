@@ -25,9 +25,6 @@ import uk.gov.hmrc.auth.core.{AffinityGroup, ConfidenceLevel}
 
 trait AuthStub extends {
 
-  private val authoriseUri: String = "/auth/authorise"
-  private val AGENT_ENROLMENT_KEY = "HMRC-AS-AGENT"
-
   val otherEnrolment: JsObject = Json.obj(
     "key" -> "HMRC-OTHER-ENROLMENT",
     "identifiers" -> Json.arr(
@@ -37,6 +34,8 @@ trait AuthStub extends {
       )
     )
   )
+  private val authoriseUri: String = "/auth/authorise"
+  private val AGENT_ENROLMENT_KEY = "HMRC-AS-AGENT"
   private val agentEnrolment = Json.obj(
     "key" -> AGENT_ENROLMENT_KEY,
     "identifiers" -> Json.arr(
@@ -67,13 +66,7 @@ trait AuthStub extends {
     )
   )
 
-  private def successfulAuthResponse(affinityGroup: Option[AffinityGroup], confidenceLevel: Option[ConfidenceLevel], enrolments: JsObject*): JsObject = {
-    affinityGroup.fold(Json.obj())(unwrappedAffinityGroup => Json.obj("affinityGroup" -> unwrappedAffinityGroup)) ++
-      confidenceLevel.fold(Json.obj())(unwrappedConfidenceLevel => Json.obj("confidenceLevel" -> unwrappedConfidenceLevel)) ++
-      Json.obj("allEnrolments" -> enrolments)
-  }
-
-  def authorised(response: JsObject = successfulAuthResponse(Some(Individual), Some(ConfidenceLevel.L250),mtditEnrolment,ninoEnrolment)): StubMapping = {
+  def authorised(response: JsObject = successfulAuthResponse(Some(Individual), Some(ConfidenceLevel.L250), mtditEnrolment, ninoEnrolment)): StubMapping = {
     stubFor(post(urlMatching(authoriseUri))
       .willReturn(
         aResponse()
@@ -89,6 +82,12 @@ trait AuthStub extends {
           .withStatus(OK)
           .withBody(successfulAuthResponse(Some(Agent), None, agentEnrolment).toString())
           .withHeader("Content-Type", "application/json; charset=utf-8")))
+  }
+
+  private def successfulAuthResponse(affinityGroup: Option[AffinityGroup], confidenceLevel: Option[ConfidenceLevel], enrolments: JsObject*): JsObject = {
+    affinityGroup.fold(Json.obj())(unwrappedAffinityGroup => Json.obj("affinityGroup" -> unwrappedAffinityGroup)) ++
+      confidenceLevel.fold(Json.obj())(unwrappedConfidenceLevel => Json.obj("confidenceLevel" -> unwrappedConfidenceLevel)) ++
+      Json.obj("allEnrolments" -> enrolments)
   }
 
   def unauthorisedOtherEnrolment(): StubMapping = {

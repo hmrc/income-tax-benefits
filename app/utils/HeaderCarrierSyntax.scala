@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,9 +20,9 @@ import uk.gov.hmrc.http.{HeaderCarrier, HeaderNames}
 
 object HeaderCarrierSyntax {
 
-  implicit class HeaderCarrierSyntax(hc:HeaderCarrier){
+  implicit class HeaderCarrierSyntax(hc: HeaderCarrier) {
 
-    def addExplicitHeaders :Seq[(String,String)] ={
+    def addExplicitHeaders: Seq[(String, String)] =
       Seq(
         HeaderNames.xRequestId            -> hc.requestId.map(_.value),
         HeaderNames.xSessionId            -> hc.sessionId.map(_.value),
@@ -36,8 +36,6 @@ object HeaderCarrierSyntax {
         HeaderNames.deviceID              -> hc.deviceID,
         HeaderNames.akamaiReputation      -> hc.akamaiReputation.map(_.value)
       ).collect { case (k, Some(v)) => (k, v) }
-    }
-
 
   }
 

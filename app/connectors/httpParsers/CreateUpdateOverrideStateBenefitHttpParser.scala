@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,8 +27,9 @@ object CreateUpdateOverrideStateBenefitHttpParser extends DESParser {
 
   override val parserName: String = "CreateUpdateOverrideStateBenefitResponse"
 
-  implicit object CreateUpdateOverrideStateBenefitResponseHttpReads extends HttpReads[CreateUpdateOverrideStateBenefitResponse] {
-    override def read(method: String, url: String, response: HttpResponse): CreateUpdateOverrideStateBenefitResponse = {
+  implicit object CreateUpdateOverrideStateBenefitResponseHttpReads
+      extends HttpReads[CreateUpdateOverrideStateBenefitResponse] {
+    override def read(method: String, url: String, response: HttpResponse): CreateUpdateOverrideStateBenefitResponse =
       response.status match {
         case NO_CONTENT => Right(())
         case INTERNAL_SERVER_ERROR =>
@@ -44,6 +45,5 @@ object CreateUpdateOverrideStateBenefitHttpParser extends DESParser {
           pagerDutyLog(UNEXPECTED_RESPONSE_FROM_DES, logMessage(response))
           handleDESError(response, Some(INTERNAL_SERVER_ERROR))
       }
-    }
   }
 }

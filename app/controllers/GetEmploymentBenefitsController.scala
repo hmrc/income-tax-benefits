@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
 package controllers
 
 import controllers.predicates.AuthorisedAction
-import javax.inject.Inject
 import models.DesErrorBodyModel.invalidView
 import play.api.Logging
 import play.api.libs.json.Json
@@ -26,22 +25,26 @@ import services.GetEmploymentBenefitsService
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 import utils.ViewParameterValidation.isValid
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class GetEmploymentBenefitsController @Inject()(service: GetEmploymentBenefitsService,
-                                                auth: AuthorisedAction,
-                                                cc: ControllerComponents)
-                                               (implicit ec: ExecutionContext) extends BackendController(cc) with Logging {
+class GetEmploymentBenefitsController @Inject() (
+  service: GetEmploymentBenefitsService,
+  auth: AuthorisedAction,
+  cc: ControllerComponents
+)(implicit ec: ExecutionContext)
+    extends BackendController(cc) with Logging {
 
-  def getEmploymentBenefits(nino: String, employmentId: String, taxYear: Int, view: String): Action[AnyContent] = auth.async { implicit user =>
-    if(isValid(view)){
-      service.getEmploymentBenefits(nino, employmentId, taxYear, view).map {
-        case Right(model) => Ok(Json.toJson(model))
-        case Left(errorModel) => Status(errorModel.status)(errorModel.toJson)
+  def getEmploymentBenefits(nino: String, employmentId: String, taxYear: Int, view: String): Action[AnyContent] =
+    auth.async { implicit user =>
+      if (isValid(view)) {
+        service.getEmploymentBenefits(nino, employmentId, taxYear, view).map {
+          case Right(model)     => Ok(Json.toJson(model))
+          case Left(errorModel) => Status(errorModel.status)(errorModel.toJson)
+        }
+      } else {
+        logger.error(s"[GetEmploymentBenefitsController][getEmploymentBenefits] Supplied view is invalid. View: $view")
+        Future(BadRequest(Json.toJson(invalidView)))
       }
-    } else {
-      logger.error(s"[GetEmploymentBenefitsController][getEmploymentBenefits] Supplied view is invalid. View: $view")
-      Future(BadRequest(Json.toJson(invalidView)))
     }
-  }
 }

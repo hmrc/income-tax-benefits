@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,8 +20,7 @@ import com.google.inject.AbstractModule
 
 class Modules extends AbstractModule {
 
-  override def configure(): Unit = {
+  override def configure(): Unit =
     bind(classOf[AppConfig]).asEagerSingleton()
-  }
 
 }

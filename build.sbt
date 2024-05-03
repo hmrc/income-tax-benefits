@@ -1,9 +1,4 @@
 import uk.gov.hmrc.DefaultBuildSettings.integrationTestSettings
-import uk.gov.hmrc.sbtdistributables.SbtDistributablesPlugin.publishingSettings
-
-val appName = "income-tax-benefits"
-
-val silencerVersion = "1.7.0"
 
 lazy val coverageSettings: Seq[Setting[_]] = {
   import scoverage.ScoverageKeys
@@ -20,7 +15,7 @@ lazy val coverageSettings: Seq[Setting[_]] = {
     "config.*",
     "testOnly.*",
     "testOnlyDoNotUseInAppConf.*",
-    "controllers.testOnly.*",
+    "controllers.testOnly.*"
   )
 
   Seq(
@@ -30,13 +25,12 @@ lazy val coverageSettings: Seq[Setting[_]] = {
     ScoverageKeys.coverageHighlighting := true
   )
 }
-
 lazy val microservice = Project(appName, file("."))
   .enablePlugins(play.sbt.PlayScala, SbtDistributablesPlugin)
   .settings(
-    majorVersion                     := 0,
-    scalaVersion                     := "2.12.12",
-    libraryDependencies              ++= AppDependencies.compile ++ AppDependencies.test,
+    majorVersion := 0,
+    scalaVersion := "2.12.18",
+    libraryDependencies ++= AppDependencies.compile ++ AppDependencies.test,
     // ***************
     // Use the silencer plugin to suppress warnings
     scalacOptions ++= Seq(
@@ -49,7 +43,6 @@ lazy val microservice = Project(appName, file("."))
     )
     // ***************
   )
-  .settings(publishingSettings: _*)
   .configs(IntegrationTest)
   .settings(PlayKeys.playDefaultPort := 9319)
   .settings(integrationTestSettings(): _*)
@@ -57,3 +50,5 @@ lazy val microservice = Project(appName, file("."))
   .settings(coverageSettings: _*)
   .disablePlugins(sbt.plugins.JUnitXmlReportPlugin)
   .disablePlugins(JUnitXmlReportPlugin)
+val appName = "income-tax-benefits"
+val silencerVersion = "1.17.13"

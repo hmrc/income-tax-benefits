@@ -29,6 +29,12 @@ import utils.DESTaxYearHelper.desTaxYearConverter
 
 class UpdateStateBenefitITest extends PlaySpec with WiremockSpec with ScalaFutures with AuthStub {
 
+  val fullUpdateStateBenefitJson: JsValue = Json.parse(
+    """{
+      |	"startDate": "2020-08-03",
+      |	"endDate": "2020-12-03"
+      |}""".stripMargin)
+
   trait Setup {
     val timeSpan: Long = 5
     implicit val patienceConfig: PatienceConfig = PatienceConfig(Span(timeSpan, Seconds))
@@ -42,12 +48,6 @@ class UpdateStateBenefitITest extends PlaySpec with WiremockSpec with ScalaFutur
     val serviceUrl: String = s"/income-tax-benefits/state-benefits/nino/$nino/taxYear/$taxYear/benefitId/$benefitId"
     auditStubs()
   }
-
-  val fullUpdateStateBenefitJson: JsValue = Json.parse(
-    """{
-      |	"startDate": "2020-08-03",
-      |	"endDate": "2020-12-03"
-      |}""".stripMargin)
 
   "update state benefit" should {
 

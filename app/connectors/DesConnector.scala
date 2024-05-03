@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,13 +18,11 @@ package connectors
 
 import com.typesafe.config.ConfigFactory
 import config.AppConfig
-import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.http.Authorization
+import uk.gov.hmrc.http.{Authorization, HeaderCarrier}
 import uk.gov.hmrc.http.HeaderCarrier.Config
 import utils.HeaderCarrierSyntax.HeaderCarrierSyntax
 
 import java.net.URL
-
 
 trait DesConnector {
 
@@ -34,7 +32,8 @@ trait DesConnector {
 
   private[connectors] def desHeaderCarrier(url: String)(implicit hc: HeaderCarrier): HeaderCarrier = {
 
-    val isInternalHost = headerCarrierConfig.internalHostPatterns.exists(_.pattern.matcher(new URL(url).getHost).matches())
+    val isInternalHost =
+      headerCarrierConfig.internalHostPatterns.exists(_.pattern.matcher(new URL(url).getHost).matches())
 
     val hcWithAuth = hc.copy(authorization = Some(Authorization(s"Bearer ${appConfig.authorisationToken}")))
 
