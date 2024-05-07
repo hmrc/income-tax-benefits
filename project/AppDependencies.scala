@@ -18,7 +18,7 @@ import sbt.*
 
 object AppDependencies {
 
-  private val bootstrapVersion = "8.4.0"
+  private val bootstrapVersion = "8.5.0"
 
   val compile: Seq[ModuleID] = Seq(
     "uk.gov.hmrc"                  %% "bootstrap-backend-play-30" % bootstrapVersion,
@@ -26,13 +26,11 @@ object AppDependencies {
   )
 
   val test: Seq[ModuleID] = Seq(
-    "uk.gov.hmrc"   %% "bootstrap-test-play-30" % bootstrapVersion % Test,
-    "org.scalatest" %% "scalatest"              % "3.2.15"         % Test,
-////    "com.typesafe.play"       %% "play-test"                % current                 % Test,
-    //    "org.pegdown"             %  "pegdown"                  % "1.6.0"                 % "test, it",
-    "com.vladsch.flexmark"    % "flexmark-all"             % "0.64.6" % Test,
-    "org.scalatestplus.play" %% "scalatestplus-play"       % "5.1.0"  % Test,
-    "com.github.tomakehurst"  % "wiremock-jre8-standalone" % "2.35.1" % Test,
-    "org.scalamock"          %% "scalamock"                % "5.2.0"  % Test
-  )
+    "uk.gov.hmrc"            %% "bootstrap-test-play-30"   % bootstrapVersion,
+    "org.scalatest"          %% "scalatest"                % "3.2.15",
+    "com.vladsch.flexmark"    % "flexmark-all"             % "0.64.6",
+    "org.scalatestplus.play" %% "scalatestplus-play"       % "5.1.0",
+    "com.github.tomakehurst"  % "wiremock-jre8-standalone" % "2.35.1",
+    "org.scalamock"          %% "scalamock"                % "5.2.0"
+  ).map(_ % Test)
 }
