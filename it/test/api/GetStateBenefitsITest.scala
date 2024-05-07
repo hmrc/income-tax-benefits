@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-package api
+package test.api
 
 import com.github.tomakehurst.wiremock.http.HttpHeader
-import helpers.{AuthStub, WiremockSpec}
 import models.DesErrorBodyModel
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.time.{Seconds, Span}
@@ -25,6 +24,7 @@ import org.scalatestplus.play.PlaySpec
 import play.api.http.HeaderNames
 import play.api.http.Status._
 import play.api.libs.json.Json
+import test.helpers.{AuthStub, WiremockSpec}
 import utils.DESTaxYearHelper.desTaxYearConverter
 
 class GetStateBenefitsITest extends PlaySpec with WiremockSpec with ScalaFutures with AuthStub {

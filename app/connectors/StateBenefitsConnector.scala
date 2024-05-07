@@ -26,6 +26,7 @@ import connectors.httpParsers.IgnoreStateBenefitHttpParser.{IgnoreStateBenefitRe
 import connectors.httpParsers.UnignoreStateBenefitHttpParser.{UnignoreStateBenefitHttpParserResponse, UnignoreStateBenefitHttpReads}
 import connectors.httpParsers.UpdateStateBenefitHttpParser.{UpdateStateBenefitHttpReads, UpdateStateBenefitResponse}
 import models.{AddStateBenefitRequestModel, CreateUpdateOverrideStateBenefit, IgnoreStateBenefit, UpdateStateBenefitModel}
+import play.api.libs.json.Writes
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
 import utils.DESTaxYearHelper.desTaxYearConverter
 
@@ -86,7 +87,7 @@ class StateBenefitsConnector @Inject() (val http: HttpClient, val appConfig: App
 
     def desCall(implicit hc: HeaderCarrier): Future[CreateUpdateOverrideStateBenefitResponse] =
       http.PUT[CreateUpdateOverrideStateBenefit, CreateUpdateOverrideStateBenefitResponse](incomeSourceUri, model)(
-        CreateUpdateOverrideStateBenefit.format.writes,
+        implicitly[Writes[CreateUpdateOverrideStateBenefit]],
         CreateUpdateOverrideStateBenefitResponseHttpReads,
         hc,
         ec
@@ -109,7 +110,7 @@ class StateBenefitsConnector @Inject() (val http: HttpClient, val appConfig: App
 
     def desCall(implicit hc: HeaderCarrier): Future[IgnoreStateBenefitResponse] =
       http.PUT[IgnoreStateBenefit, IgnoreStateBenefitResponse](incomeSourceUri, model)(
-        IgnoreStateBenefit.format.writes,
+        implicitly[Writes[IgnoreStateBenefit]],
         IgnoreStateBenefitResponseHttpReads,
         hc,
         ec

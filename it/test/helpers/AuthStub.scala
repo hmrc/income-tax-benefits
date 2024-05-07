@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package helpers
+package test.helpers
 
 import com.github.tomakehurst.wiremock.client.WireMock.{aResponse, post, stubFor, urlMatching}
 import com.github.tomakehurst.wiremock.stubbing.StubMapping

@@ -16,12 +16,13 @@
 
 package utils
 
-import akka.actor.ActorSystem
+
 import com.codahale.metrics.SharedMetricRegistries
 import common.{EnrolmentIdentifiers, EnrolmentKeys}
 import config.{AppConfig, MockAppConfig}
 import controllers.predicates.AuthorisedAction
 import models.{Benefits, Employment, EmploymentBenefits}
+import org.apache.pekko.actor.ActorSystem
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.matchers.must.Matchers

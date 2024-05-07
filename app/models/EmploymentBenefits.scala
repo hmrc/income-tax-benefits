@@ -51,31 +51,32 @@ case class Benefits(
 )
 
 object Benefits {
+  private type BenefitsFirstSetOfFields = (
+    Option[BigDecimal],
+    Option[BigDecimal],
+    Option[BigDecimal],
+    Option[BigDecimal],
+    Option[BigDecimal],
+    Option[BigDecimal],
+    Option[BigDecimal],
+    Option[BigDecimal],
+    Option[BigDecimal],
+    Option[BigDecimal],
+    Option[BigDecimal],
+    Option[BigDecimal],
+    Option[BigDecimal],
+    Option[BigDecimal],
+    Option[BigDecimal],
+    Option[BigDecimal],
+    Option[BigDecimal],
+    Option[BigDecimal],
+    Option[BigDecimal],
+    Option[BigDecimal],
+    Option[BigDecimal],
+    Option[BigDecimal]
+  )
   val firstSetOfFields: OFormat[
-    (
-      Option[BigDecimal],
-      Option[BigDecimal],
-      Option[BigDecimal],
-      Option[BigDecimal],
-      Option[BigDecimal],
-      Option[BigDecimal],
-      Option[BigDecimal],
-      Option[BigDecimal],
-      Option[BigDecimal],
-      Option[BigDecimal],
-      Option[BigDecimal],
-      Option[BigDecimal],
-      Option[BigDecimal],
-      Option[BigDecimal],
-      Option[BigDecimal],
-      Option[BigDecimal],
-      Option[BigDecimal],
-      Option[BigDecimal],
-      Option[BigDecimal],
-      Option[BigDecimal],
-      Option[BigDecimal],
-      Option[BigDecimal]
-    )
+    BenefitsFirstSetOfFields
   ] = (
     (__ \ "accommodation").formatNullable[BigDecimal] and
       (__ \ "assets").formatNullable[BigDecimal] and
@@ -101,15 +102,16 @@ object Benefits {
       (__ \ "qualifyingRelocationExpenses").formatNullable[BigDecimal]
   ).tupled
 
+  private type BenefitsSecondSetOfFields = (
+    Option[BigDecimal],
+    Option[BigDecimal],
+    Option[BigDecimal],
+    Option[BigDecimal],
+    Option[BigDecimal],
+    Option[BigDecimal]
+  )
   val secondSetOfFields: OFormat[
-    (
-      Option[BigDecimal],
-      Option[BigDecimal],
-      Option[BigDecimal],
-      Option[BigDecimal],
-      Option[BigDecimal],
-      Option[BigDecimal]
-    )
+    BenefitsSecondSetOfFields
   ] = (
     (__ \ "employerProvidedProfessionalSubscriptions").formatNullable[BigDecimal] and
       (__ \ "employerProvidedServices").formatNullable[BigDecimal] and
@@ -121,73 +123,74 @@ object Benefits {
 
   implicit val format: OFormat[Benefits] =
     (firstSetOfFields and secondSetOfFields).apply(
-      {
-        case (
-              (
-                accommodation,
-                assets,
-                assetTransfer,
-                beneficialLoan,
-                car,
-                carFuel,
-                educationalServices,
-                entertaining,
-                expenses,
-                medicalInsurance,
-                telephone,
-                service,
-                taxableExpenses,
-                van,
-                vanFuel,
-                mileage,
-                nonQualifyingRelocationExpenses,
-                nurseryPlaces,
-                otherItems,
-                paymentsOnEmployeesBehalf,
-                personalIncidentalExpenses,
-                qualifyingRelocationExpenses
-              ),
-              (
-                employerProvidedProfessionalSubscriptions,
-                employerProvidedServices,
-                incomeTaxPaidByDirector,
-                travelAndSubsistence,
-                vouchersAndCreditCards,
-                nonCash
-              )
-            ) =>
-          Benefits(
-            accommodation,
-            assets,
-            assetTransfer,
-            beneficialLoan,
-            car,
-            carFuel,
-            educationalServices,
-            entertaining,
-            expenses,
-            medicalInsurance,
-            telephone,
-            service,
-            taxableExpenses,
-            van,
-            vanFuel,
-            mileage,
-            nonQualifyingRelocationExpenses,
-            nurseryPlaces,
-            otherItems,
-            paymentsOnEmployeesBehalf,
-            personalIncidentalExpenses,
-            qualifyingRelocationExpenses,
-            employerProvidedProfessionalSubscriptions,
-            employerProvidedServices,
-            incomeTaxPaidByDirector,
-            travelAndSubsistence,
-            vouchersAndCreditCards,
-            nonCash
-          )
-      },
-      benefits =>
+      (first: BenefitsFirstSetOfFields, second: BenefitsSecondSetOfFields) =>
+        (first, second) match {
+          case (
+                (
+                  accommodation,
+                  assets,
+                  assetTransfer,
+                  beneficialLoan,
+                  car,
+                  carFuel,
+                  educationalServices,
+                  entertaining,
+                  expenses,
+                  medicalInsurance,
+                  telephone,
+                  service,
+                  taxableExpenses,
+                  van,
+                  vanFuel,
+                  mileage,
+                  nonQualifyingRelocationExpenses,
+                  nurseryPlaces,
+                  otherItems,
+                  paymentsOnEmployeesBehalf,
+                  personalIncidentalExpenses,
+                  qualifyingRelocationExpenses
+                ),
+                (
+                  employerProvidedProfessionalSubscriptions,
+                  employerProvidedServices,
+                  incomeTaxPaidByDirector,
+                  travelAndSubsistence,
+                  vouchersAndCreditCards,
+                  nonCash
+                )
+              ) =>
+            Benefits(
+              accommodation,
+              assets,
+              assetTransfer,
+              beneficialLoan,
+              car,
+              carFuel,
+              educationalServices,
+              entertaining,
+              expenses,
+              medicalInsurance,
+              telephone,
+              service,
+              taxableExpenses,
+              van,
+              vanFuel,
+              mileage,
+              nonQualifyingRelocationExpenses,
+              nurseryPlaces,
+              otherItems,
+              paymentsOnEmployeesBehalf,
+              personalIncidentalExpenses,
+              qualifyingRelocationExpenses,
+              employerProvidedProfessionalSubscriptions,
+              employerProvidedServices,
+              incomeTaxPaidByDirector,
+              travelAndSubsistence,
+              vouchersAndCreditCards,
+              nonCash
+            )
+        },
+      (benefits: Benefits) =>
         (
           (
             benefits.accommodation,
@@ -223,6 +226,7 @@ object Benefits {
           )
         )
     )
+
 }
 
 case class Employment(benefitsInKind: Option[Benefits] = None)
