@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-package api
+package test.api
 
 import com.github.tomakehurst.wiremock.http.HttpHeader
-import helpers.{AuthStub, WiremockSpec}
 import models.{DesErrorBodyModel, DesErrorModel}
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.time.{Seconds, Span}
@@ -25,9 +24,10 @@ import org.scalatestplus.play.PlaySpec
 import play.api.http.HeaderNames
 import play.api.http.Status._
 import play.api.libs.json.{JsValue, Json}
+import test.helpers.{AuthStub, WiremockSpec}
 import utils.DESTaxYearHelper.desTaxYearConverter
 
-class UpdateStateBenefitITest extends PlaySpec with WiremockSpec with ScalaFutures with AuthStub {
+class DeleteOverrideStateBenefitITest extends PlaySpec with WiremockSpec with ScalaFutures with AuthStub {
 
   trait Setup {
     val timeSpan: Long = 5
@@ -38,26 +38,20 @@ class UpdateStateBenefitITest extends PlaySpec with WiremockSpec with ScalaFutur
     val mtditidHeader: (String, String) = ("mtditid", "555555555")
     val authorization: (String, String) = HeaderNames.AUTHORIZATION -> "mock-bearer-token"
     val requestHeaders: Seq[HttpHeader] = Seq(new HttpHeader("mtditid", "555555555"))
-    val desUrl: String = s"/income-tax/income/state-benefits/$nino/${desTaxYearConverter(taxYear)}/custom/$benefitId"
-    val serviceUrl: String = s"/income-tax-benefits/state-benefits/nino/$nino/taxYear/$taxYear/benefitId/$benefitId"
+    val desUrl: String = s"/income-tax/income/state-benefits/$nino/${desTaxYearConverter(taxYear)}/$benefitId"
+    val serviceUrl: String = s"/income-tax-benefits/state-benefits/override/nino/$nino/taxYear/$taxYear/benefitId/$benefitId"
     auditStubs()
   }
 
-  val fullUpdateStateBenefitJson: JsValue = Json.parse(
-    """{
-      |	"startDate": "2020-08-03",
-      |	"endDate": "2020-12-03"
-      |}""".stripMargin)
-
-  "update state benefit" should {
+  "delete override state benefit" should {
 
     "return a 204 No Content response on success" in new Setup {
-      stubPutWithoutResponseBody(desUrl, Json.toJson(fullUpdateStateBenefitJson).toString(), NO_CONTENT)
+      stubDeleteWithoutResponseBody(desUrl, NO_CONTENT)
       authorised()
 
       whenReady(buildClient(serviceUrl)
         .withHttpHeaders(mtditidHeader, authorization)
-        .put(fullUpdateStateBenefitJson)) {
+        .delete) {
         result =>
           result.status mustBe NO_CONTENT
       }
@@ -70,47 +64,31 @@ class UpdateStateBenefitITest extends PlaySpec with WiremockSpec with ScalaFutur
 
       val expectedResult: JsValue = DesErrorModel(BAD_REQUEST, DesErrorBodyModel.invalidBenefitId).toJson
 
-      stubPutWithResponseBody(desUrl, Json.toJson(fullUpdateStateBenefitJson).toString(), errorResponseBody, BAD_REQUEST)
+      stubDeleteWithResponseBody(desUrl, BAD_REQUEST, errorResponseBody)
       authorised()
 
       whenReady(buildClient(serviceUrl)
         .withHttpHeaders(mtditidHeader, authorization)
-        .put(fullUpdateStateBenefitJson)) {
+        .delete()) {
         result =>
           result.status mustBe BAD_REQUEST
           Json.parse(result.body) mustBe expectedResult
+
+
       }
     }
 
-    "return a 403 if the update is forbidden" in new Setup {
-      val errorResponseBody: String = Json.toJson(DesErrorBodyModel(
-        "UPDATE_FORBIDDEN", "The remote endpoint has indicated that HMRC held State Benefit cannot be updated."
-      )).toString()
-
-      stubPutWithResponseBody(desUrl, Json.toJson(fullUpdateStateBenefitJson).toString(), errorResponseBody, FORBIDDEN)
-      authorised()
-
-      whenReady(buildClient(serviceUrl)
-        .withHttpHeaders(mtditidHeader, authorization)
-        .put(fullUpdateStateBenefitJson)) {
-        result =>
-          result.status mustBe FORBIDDEN
-          Json.parse(result.body) mustBe Json.obj(
-            "code" -> "UPDATE_FORBIDDEN", "reason" -> "The remote endpoint has indicated that HMRC held State Benefit cannot be updated.")
-      }
-    }
-
-    "return a 404 if no data is found to update" in new Setup {
+    "return a 404 if no data is found to delete" in new Setup {
       val errorResponseBody: String = Json.toJson(DesErrorBodyModel(
         "NO_DATA_FOUND", "The remote endpoint has indicated that the requested resource could not be found."
       )).toString()
 
-      stubPutWithResponseBody(desUrl, Json.toJson(fullUpdateStateBenefitJson).toString(), errorResponseBody, NOT_FOUND)
+      stubDeleteWithResponseBody(desUrl, NOT_FOUND, errorResponseBody)
       authorised()
 
       whenReady(buildClient(serviceUrl)
         .withHttpHeaders(mtditidHeader, authorization)
-        .put(fullUpdateStateBenefitJson)) {
+        .delete()) {
         result =>
           result.status mustBe NOT_FOUND
           Json.parse(result.body) mustBe Json.obj(
@@ -118,21 +96,40 @@ class UpdateStateBenefitITest extends PlaySpec with WiremockSpec with ScalaFutur
       }
     }
 
-    "return a 422 if the start date is invalid" in new Setup {
-      val errorResponseBody: String = Json.toJson(DesErrorBodyModel(
-        "INVALID_START_DATE", "The remote endpoint has indicated that start date is after the end of the tax year."
-      )).toString()
+    "return 500 if a downstream error occurs" in new Setup {
 
-      stubPutWithResponseBody(desUrl, Json.toJson(fullUpdateStateBenefitJson).toString(), errorResponseBody, UNPROCESSABLE_ENTITY)
+      val errorResponseBody: String = Json.toJson(DesErrorBodyModel(
+        "SERVER_ERROR", "DES is currently experiencing problems that require live service intervention.")).toString()
+
+      stubDeleteWithResponseBody(desUrl, INTERNAL_SERVER_ERROR, errorResponseBody)
+
       authorised()
 
       whenReady(buildClient(serviceUrl)
         .withHttpHeaders(mtditidHeader, authorization)
-        .put(fullUpdateStateBenefitJson)) {
+        .delete()) {
         result =>
-          result.status mustBe UNPROCESSABLE_ENTITY
+          result.status mustBe INTERNAL_SERVER_ERROR
           Json.parse(result.body) mustBe Json.obj(
-            "code" -> "INVALID_START_DATE", "reason" -> "The remote endpoint has indicated that start date is after the end of the tax year.")
+            "code" -> "SERVER_ERROR", "reason" -> "DES is currently experiencing problems that require live service intervention.")
+      }
+    }
+
+    "return 503 if a downstream error occurs" in new Setup {
+
+      val errorResponseBody: String = Json.toJson(DesErrorBodyModel(
+        "SERVICE_UNAVAILABLE", "Dependent systems are currently not responding.")).toString()
+
+      stubDeleteWithResponseBody(desUrl, SERVICE_UNAVAILABLE, errorResponseBody)
+
+      authorised()
+
+      whenReady(buildClient(serviceUrl)
+        .withHttpHeaders(mtditidHeader, authorization)
+        .delete()) {
+        result =>
+          result.status mustBe SERVICE_UNAVAILABLE
+          Json.parse(result.body) mustBe Json.obj("code" -> "SERVICE_UNAVAILABLE", "reason" -> "Dependent systems are currently not responding.")
       }
     }
 
@@ -143,7 +140,7 @@ class UpdateStateBenefitITest extends PlaySpec with WiremockSpec with ScalaFutur
 
         whenReady(buildClient(serviceUrl)
           .withHttpHeaders(mtditidHeader, authorization)
-          .put(fullUpdateStateBenefitJson)) {
+          .delete()) {
           result =>
             result.status mustBe UNAUTHORIZED
             result.body mustBe ""
@@ -152,7 +149,7 @@ class UpdateStateBenefitITest extends PlaySpec with WiremockSpec with ScalaFutur
 
       "the request has no MTDITID header present" in new Setup {
         whenReady(buildClient(serviceUrl)
-          .put(fullUpdateStateBenefitJson)) {
+          .delete()) {
           result =>
             result.status mustBe UNAUTHORIZED
             result.body mustBe ""
@@ -160,5 +157,4 @@ class UpdateStateBenefitITest extends PlaySpec with WiremockSpec with ScalaFutur
       }
     }
   }
-
 }

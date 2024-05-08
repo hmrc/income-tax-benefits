@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,11 +36,11 @@ trait AppConfig {
 
 }
 
-class BackendAppConfig @Inject()(config: Configuration, servicesConfig: ServicesConfig) extends AppConfig {
+class BackendAppConfig @Inject() (config: Configuration, servicesConfig: ServicesConfig) extends AppConfig {
 
   val authBaseUrl: String = servicesConfig.baseUrl("auth")
   val auditingEnabled: Boolean = config.get[Boolean]("auditing.enabled")
-  val graphiteHost: String     = config.get[String]("microservice.metrics.graphite.host")
+  val graphiteHost: String = config.get[String]("microservice.metrics.graphite.host")
 
   val desBaseUrl: String = servicesConfig.baseUrl("des")
 

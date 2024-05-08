@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +28,7 @@ object UnignoreStateBenefitHttpParser extends DESParser {
   override val parserName: String = "UnignoreStateBenefitHttpParserResponse"
 
   implicit object UnignoreStateBenefitHttpReads extends HttpReads[UnignoreStateBenefitHttpParserResponse] {
-    override def read(method: String, url: String, response: HttpResponse): UnignoreStateBenefitHttpParserResponse = {
+    override def read(method: String, url: String, response: HttpResponse): UnignoreStateBenefitHttpParserResponse =
       response.status match {
         case NO_CONTENT => Right(())
         case INTERNAL_SERVER_ERROR =>
@@ -37,13 +37,12 @@ object UnignoreStateBenefitHttpParser extends DESParser {
         case SERVICE_UNAVAILABLE =>
           pagerDutyLog(SERVICE_UNAVAILABLE_FROM_DES, logMessage(response))
           handleDESError(response)
-        case BAD_REQUEST | NOT_FOUND | UNPROCESSABLE_ENTITY | FORBIDDEN=>
+        case BAD_REQUEST | NOT_FOUND | UNPROCESSABLE_ENTITY | FORBIDDEN =>
           pagerDutyLog(FOURXX_RESPONSE_FROM_DES, logMessage(response))
           handleDESError(response)
         case _ =>
           pagerDutyLog(UNEXPECTED_RESPONSE_FROM_DES, logMessage(response))
           handleDESError(response, Some(INTERNAL_SERVER_ERROR))
       }
-    }
   }
 }

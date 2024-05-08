@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,15 +28,18 @@ object GetStateBenefitsHttpParser extends DESParser {
   override val parserName: String = "GetStateBenefitsHttpParser"
 
   implicit object GetStateBenefitsHttpReads extends HttpReads[GetStateBenefitsResponse] {
-    override def read(method: String, url: String, response: HttpResponse): GetStateBenefitsResponse = {
+    override def read(method: String, url: String, response: HttpResponse): GetStateBenefitsResponse =
       response.status match {
-        case OK => response.json.validate[GetStateBenefitsModel].fold[GetStateBenefitsResponse](
-          jsonErrors => {
-            pagerDutyLog(BAD_SUCCESS_JSON_FROM_DES, s"[GetStateBenefitsHttpParser][read] Invalid Json from DES.")
-            Left(DesErrorModel(INTERNAL_SERVER_ERROR, DesErrorBodyModel.parsingError))
-          },
-          parsedModel => Right(parsedModel)
-        )
+        case OK =>
+          response.json
+            .validate[GetStateBenefitsModel]
+            .fold[GetStateBenefitsResponse](
+              jsonErrors => {
+                pagerDutyLog(BAD_SUCCESS_JSON_FROM_DES, s"[GetStateBenefitsHttpParser][read] Invalid Json from DES.")
+                Left(DesErrorModel(INTERNAL_SERVER_ERROR, DesErrorBodyModel.parsingError))
+              },
+              parsedModel => Right(parsedModel)
+            )
         case INTERNAL_SERVER_ERROR =>
           pagerDutyLog(INTERNAL_SERVER_ERROR_FROM_DES, logMessage(response))
           handleDESError(response)
@@ -50,6 +53,5 @@ object GetStateBenefitsHttpParser extends DESParser {
           pagerDutyLog(UNEXPECTED_RESPONSE_FROM_DES, logMessage(response))
           handleDESError(response, Some(INTERNAL_SERVER_ERROR))
       }
-    }
   }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,41 +23,56 @@ import connectors.httpParsers.DeleteOverrideStateBenefitHttpParser.DeleteStateBe
 import connectors.httpParsers.DeleteStateBenefitsHttpParser.DeleteStateBenefitsResponse
 import connectors.httpParsers.GetStateBenefitsHttpParser.GetStateBenefitsResponse
 import connectors.httpParsers.IgnoreStateBenefitHttpParser.IgnoreStateBenefitResponse
-import connectors.httpParsers.UpdateStateBenefitHttpParser.UpdateStateBenefitResponse
 import connectors.httpParsers.UnignoreStateBenefitHttpParser.UnignoreStateBenefitHttpParserResponse
+import connectors.httpParsers.UpdateStateBenefitHttpParser.UpdateStateBenefitResponse
 import models.{AddStateBenefitRequestModel, CreateUpdateOverrideStateBenefit, UpdateStateBenefitModel}
 import uk.gov.hmrc.http.HeaderCarrier
-import javax.inject.Inject
 
+import javax.inject.Inject
 import scala.concurrent.Future
 
-class StateBenefitsService @Inject()(connector: StateBenefitsConnector) {
+class StateBenefitsService @Inject() (connector: StateBenefitsConnector) {
 
-  def getStateBenefits(nino: String, taxYear: Int, benefitId: Option[String])(implicit hc: HeaderCarrier): Future[GetStateBenefitsResponse] =
+  def getStateBenefits(nino: String, taxYear: Int, benefitId: Option[String])(implicit
+    hc: HeaderCarrier
+  ): Future[GetStateBenefitsResponse] =
     connector.getStateBenefits(nino, taxYear, benefitId)
 
-  def deleteStateBenefit(nino: String, taxYear: Int, benefitId: String)(implicit hc: HeaderCarrier): Future[DeleteStateBenefitsResponse] = {
+  def deleteStateBenefit(nino: String, taxYear: Int, benefitId: String)(implicit
+    hc: HeaderCarrier
+  ): Future[DeleteStateBenefitsResponse] =
     connector.deleteStateBenefitEndOfYear(nino, taxYear, benefitId)
-  }
 
-  def deleteOverrideStateBenefit(nino: String, taxYear: Int, benefitId: String)(implicit hc: HeaderCarrier): Future[DeleteStateBenefitOverrideResponse] =
+  def deleteOverrideStateBenefit(nino: String, taxYear: Int, benefitId: String)(implicit
+    hc: HeaderCarrier
+  ): Future[DeleteStateBenefitOverrideResponse] =
     connector.deleteOverrideStateBenefit(nino, taxYear, benefitId)
 
-  def createUpdateStateBenefitOverride(nino: String, taxYear: Int, benefitId: String, model: CreateUpdateOverrideStateBenefit)
-                                      (implicit hc: HeaderCarrier): Future[CreateUpdateOverrideStateBenefitResponse] =
+  def createUpdateStateBenefitOverride(
+    nino: String,
+    taxYear: Int,
+    benefitId: String,
+    model: CreateUpdateOverrideStateBenefit
+  )(implicit hc: HeaderCarrier): Future[CreateUpdateOverrideStateBenefitResponse] =
     connector.createUpdateStateBenefitOverride(nino, taxYear, benefitId, model)
 
-  def ignoreStateBenefit(nino: String, taxYear: Int, benefitId: String, ignoreBenefit: Boolean)
-                        (implicit hc: HeaderCarrier): Future[IgnoreStateBenefitResponse] =
+  def ignoreStateBenefit(nino: String, taxYear: Int, benefitId: String, ignoreBenefit: Boolean)(implicit
+    hc: HeaderCarrier
+  ): Future[IgnoreStateBenefitResponse] =
     connector.ignoreStateBenefit(nino, taxYear, benefitId, ignoreBenefit)
 
-  def unignoreStateBenefit(nino: String, taxYear: Int, benefitId: String)(implicit hc: HeaderCarrier): Future[UnignoreStateBenefitHttpParserResponse] =
+  def unignoreStateBenefit(nino: String, taxYear: Int, benefitId: String)(implicit
+    hc: HeaderCarrier
+  ): Future[UnignoreStateBenefitHttpParserResponse] =
     connector.unignoreStateBenefit(nino, taxYear, benefitId)
 
-  def addStateBenefit(nino: String, taxYear: Int, requestModel: AddStateBenefitRequestModel)(implicit hc: HeaderCarrier): Future[AddStateBenefitResponse] =
+  def addStateBenefit(nino: String, taxYear: Int, requestModel: AddStateBenefitRequestModel)(implicit
+    hc: HeaderCarrier
+  ): Future[AddStateBenefitResponse] =
     connector.addStateBenefit(nino, taxYear, requestModel)
 
-  def updateStateBenefit(nino: String, taxYear: Int, benefitId: String, benefitUpdateData: UpdateStateBenefitModel)
-                        (implicit hc: HeaderCarrier): Future[UpdateStateBenefitResponse] =
+  def updateStateBenefit(nino: String, taxYear: Int, benefitId: String, benefitUpdateData: UpdateStateBenefitModel)(
+    implicit hc: HeaderCarrier
+  ): Future[UpdateStateBenefitResponse] =
     connector.updateStateBenefit(nino, taxYear, benefitId, benefitUpdateData)
 }

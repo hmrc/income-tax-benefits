@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,14 +18,15 @@ package services
 
 import connectors.GetEmploymentBenefitsConnector
 import connectors.httpParsers.GetEmploymentBenefitsHttpParser.GetEmploymentBenefitsResponse
-import javax.inject.Inject
 import uk.gov.hmrc.http.HeaderCarrier
 
+import javax.inject.Inject
 import scala.concurrent.Future
 
-class GetEmploymentBenefitsService @Inject()(connector: GetEmploymentBenefitsConnector) {
+class GetEmploymentBenefitsService @Inject() (connector: GetEmploymentBenefitsConnector) {
 
-  def getEmploymentBenefits(nino: String, employmentId: String, taxYear: Int, view: String)
-                           (implicit hc: HeaderCarrier): Future[GetEmploymentBenefitsResponse] =
+  def getEmploymentBenefits(nino: String, employmentId: String, taxYear: Int, view: String)(implicit
+    hc: HeaderCarrier
+  ): Future[GetEmploymentBenefitsResponse] =
     connector.getEmploymentBenefits(nino, employmentId, taxYear, view)
 }

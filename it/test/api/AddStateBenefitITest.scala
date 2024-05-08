@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-package api
+package test.api
 
 import com.github.tomakehurst.wiremock.http.HttpHeader
-import helpers.{AuthStub, WiremockSpec}
 import models.{AddStateBenefitRequestModel, DesErrorBodyModel}
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.time.{Seconds, Span}
@@ -25,9 +24,21 @@ import org.scalatestplus.play.PlaySpec
 import play.api.http.HeaderNames
 import play.api.http.Status._
 import play.api.libs.json.Json
+import test.helpers.{AuthStub, WiremockSpec}
 import utils.DESTaxYearHelper.desTaxYearConverter
 
 class AddStateBenefitITest extends PlaySpec with WiremockSpec with ScalaFutures with AuthStub {
+  val requestModel: AddStateBenefitRequestModel = AddStateBenefitRequestModel("statePension", "2020-08-03", Some("2020-12-03"))
+  val requestBody: String =
+    """
+      |{
+      |  "benefitType": "statePension",
+      |  "startDate": "2020-08-03",
+      |  "endDate": "2020-12-03"
+      |}
+      |""".stripMargin
+  val responseBody: String = """{"benefitId": "b1e8057e-fbbc-47a8-a8b4-78d9f015c253"}"""
+
   trait Setup {
     val timeSpan: Long = 5
     implicit val patienceConfig: PatienceConfig = PatienceConfig(Span(timeSpan, Seconds))
@@ -40,18 +51,6 @@ class AddStateBenefitITest extends PlaySpec with WiremockSpec with ScalaFutures 
     val serviceUrl: String = s"/income-tax-benefits/state-benefits/nino/$nino/taxYear/$taxYear"
     auditStubs()
   }
-
-  val requestModel: AddStateBenefitRequestModel = AddStateBenefitRequestModel("statePension", "2020-08-03", Some("2020-12-03"))
-  val requestBody: String =
-    """
-      |{
-      |  "benefitType": "statePension",
-      |  "startDate": "2020-08-03",
-      |  "endDate": "2020-12-03"
-      |}
-      |""".stripMargin
-
-  val responseBody: String = """{"benefitId": "b1e8057e-fbbc-47a8-a8b4-78d9f015c253"}"""
 
 
   "add state benefit" should {

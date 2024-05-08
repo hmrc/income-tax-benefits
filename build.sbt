@@ -1,11 +1,13 @@
-import uk.gov.hmrc.DefaultBuildSettings.integrationTestSettings
-import uk.gov.hmrc.sbtdistributables.SbtDistributablesPlugin.publishingSettings
+import uk.gov.hmrc.DefaultBuildSettings
 
 val appName = "income-tax-benefits"
 
-val silencerVersion = "1.7.0"
+val silencerVersion = "1.7.17"
 
-lazy val coverageSettings: Seq[Setting[_]] = {
+ThisBuild / majorVersion := 0
+ThisBuild / scalaVersion := "2.13.12"
+
+lazy val coverageSettings: Seq[Setting[?]] = {
   import scoverage.ScoverageKeys
 
   val excludedPackages = Seq(
@@ -20,7 +22,7 @@ lazy val coverageSettings: Seq[Setting[_]] = {
     "config.*",
     "testOnly.*",
     "testOnlyDoNotUseInAppConf.*",
-    "controllers.testOnly.*",
+    "controllers.testOnly.*"
   )
 
   Seq(
@@ -30,13 +32,10 @@ lazy val coverageSettings: Seq[Setting[_]] = {
     ScoverageKeys.coverageHighlighting := true
   )
 }
-
 lazy val microservice = Project(appName, file("."))
   .enablePlugins(play.sbt.PlayScala, SbtDistributablesPlugin)
   .settings(
-    majorVersion                     := 0,
-    scalaVersion                     := "2.12.12",
-    libraryDependencies              ++= AppDependencies.compile ++ AppDependencies.test,
+    libraryDependencies ++= AppDependencies.compile ++ AppDependencies.test,
     // ***************
     // Use the silencer plugin to suppress warnings
     scalacOptions ++= Seq(
@@ -49,11 +48,17 @@ lazy val microservice = Project(appName, file("."))
     )
     // ***************
   )
-  .settings(publishingSettings: _*)
-  .configs(IntegrationTest)
   .settings(PlayKeys.playDefaultPort := 9319)
-  .settings(integrationTestSettings(): _*)
   .settings(resolvers += Resolver.jcenterRepo)
-  .settings(coverageSettings: _*)
+  .settings(coverageSettings *)
+  .settings(
+    // To resolve a bug with version 2.x.x of the scoverage plugin - https://github.com/sbt/sbt/issues/6997
+    libraryDependencySchemes ++= Seq("org.scala-lang.modules" %% "scala-xml" % VersionScheme.Always)
+  )
   .disablePlugins(sbt.plugins.JUnitXmlReportPlugin)
   .disablePlugins(JUnitXmlReportPlugin)
+
+lazy val it = project
+  .enablePlugins(PlayScala)
+  .dependsOn(microservice % "test->test") // the "test->test" allows reusing test code and test dependencies
+  .settings(DefaultBuildSettings.itSettings())

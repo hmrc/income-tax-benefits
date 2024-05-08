@@ -1,15 +1,18 @@
-
 # income-tax-benefits
-This is where we make API calls from users viewing and making changes to the employment benefits and state benefits sections of their income tax return.
+
+This is where we make API calls from users viewing and making changes to the employment benefits and state benefits
+sections of their income tax return.
 
 ## Running the service locally
 
 You will need to have the following:
+
 - Installed/configured [service manager](https://github.com/hmrc/service-manager).
 
 The service manager profile for this service is:
 
     sm --start INCOME_TAX_BENEFITS
+
 Run the following command to start the remaining services locally:
 
     sudo mongod (If not already running)
@@ -19,35 +22,45 @@ This service runs on port: `localhost:9319`
 
 ### Employment benefits endpoints:
 
-- **GET /income-tax/nino/:nino/sources/:employmentId** (Gets either hmrc benefits or customer benefits data for a particular employment. Also referred to as benefits in kind.)
+- **GET /income-tax/nino/:nino/sources/:employmentId** (Gets either hmrc benefits or customer benefits data for a
+  particular employment. Also referred to as benefits in kind.)
 
 ### State benefits endpoints:
 
-- **GET     /state-benefits/nino/:nino/taxYear/:taxYear** (Gets all state benefits data or optionally data for specific benefit)                              
+- **GET /state-benefits/nino/:nino/taxYear/:taxYear** (Gets all state benefits data or optionally data for specific
+  benefit)
 
-- **POST    /state-benefits/nino/:nino/taxYear/:taxYear** (Creates a new customer state benefit)     
-                      
-- **PUT    /state-benefits/nino/:nino/taxYear/:taxYear/benefitId/:benefitId** (Updates a state benefit)    
-   
-- **PUT     /state-benefits/override/nino/:nino/taxYear/:taxYear/benefitId/:benefitId** (Updates a customer state benefit)
+- **POST /state-benefits/nino/:nino/taxYear/:taxYear** (Creates a new customer state benefit)
 
-- **DELETE  /state-benefits/nino/:nino/taxYear/:taxYear/benefitId/:benefitId** (Deletes a state benefit)      
-   
-- **DELETE  /state-benefits/override/nino/:nino/taxYear/:taxYear/benefitId/:benefitId** (Deletes customer added state benefit)
+- **PUT /state-benefits/nino/:nino/taxYear/:taxYear/benefitId/:benefitId** (Updates a state benefit)
 
-- **PUT     /state-benefits/nino/:nino/taxYear/:taxYear/benefitId/:benefitId/ignoreBenefit/:ignoreBenefit** (Ignores a hmrc state benefit)
+- **PUT /state-benefits/override/nino/:nino/taxYear/:taxYear/benefitId/:benefitId** (Updates a customer state benefit)
+
+- **DELETE /state-benefits/nino/:nino/taxYear/:taxYear/benefitId/:benefitId** (Deletes a state benefit)
+
+- **DELETE /state-benefits/override/nino/:nino/taxYear/:taxYear/benefitId/:benefitId** (Deletes customer added state
+  benefit)
+
+- **PUT /state-benefits/nino/:nino/taxYear/:taxYear/benefitId/:benefitId/ignoreBenefit/:ignoreBenefit** (Ignores a hmrc
+  state benefit)
 
 - **DELETE /state-benefits/nino/:nino/taxYear/:taxYear/ignore/benefitId/:benefitId** (Unignores a hmrc state benefit)
 
 ### Downstream services
+
 All benefits data is retrieved / updated via one of two downstream systems.
+
 - DES (Data Exchange Service)
 - IF (Integration Framework)
 
 ### Employment Sources (HMRC-Held and Customer Data)
-Employment data can come from different sources: HMRC-Held and Customer. HMRC-Held data is employment data that HMRC have for the user within the tax year, prior to any updates made by the user. The employment data displayed in-year is HMRC-Held. This is the same for benefits data, you can have hmrc held benefits and/or customer benefits data.
 
-Customer data is provided by the user. At the end of the tax year, users can view any existing employment data and make changes (create, update and delete).
+Employment data can come from different sources: HMRC-Held and Customer. HMRC-Held data is employment data that HMRC
+have for the user within the tax year, prior to any updates made by the user. The employment data displayed in-year is
+HMRC-Held. This is the same for benefits data, you can have hmrc held benefits and/or customer benefits data.
+
+Customer data is provided by the user. At the end of the tax year, users can view any existing employment data and make
+changes (create, update and delete).
 
 <details>
 <summary>Click here to see an example of a user with HMRC-Held and Customer data (JSON)</summary>
@@ -226,7 +239,9 @@ Customer data is provided by the user. At the end of the tax year, users can vie
 </details>
 
 ### State benefits (HMRC-Held and Customer Data)
-State benefits data can come from different sources: HMRC-Held and Customer. HMRC-Held data is state benefits data that HMRC have for the user within the tax year, prior to any updates made by the user.
+
+State benefits data can come from different sources: HMRC-Held and Customer. HMRC-Held data is state benefits data that
+HMRC have for the user within the tax year, prior to any updates made by the user.
 
 Customer data is provided by the user.
 
@@ -235,141 +250,141 @@ Customer data is provided by the user.
 
 ```json
 {
-   "stateBenefits":{
-      "incapacityBenefit":[
-         {
-            "benefitId":"a1e8057e-fbbc-47a8-a8b4-78d9f015c934",
-            "startDate":"2019-11-13",
-            "dateIgnored":"2019-04-11T16:22:00Z",
-            "submittedOn":"2020-09-11T17:23:00Z",
-            "endDate":"2020-08-23",
-            "amount":1212.34,
-            "taxPaid":22323.23
-         }
-      ],
-      "statePension":{
-         "benefitId":"a1e8057e-fbbc-47a8-a8b4-78d9f015c934",
-         "startDate":"2019-11-13",
-         "dateIgnored":"2019-04-11T16:22:00Z",
-         "submittedOn":"2020-09-11T17:23:00Z",
-         "endDate":"2020-08-23",
-         "amount":1212.34,
-         "taxPaid":22323.23
-      },
-      "statePensionLumpSum":{
-         "benefitId":"a1e8057e-fbbc-47a8-a8b4-78d9f015c934",
-         "startDate":"2019-11-13",
-         "dateIgnored":"2019-04-11T16:22:00Z",
-         "submittedOn":"2020-09-11T17:23:00Z",
-         "endDate":"2020-08-23",
-         "amount":1212.34,
-         "taxPaid":22323.23
-      },
-      "employmentSupportAllowance":[
-         {
-            "benefitId":"a1e8057e-fbbc-47a8-a8b4-78d9f015c934",
-            "startDate":"2019-11-13",
-            "dateIgnored":"2019-04-11T16:22:00Z",
-            "submittedOn":"2020-09-11T17:23:00Z",
-            "endDate":"2020-08-23",
-            "amount":1212.34,
-            "taxPaid":22323.23
-         }
-      ],
-      "jobSeekersAllowance":[
-         {
-            "benefitId":"a1e8057e-fbbc-47a8-a8b4-78d9f015c934",
-            "startDate":"2019-11-13",
-            "dateIgnored":"2019-04-11T16:22:00Z",
-            "submittedOn":"2020-09-11T17:23:00Z",
-            "endDate":"2020-08-23",
-            "amount":1212.34,
-            "taxPaid":22323.23
-         }
-      ],
-      "bereavementAllowance":{
-         "benefitId":"a1e8057e-fbbc-47a8-a8b4-78d9f015c934",
-         "startDate":"2019-11-13",
-         "dateIgnored":"2019-04-11T16:22:00Z",
-         "submittedOn":"2020-09-11T17:23:00Z",
-         "endDate":"2020-08-23",
-         "amount":1212.34,
-         "taxPaid":22323.23
-      },
-      "otherStateBenefits":{
-         "benefitId":"a1e8057e-fbbc-47a8-a8b4-78d9f015c934",
-         "startDate":"2019-11-13",
-         "dateIgnored":"2019-04-11T16:22:00Z",
-         "submittedOn":"2020-09-11T17:23:00Z",
-         "endDate":"2020-08-23",
-         "amount":1212.34,
-         "taxPaid":22323.23
+  "stateBenefits": {
+    "incapacityBenefit": [
+      {
+        "benefitId": "a1e8057e-fbbc-47a8-a8b4-78d9f015c934",
+        "startDate": "2019-11-13",
+        "dateIgnored": "2019-04-11T16:22:00Z",
+        "submittedOn": "2020-09-11T17:23:00Z",
+        "endDate": "2020-08-23",
+        "amount": 1212.34,
+        "taxPaid": 22323.23
       }
-   },
-   "customerAddedStateBenefits":{
-      "incapacityBenefit":[
-         {
-            "benefitId":"a1e8057e-fbbc-47a8-a8b4-78d9f015c934",
-            "startDate":"2018-07-17",
-            "submittedOn":"2020-11-17T19:23:00Z",
-            "endDate":"2020-09-23",
-            "amount":45646.78,
-            "taxPaid":4544.34
-         }
-      ],
-      "statePension":{
-         "benefitId":"a1e8057e-fbbc-47a8-a8b4-78d9f015c934",
-         "startDate":"2018-07-17",
-         "submittedOn":"2020-11-17T19:23:00Z",
-         "endDate":"2020-09-23",
-         "amount":45646.78,
-         "taxPaid":4544.34
-      },
-      "statePensionLumpSum":{
-         "benefitId":"a1e8057e-fbbc-47a8-a8b4-78d9f015c934",
-         "startDate":"2018-07-17",
-         "submittedOn":"2020-11-17T19:23:00Z",
-         "endDate":"2020-09-23",
-         "amount":45646.78,
-         "taxPaid":4544.34
-      },
-      "employmentSupportAllowance":[
-         {
-            "benefitId":"a1e8057e-fbbc-47a8-a8b4-78d9f015c934",
-            "startDate":"2018-07-17",
-            "submittedOn":"2020-11-17T19:23:00Z",
-            "endDate":"2020-09-23",
-            "amount":45646.78,
-            "taxPaid":4544.34
-         }
-      ],
-      "jobSeekersAllowance":[
-         {
-            "benefitId":"a1e8057e-fbbc-47a8-a8b4-78d9f015c934",
-            "startDate":"2018-07-17",
-            "submittedOn":"2020-11-17T19:23:00Z",
-            "endDate":"2020-09-23",
-            "amount":45646.78,
-            "taxPaid":4544.34
-         }
-      ],
-      "bereavementAllowance":{
-         "benefitId":"a1e8057e-fbbc-47a8-a8b4-78d9f015c934",
-         "startDate":"2018-07-17",
-         "submittedOn":"2020-11-17T19:23:00Z",
-         "endDate":"2020-09-23",
-         "amount":45646.78,
-         "taxPaid":4544.34
-      },
-      "otherStateBenefits":{
-         "benefitId":"a1e8057e-fbbc-47a8-a8b4-78d9f015c934",
-         "startDate":"2018-07-17",
-         "submittedOn":"2020-11-17T19:23:00Z",
-         "endDate":"2020-09-23",
-         "amount":45646.78,
-         "taxPaid":4544.34
+    ],
+    "statePension": {
+      "benefitId": "a1e8057e-fbbc-47a8-a8b4-78d9f015c934",
+      "startDate": "2019-11-13",
+      "dateIgnored": "2019-04-11T16:22:00Z",
+      "submittedOn": "2020-09-11T17:23:00Z",
+      "endDate": "2020-08-23",
+      "amount": 1212.34,
+      "taxPaid": 22323.23
+    },
+    "statePensionLumpSum": {
+      "benefitId": "a1e8057e-fbbc-47a8-a8b4-78d9f015c934",
+      "startDate": "2019-11-13",
+      "dateIgnored": "2019-04-11T16:22:00Z",
+      "submittedOn": "2020-09-11T17:23:00Z",
+      "endDate": "2020-08-23",
+      "amount": 1212.34,
+      "taxPaid": 22323.23
+    },
+    "employmentSupportAllowance": [
+      {
+        "benefitId": "a1e8057e-fbbc-47a8-a8b4-78d9f015c934",
+        "startDate": "2019-11-13",
+        "dateIgnored": "2019-04-11T16:22:00Z",
+        "submittedOn": "2020-09-11T17:23:00Z",
+        "endDate": "2020-08-23",
+        "amount": 1212.34,
+        "taxPaid": 22323.23
       }
-   }
+    ],
+    "jobSeekersAllowance": [
+      {
+        "benefitId": "a1e8057e-fbbc-47a8-a8b4-78d9f015c934",
+        "startDate": "2019-11-13",
+        "dateIgnored": "2019-04-11T16:22:00Z",
+        "submittedOn": "2020-09-11T17:23:00Z",
+        "endDate": "2020-08-23",
+        "amount": 1212.34,
+        "taxPaid": 22323.23
+      }
+    ],
+    "bereavementAllowance": {
+      "benefitId": "a1e8057e-fbbc-47a8-a8b4-78d9f015c934",
+      "startDate": "2019-11-13",
+      "dateIgnored": "2019-04-11T16:22:00Z",
+      "submittedOn": "2020-09-11T17:23:00Z",
+      "endDate": "2020-08-23",
+      "amount": 1212.34,
+      "taxPaid": 22323.23
+    },
+    "otherStateBenefits": {
+      "benefitId": "a1e8057e-fbbc-47a8-a8b4-78d9f015c934",
+      "startDate": "2019-11-13",
+      "dateIgnored": "2019-04-11T16:22:00Z",
+      "submittedOn": "2020-09-11T17:23:00Z",
+      "endDate": "2020-08-23",
+      "amount": 1212.34,
+      "taxPaid": 22323.23
+    }
+  },
+  "customerAddedStateBenefits": {
+    "incapacityBenefit": [
+      {
+        "benefitId": "a1e8057e-fbbc-47a8-a8b4-78d9f015c934",
+        "startDate": "2018-07-17",
+        "submittedOn": "2020-11-17T19:23:00Z",
+        "endDate": "2020-09-23",
+        "amount": 45646.78,
+        "taxPaid": 4544.34
+      }
+    ],
+    "statePension": {
+      "benefitId": "a1e8057e-fbbc-47a8-a8b4-78d9f015c934",
+      "startDate": "2018-07-17",
+      "submittedOn": "2020-11-17T19:23:00Z",
+      "endDate": "2020-09-23",
+      "amount": 45646.78,
+      "taxPaid": 4544.34
+    },
+    "statePensionLumpSum": {
+      "benefitId": "a1e8057e-fbbc-47a8-a8b4-78d9f015c934",
+      "startDate": "2018-07-17",
+      "submittedOn": "2020-11-17T19:23:00Z",
+      "endDate": "2020-09-23",
+      "amount": 45646.78,
+      "taxPaid": 4544.34
+    },
+    "employmentSupportAllowance": [
+      {
+        "benefitId": "a1e8057e-fbbc-47a8-a8b4-78d9f015c934",
+        "startDate": "2018-07-17",
+        "submittedOn": "2020-11-17T19:23:00Z",
+        "endDate": "2020-09-23",
+        "amount": 45646.78,
+        "taxPaid": 4544.34
+      }
+    ],
+    "jobSeekersAllowance": [
+      {
+        "benefitId": "a1e8057e-fbbc-47a8-a8b4-78d9f015c934",
+        "startDate": "2018-07-17",
+        "submittedOn": "2020-11-17T19:23:00Z",
+        "endDate": "2020-09-23",
+        "amount": 45646.78,
+        "taxPaid": 4544.34
+      }
+    ],
+    "bereavementAllowance": {
+      "benefitId": "a1e8057e-fbbc-47a8-a8b4-78d9f015c934",
+      "startDate": "2018-07-17",
+      "submittedOn": "2020-11-17T19:23:00Z",
+      "endDate": "2020-09-23",
+      "amount": 45646.78,
+      "taxPaid": 4544.34
+    },
+    "otherStateBenefits": {
+      "benefitId": "a1e8057e-fbbc-47a8-a8b4-78d9f015c934",
+      "startDate": "2018-07-17",
+      "submittedOn": "2020-11-17T19:23:00Z",
+      "endDate": "2020-09-23",
+      "amount": 45646.78,
+      "taxPaid": 4544.34
+    }
+  }
 }
 ```
 
@@ -378,17 +393,20 @@ Customer data is provided by the user.
 ## Ninos with stub data for employment
 
 ### In-Year
-| Nino | Employment data | Source |
-| --- | --- | --- |
-| AA133742A | Single employment - Employment details, benefits and expenses | HMRC-Held |
-| BB444444A | Multiple employments - Employment details, benefits and expenses| HMRC-Held |
+
+| Nino      | Employment data                                                  | Source    |
+|-----------|------------------------------------------------------------------|-----------|
+| AA133742A | Single employment - Employment details, benefits and expenses    | HMRC-Held |
+| BB444444A | Multiple employments - Employment details, benefits and expenses | HMRC-Held |
 
 ### End of Year
-| Nino | Employment data | Source
-| --- | --- | --- |
-| AA133742A | Single employment - Employment details and benefits | HMRC-Held, Customer|
+
+| Nino      | Employment data                                                  | Source              
+|-----------|------------------------------------------------------------------|---------------------|
+| AA133742A | Single employment - Employment details and benefits              | HMRC-Held, Customer |
 | BB444444A | Multiple employments - Employment details, benefits and expenses | HMRC-Held, Customer |
 
 ### License
 
-This code is open source software licensed under the [Apache 2.0 License]("http://www.apache.org/licenses/LICENSE-2.0.html").
+This code is open source software licensed under
+the [Apache 2.0 License]("http://www.apache.org/licenses/LICENSE-2.0.html").

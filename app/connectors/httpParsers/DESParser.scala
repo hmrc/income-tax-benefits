@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,18 +24,20 @@ import utils.PagerDutyHelper.{getCorrelationId, pagerDutyLog}
 
 trait DESParser {
 
-  val parserName : String
+  val parserName: String
 
-  def logMessage(response:HttpResponse): String ={
+  def logMessage(response: HttpResponse): String =
     s"[$parserName][read] Received ${response.status} from DES. Body:${response.body}" + getCorrelationId(response)
-  }
 
   def badSuccessJsonFromDES[Response]: Either[DesErrorModel, Response] = {
     pagerDutyLog(BAD_SUCCESS_JSON_FROM_DES, s"[$parserName][read] Invalid Json from DES.")
     Left(DesErrorModel(INTERNAL_SERVER_ERROR, DesErrorBodyModel.parsingError))
   }
 
-  def handleDESError[Response](response: HttpResponse, statusOverride: Option[Int] = None): Either[DesErrorModel, Response] = {
+  def handleDESError[Response](
+    response: HttpResponse,
+    statusOverride: Option[Int] = None
+  ): Either[DesErrorModel, Response] = {
 
     val status = statusOverride.getOrElse(response.status)
 
@@ -46,7 +48,7 @@ trait DESParser {
       lazy val desErrors = json.asOpt[DesErrorsBodyModel]
 
       (desError, desErrors) match {
-        case (Some(desError), _) => Left(DesErrorModel(status, desError))
+        case (Some(desError), _)  => Left(DesErrorModel(status, desError))
         case (_, Some(desErrors)) => Left(DesErrorModel(status, desErrors))
         case _ =>
           pagerDutyLog(UNEXPECTED_RESPONSE_FROM_DES, s"[$parserName][read] Unexpected Json from DES.")

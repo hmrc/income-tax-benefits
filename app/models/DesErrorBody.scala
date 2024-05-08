@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,63 +20,91 @@ import play.api.libs.json.{JsValue, Json, OFormat}
 
 sealed trait DesErrorBody
 
-case class DesErrorModel(status: Int, body: DesErrorBody){
-  def toJson: JsValue ={
+case class DesErrorModel(status: Int, body: DesErrorBody) {
+  def toJson: JsValue =
     body match {
-      case error: DesErrorBodyModel => Json.toJson(error)
+      case error: DesErrorBodyModel   => Json.toJson(error)
       case errors: DesErrorsBodyModel => Json.toJson(errors)
     }
-  }
 }
 
-/** Single DES Error **/
+/** Single DES Error * */
 case class DesErrorBodyModel(code: String, reason: String) extends DesErrorBody
 
 object DesErrorBodyModel {
   implicit val formats: OFormat[DesErrorBodyModel] = Json.format[DesErrorBodyModel]
   val parsingError: DesErrorBodyModel = DesErrorBodyModel("PARSING_ERROR", "Error parsing response from DES")
-  val invalidView: DesErrorBodyModel = DesErrorBodyModel("INVALID_VIEW", "Submission has not passed validation. Invalid query parameter view.")
-  val invalidTaxYear: DesErrorBodyModel = DesErrorBodyModel(
-    "INVALID_TAX_YEAR", "Submission has not passed validation. Invalid parameter taxYear.")
+  val invalidView: DesErrorBodyModel =
+    DesErrorBodyModel("INVALID_VIEW", "Submission has not passed validation. Invalid query parameter view.")
+  val invalidTaxYear: DesErrorBodyModel =
+    DesErrorBodyModel("INVALID_TAX_YEAR", "Submission has not passed validation. Invalid parameter taxYear.")
   val invalidTaxableEntityId: DesErrorBodyModel = DesErrorBodyModel(
-    "INVALID_TAXABLE_ENTITY_ID", "Submission has not passed validation. Invalid parameter taxableEntityId.")
+    "INVALID_TAXABLE_ENTITY_ID",
+    "Submission has not passed validation. Invalid parameter taxableEntityId."
+  )
   val invalidCorrelationId: DesErrorBodyModel = DesErrorBodyModel(
-    "INVALID_CORRELATIONID", "Submission has not passed validation. Invalid Header parameter CorrelationId.")
-  val invalidPayload: DesErrorBodyModel = DesErrorBodyModel(
-    "INVALID_PAYLOAD", "Submission has not passed validation. Invalid payload.")
+    "INVALID_CORRELATIONID",
+    "Submission has not passed validation. Invalid Header parameter CorrelationId."
+  )
+  val invalidPayload: DesErrorBodyModel =
+    DesErrorBodyModel("INVALID_PAYLOAD", "Submission has not passed validation. Invalid payload.")
   val noDataFound: DesErrorBodyModel = DesErrorBodyModel(
-    "NO_DATA_FOUND", "The remote endpoint has indicated that the requested resource could not be found.")
-  val invalidBenefitId: DesErrorBodyModel = DesErrorBodyModel(
-    "INVALID_BENEFIT_ID", "Submission has not passed validation. Invalid parameter benefitId.")
-  val serviceUnavailable: DesErrorBodyModel = DesErrorBodyModel("SERVICE_UNAVAILABLE", "Dependent systems are currently not responding.")
-  val serverError: DesErrorBodyModel = DesErrorBodyModel("SERVER_ERROR", "DES is currently experiencing problems that require live service intervention.")
-  val invalidDateRange: DesErrorBodyModel = DesErrorBodyModel(
-    "INVALID_DATE_RANGE", "The remote endpoint has indicated that tax year requested exceeds CY-4.")
+    "NO_DATA_FOUND",
+    "The remote endpoint has indicated that the requested resource could not be found."
+  )
+  val invalidBenefitId: DesErrorBodyModel =
+    DesErrorBodyModel("INVALID_BENEFIT_ID", "Submission has not passed validation. Invalid parameter benefitId.")
+  val serviceUnavailable: DesErrorBodyModel =
+    DesErrorBodyModel("SERVICE_UNAVAILABLE", "Dependent systems are currently not responding.")
+  val serverError: DesErrorBodyModel =
+    DesErrorBodyModel("SERVER_ERROR", "DES is currently experiencing problems that require live service intervention.")
+  val invalidDateRange: DesErrorBodyModel =
+    DesErrorBodyModel("INVALID_DATE_RANGE", "The remote endpoint has indicated that tax year requested exceeds CY-4.")
   val taxYearNotSupported: DesErrorBodyModel = DesErrorBodyModel(
-    "TAX_YEAR_NOT_SUPPORTED", "The remote endpoint has indicated that requested tax year is not supported.")
+    "TAX_YEAR_NOT_SUPPORTED",
+    "The remote endpoint has indicated that requested tax year is not supported."
+  )
   val deleteForbidden: DesErrorBodyModel = DesErrorBodyModel(
-    "DELETE_FORBIDDEN", "The remote endpoint has indicated that HMRC held State Benefit cannot be deleted.")
+    "DELETE_FORBIDDEN",
+    "The remote endpoint has indicated that HMRC held State Benefit cannot be deleted."
+  )
   val updateForbidden: DesErrorBodyModel = DesErrorBodyModel(
-    "UPDATE_FORBIDDEN", "The remote endpoint has indicated that HMRC held State Benefit cannot be updated.")
+    "UPDATE_FORBIDDEN",
+    "The remote endpoint has indicated that HMRC held State Benefit cannot be updated."
+  )
   val requestBeforeTaxYear: DesErrorBodyModel = DesErrorBodyModel(
-    "INVALID_REQUEST_BEFORE_TAX_YEAR", "The remote endpoint has indicated that submission is provided before the tax year has ended.")
+    "INVALID_REQUEST_BEFORE_TAX_YEAR",
+    "The remote endpoint has indicated that submission is provided before the tax year has ended."
+  )
   val ignoreForbidden: DesErrorBodyModel = DesErrorBodyModel(
-    "IGNORE_FORBIDDEN", "The remote endpoint has indicated that HMRC held State Benefit cannot be ignored.")
+    "IGNORE_FORBIDDEN",
+    "The remote endpoint has indicated that HMRC held State Benefit cannot be ignored."
+  )
   val notSupportedTaxYear: DesErrorBodyModel = DesErrorBodyModel(
-    "NOT_SUPPORTED_TAX_YEAR", "The remote endpoint has indicated that submission is provided before the tax year has ended.")
+    "NOT_SUPPORTED_TAX_YEAR",
+    "The remote endpoint has indicated that submission is provided before the tax year has ended."
+  )
   val forbiddenUnignore: DesErrorBodyModel = DesErrorBodyModel(
-    "CUSTOMER_ADDED", "The remote endpoint has indicated you Cannot un-ignore customer added State Benefit.")
-  val beforeTaxYear: DesErrorBodyModel = DesErrorBodyModel(
-    "BEFORE_TAX_YEAR_ENDED", "Submission is provided before the tax year has ended.")
+    "CUSTOMER_ADDED",
+    "The remote endpoint has indicated you Cannot un-ignore customer added State Benefit."
+  )
+  val beforeTaxYear: DesErrorBodyModel =
+    DesErrorBodyModel("BEFORE_TAX_YEAR_ENDED", "Submission is provided before the tax year has ended.")
   val invalidRequestTaxYear: DesErrorBodyModel = DesErrorBodyModel(
-    "INVALID_REQUEST_TAX_YEAR", "The remote endpoint has indicated that tax year provided is invalid.")
+    "INVALID_REQUEST_TAX_YEAR",
+    "The remote endpoint has indicated that tax year provided is invalid."
+  )
   val invalidStartDate: DesErrorBodyModel = DesErrorBodyModel(
-    "INVALID_START_DATE", "The remote endpoint has indicated that start date is after the end of the tax year.")
+    "INVALID_START_DATE",
+    "The remote endpoint has indicated that start date is after the end of the tax year."
+  )
   val invalidCessationDate: DesErrorBodyModel = DesErrorBodyModel(
-    "INVALID_CESSATION_DATE", "The remote endpoint has indicated that cessation date is before the start of the tax year.")
+    "INVALID_CESSATION_DATE",
+    "The remote endpoint has indicated that cessation date is before the start of the tax year."
+  )
 }
 
-/** Multiple DES Errors **/
+/** Multiple DES Errors * */
 case class DesErrorsBodyModel(failures: Seq[DesErrorBodyModel]) extends DesErrorBody
 
 object DesErrorsBodyModel {

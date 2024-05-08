@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-package api
+package test.api
 
 import com.github.tomakehurst.wiremock.http.HttpHeader
-import helpers.{AuthStub, WiremockSpec}
 import models.DesErrorBodyModel
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.time.{Seconds, Span}
@@ -25,23 +24,10 @@ import org.scalatestplus.play.PlaySpec
 import play.api.http.HeaderNames
 import play.api.http.Status._
 import play.api.libs.json.Json
+import test.helpers.{AuthStub, WiremockSpec}
 import utils.DESTaxYearHelper.desTaxYearConverter
 
-class GetStateBenefitsITest extends PlaySpec with WiremockSpec with ScalaFutures with AuthStub{
-
-  trait Setup {
-    val timeSpan: Long = 5
-    implicit val patienceConfig: PatienceConfig = PatienceConfig(Span(timeSpan, Seconds))
-    val nino: String = "AA123123A"
-    val taxYear: Int = 2021
-    val benefitId = "a1e8057e-fbbc-47a8-a8b4-78d9f015c934"
-    val mtditidHeader: (String, String) = ("mtditid", "555555555")
-    val authorization: (String, String) = HeaderNames.AUTHORIZATION -> "mock-bearer-token"
-    val requestHeaders: Seq[HttpHeader] = Seq(new HttpHeader("mtditid", "555555555"))
-    val desUrl: String = s"/income-tax/income/state-benefits/$nino/${desTaxYearConverter(taxYear)}\\?benefitId=$benefitId"
-    val serviceUrl: String = s"/income-tax-benefits/state-benefits/nino/$nino/taxYear/$taxYear?benefitId=$benefitId"
-    auditStubs()
-  }
+class GetStateBenefitsITest extends PlaySpec with WiremockSpec with ScalaFutures with AuthStub {
 
   val GetStateBenefitsDesResponseBody: String =
     """
@@ -183,6 +169,20 @@ class GetStateBenefitsITest extends PlaySpec with WiremockSpec with ScalaFutures
       |   }
       |}
       |""".stripMargin
+
+  trait Setup {
+    val timeSpan: Long = 5
+    implicit val patienceConfig: PatienceConfig = PatienceConfig(Span(timeSpan, Seconds))
+    val nino: String = "AA123123A"
+    val taxYear: Int = 2021
+    val benefitId = "a1e8057e-fbbc-47a8-a8b4-78d9f015c934"
+    val mtditidHeader: (String, String) = ("mtditid", "555555555")
+    val authorization: (String, String) = HeaderNames.AUTHORIZATION -> "mock-bearer-token"
+    val requestHeaders: Seq[HttpHeader] = Seq(new HttpHeader("mtditid", "555555555"))
+    val desUrl: String = s"/income-tax/income/state-benefits/$nino/${desTaxYearConverter(taxYear)}\\?benefitId=$benefitId"
+    val serviceUrl: String = s"/income-tax-benefits/state-benefits/nino/$nino/taxYear/$taxYear?benefitId=$benefitId"
+    auditStubs()
+  }
 
 
   "get state benefits" when {

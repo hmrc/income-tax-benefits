@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,12 +29,15 @@ object GetEmploymentBenefitsHttpParser extends DESParser {
 
   implicit object GetEmploymentExpensesHttpReads extends HttpReads[GetEmploymentBenefitsResponse] {
 
-    override def read(method: String, url: String, response: HttpResponse): GetEmploymentBenefitsResponse = {
+    override def read(method: String, url: String, response: HttpResponse): GetEmploymentBenefitsResponse =
       response.status match {
-        case OK => response.json.validate[EmploymentBenefits].fold[GetEmploymentBenefitsResponse](
-          _ => badSuccessJsonFromDES,
-          parsedModel => Right(parsedModel)
-        )
+        case OK =>
+          response.json
+            .validate[EmploymentBenefits]
+            .fold[GetEmploymentBenefitsResponse](
+              _ => badSuccessJsonFromDES,
+              parsedModel => Right(parsedModel)
+            )
         case INTERNAL_SERVER_ERROR =>
           pagerDutyLog(INTERNAL_SERVER_ERROR_FROM_DES, logMessage(response))
           handleDESError(response)
@@ -48,7 +51,6 @@ object GetEmploymentBenefitsHttpParser extends DESParser {
           pagerDutyLog(UNEXPECTED_RESPONSE_FROM_DES, logMessage(response))
           handleDESError(response, Some(INTERNAL_SERVER_ERROR))
       }
-    }
   }
 
 }
