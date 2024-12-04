@@ -29,4 +29,6 @@ class MockAppConfig extends AppConfig {
   override val environment: String = "dev"
 
   override val authorisationToken: String = "someToken"
+
+  override def emaSupportingAgentsEnabled: Boolean = false
 }
