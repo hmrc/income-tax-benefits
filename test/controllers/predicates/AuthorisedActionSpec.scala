@@ -17,6 +17,7 @@
 package controllers.predicates
 
 import common.{EnrolmentIdentifiers, EnrolmentKeys}
+import config.AppConfig
 import models.User
 import play.api.http.Status._
 import play.api.mvc.Results._
@@ -26,7 +27,7 @@ import uk.gov.hmrc.auth.core.authorise.Predicate
 import uk.gov.hmrc.auth.core.retrieve.Retrieval
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
 import uk.gov.hmrc.auth.core.syntax.retrieved.authSyntaxForRetrieved
-import uk.gov.hmrc.auth.core.{Enrolment, EnrolmentIdentifier, Enrolments, _}
+import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.TestUtils
 
@@ -34,7 +35,8 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class AuthorisedActionSpec extends TestUtils {
 
-  val auth: AuthorisedAction = authorisedAction
+  val mockedAppConfig: AppConfig = mock[AppConfig]
+  val auth = new AuthorisedAction()(mockAuthConnector, defaultActionBuilder, mockControllerComponents, mockedAppConfig)
 
   ".enrolmentGetIdentifierValue" should {
 
@@ -296,7 +298,7 @@ class AuthorisedActionSpec extends TestUtils {
 
       "perform the block action" when {
 
-        "the agent is authorised for the given user" which {
+        "the agent is authorised for the given user (primary agent)" which {
 
           val enrolments = Enrolments(Set(
             Enrolment(EnrolmentKeys.Individual, Seq(EnrolmentIdentifier(EnrolmentIdentifiers.individualId, "1234567890")), "Activated"),
@@ -319,15 +321,57 @@ class AuthorisedActionSpec extends TestUtils {
             bodyOf(result) mustBe "1234567890 0987654321"
           }
         }
+
+        "the agent is authorised for the given user (secondary agent)" which {
+
+          val enrolments = Enrolments(Set(
+            Enrolment(EnrolmentKeys.SupportingAgent, Seq(EnrolmentIdentifier(EnrolmentIdentifiers.individualId, "1234567890")), "Activated"),
+            Enrolment(EnrolmentKeys.Agent, Seq(EnrolmentIdentifier(EnrolmentIdentifiers.agentReference, "0987654321")), "Activated")
+          ))
+
+          lazy val result = {
+
+            (() => mockedAppConfig.emaSupportingAgentsEnabled).expects().returning(true)
+            mockAuthReturnException(InsufficientEnrolments())
+            (mockAuthConnector.authorise(_: Predicate, _: Retrieval[_])(_: HeaderCarrier, _: ExecutionContext))
+              .expects(*, Retrievals.allEnrolments, *, *)
+              .returning(Future.successful(enrolments))
+              .once()
+
+            auth.agentAuthentication(block, "1234567890")(fakeRequest, emptyHeaderCarrier)
+          }
+
+          "has a status of OK" in {
+            status(result) mustBe OK
+          }
+
+          "has the correct body" in {
+            bodyOf(result) mustBe "1234567890 0987654321"
+          }
+        }
       }
       "return an Unauthorised" when {
 
-        "the authorisation service returns an AuthorisationException exception" in {
-          object AuthException extends AuthorisationException("Some reason")
+        "the authorisation service returns an AuthorisationException exception (EMA Secondary Agent Disabled)" in {
 
           lazy val result = {
-            mockAuthReturnException(AuthException)
+            (() => mockedAppConfig.emaSupportingAgentsEnabled).expects().returning(false)
+            mockAuthReturnException(InsufficientEnrolments())
             auth.agentAuthentication(block,"1234567890")(fakeRequest, emptyHeaderCarrier)
+          }
+          status(result) mustBe UNAUTHORIZED
+        }
+
+        "the authorisation service returns an AuthorisationException exception on the second call (EMA Secondary Enabled)" in {
+
+          lazy val result = {
+            //Enabled EMA Supporting/Secondary Agent feature
+            (() => mockedAppConfig.emaSupportingAgentsEnabled).expects().returning(true)
+
+            //Simulate first & second call failing for Primary Agent check
+            mockAuthReturnException(InsufficientEnrolments()).twice()
+
+            auth.agentAuthentication(block, "1234567890")(fakeRequest, emptyHeaderCarrier)
           }
           status(result) mustBe UNAUTHORIZED
         }

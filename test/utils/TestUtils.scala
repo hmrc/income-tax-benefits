@@ -60,7 +60,7 @@ trait TestUtils extends AnyWordSpecLike with Matchers with MockFactory with Befo
   implicit val mockAuthConnector: AuthConnector = mock[AuthConnector]
   implicit val mockAuthService: AuthService = new AuthService(mockAuthConnector)
   val defaultActionBuilder: DefaultActionBuilder = DefaultActionBuilder(mockControllerComponents.parsers.default)
-  val authorisedAction = new AuthorisedAction()(mockAuthConnector, defaultActionBuilder, mockControllerComponents)
+  val authorisedAction = new AuthorisedAction()(mockAuthConnector, defaultActionBuilder, mockControllerComponents, mockAppConfig)
 
 
   def status(awaitable: Future[Result]): Int = await(awaitable).header.status
@@ -87,6 +87,7 @@ trait TestUtils extends AnyWordSpecLike with Matchers with MockFactory with Befo
   }
 
   val agentEnrolments: Enrolments = Enrolments(Set(
+
     Enrolment(EnrolmentKeys.Individual, Seq(EnrolmentIdentifier(EnrolmentIdentifiers.individualId, "1234567890")), "Activated"),
     Enrolment(EnrolmentKeys.Agent, Seq(EnrolmentIdentifier(EnrolmentIdentifiers.agentReference, "0987654321")), "Activated")
   ))
