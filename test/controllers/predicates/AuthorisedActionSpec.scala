@@ -408,22 +408,44 @@ class AuthorisedActionSpec extends TestUtils {
         }
       }
 
-      "results in a non-Auth related Exception to be returned for Primary and Secondary Agent check" in {
+      "return INTERNAL SERVER ERROR" when {
 
-        object NonAuthException extends Exception("Non-authentication related exception")
+        "results in a non-Auth related Exception to be returned for Primary Agent check" in {
 
-        lazy val result = {
-          (mockAuthConnector.authorise(_: Predicate, _: Retrieval[_])(_: HeaderCarrier, _: ExecutionContext))
-            .expects(*, Retrievals.allEnrolments, *, *)
-            .returning(Future.failed(NonAuthException))
+          object NonAuthException extends Exception("Non-authentication related exception")
 
-          auth.agentAuthentication(block, "1234567890")(fakeRequest, emptyHeaderCarrier)
+          lazy val result = {
+            (() => mockedAppConfig.emaSupportingAgentsEnabled).expects().returning(true)
+            mockAuthReturnException(InsufficientEnrolments())
+            (mockAuthConnector.authorise(_: Predicate, _: Retrieval[_])(_: HeaderCarrier, _: ExecutionContext))
+              .expects(*, Retrievals.allEnrolments, *, *)
+              .returning(Future.failed(NonAuthException))
+
+            auth.agentAuthentication(block, "1234567890")(fakeRequest, emptyHeaderCarrier)
+
+          }
+
+          status(result) mustBe INTERNAL_SERVER_ERROR
+
         }
 
-        status(result) mustBe INTERNAL_SERVER_ERROR
+        "results in a non-Auth related Exception to be returned for Secondary Agent check" in {
+
+          object NonAuthException extends Exception("Non-authentication related exception")
+
+          lazy val result = {
+            (mockAuthConnector.authorise(_: Predicate, _: Retrieval[_])(_: HeaderCarrier, _: ExecutionContext))
+              .expects(*, Retrievals.allEnrolments, *, *)
+              .returning(Future.failed(NonAuthException))
+
+            auth.agentAuthentication(block, "1234567890")(fakeRequest, emptyHeaderCarrier)
+          }
+
+          status(result) mustBe INTERNAL_SERVER_ERROR
+
+        }
 
       }
-
     }
     ".async" should {
 
