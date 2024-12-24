@@ -27,7 +27,7 @@ import uk.gov.hmrc.auth.core.authorise.Predicate
 import uk.gov.hmrc.auth.core.retrieve.Retrieval
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
 import uk.gov.hmrc.auth.core.syntax.retrieved.authSyntaxForRetrieved
-import uk.gov.hmrc.auth.core._
+import uk.gov.hmrc.auth.core.{Enrolment, _}
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.TestUtils
 
@@ -407,6 +407,45 @@ class AuthorisedActionSpec extends TestUtils {
           status(result) mustBe UNAUTHORIZED
         }
       }
+
+      "return INTERNAL SERVER ERROR" when {
+
+        "results in a non-Auth related Exception to be returned for Primary Agent check" in {
+
+          object NonAuthException extends Exception("Non-authentication related exception")
+
+          lazy val result = {
+            (() => mockedAppConfig.emaSupportingAgentsEnabled).expects().returning(true)
+            mockAuthReturnException(InsufficientEnrolments())
+            (mockAuthConnector.authorise(_: Predicate, _: Retrieval[_])(_: HeaderCarrier, _: ExecutionContext))
+              .expects(*, Retrievals.allEnrolments, *, *)
+              .returning(Future.failed(NonAuthException))
+
+            auth.agentAuthentication(block, "1234567890")(fakeRequest, emptyHeaderCarrier)
+
+          }
+
+          status(result) mustBe INTERNAL_SERVER_ERROR
+
+        }
+
+        "results in a non-Auth related Exception to be returned for Secondary Agent check" in {
+
+          object NonAuthException extends Exception("Non-authentication related exception")
+
+          lazy val result = {
+            (mockAuthConnector.authorise(_: Predicate, _: Retrieval[_])(_: HeaderCarrier, _: ExecutionContext))
+              .expects(*, Retrievals.allEnrolments, *, *)
+              .returning(Future.failed(NonAuthException))
+
+            auth.agentAuthentication(block, "1234567890")(fakeRequest, emptyHeaderCarrier)
+          }
+
+          status(result) mustBe INTERNAL_SERVER_ERROR
+
+        }
+
+      }
     }
     ".async" should {
 
@@ -474,6 +513,19 @@ class AuthorisedActionSpec extends TestUtils {
           }
 
           status(result(FakeRequest())) mustBe UNAUTHORIZED
+        }
+
+      }
+
+      "return ISE" when {
+
+        "the authorisation service returns an Exception that is not an Auth related Exception" in {
+
+          mockAuthReturnException(new Exception("Some reason"))
+
+          val result = auth.async(block)
+
+          status(result(fakeRequest)) mustBe INTERNAL_SERVER_ERROR
         }
       }
 
