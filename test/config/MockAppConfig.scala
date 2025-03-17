@@ -30,5 +30,4 @@ class MockAppConfig extends AppConfig {
 
   override val authorisationToken: String = "someToken"
 
-  override def emaSupportingAgentsEnabled: Boolean = false
 }
