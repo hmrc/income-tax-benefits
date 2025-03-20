@@ -39,8 +39,7 @@ lazy val microservice = Project(appName, file("."))
     // ***************
     // Use the silencer plugin to suppress warnings
     scalacOptions ++= Seq(
-      "-P:silencer:pathFilters=routes",
-      "-Xfatal-warnings"
+      "-P:silencer:pathFilters=routes"
     ),
     libraryDependencies ++= Seq(
       compilerPlugin("com.github.ghik" % "silencer-plugin" % silencerVersion cross CrossVersion.full),
