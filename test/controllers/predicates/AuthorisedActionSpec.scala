@@ -322,6 +322,21 @@ class AuthorisedActionSpec extends TestUtils {
           }
         }
       }
+      "return an Unauthorised" when {
+
+        "the authorisation service returns an AuthorisationException exception " in {
+
+          lazy val result = {
+
+            //Simulate first & second call failing for Primary Agent check
+            mockAuthReturnException(InsufficientEnrolments())
+
+            auth.agentAuthentication(block, "1234567890")(fakeRequest, emptyHeaderCarrier)
+          }
+          status(result) mustBe UNAUTHORIZED
+        }
+
+      }
 
       "return an Unauthorised" when {
 
