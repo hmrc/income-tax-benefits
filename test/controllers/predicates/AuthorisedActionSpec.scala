@@ -36,7 +36,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class AuthorisedActionSpec extends TestUtils {
 
   val mockedAppConfig: AppConfig = mock[AppConfig]
-  val auth = new AuthorisedAction()(mockAuthConnector, defaultActionBuilder, mockControllerComponents, mockedAppConfig)
+  val auth = new AuthorisedAction()(mockAuthConnector, defaultActionBuilder, mockControllerComponents)
 
   ".enrolmentGetIdentifierValue" should {
 
@@ -321,55 +321,15 @@ class AuthorisedActionSpec extends TestUtils {
             bodyOf(result) mustBe "1234567890 0987654321"
           }
         }
-
-        "the agent is authorised for the given user (secondary agent)" which {
-
-          val enrolments = Enrolments(Set(
-            Enrolment(EnrolmentKeys.SupportingAgent, Seq(EnrolmentIdentifier(EnrolmentIdentifiers.individualId, "1234567890")), "Activated"),
-            Enrolment(EnrolmentKeys.Agent, Seq(EnrolmentIdentifier(EnrolmentIdentifiers.agentReference, "0987654321")), "Activated")
-          ))
-
-          lazy val result = {
-
-            (() => mockedAppConfig.emaSupportingAgentsEnabled).expects().returning(true)
-            mockAuthReturnException(InsufficientEnrolments())
-            (mockAuthConnector.authorise(_: Predicate, _: Retrieval[_])(_: HeaderCarrier, _: ExecutionContext))
-              .expects(*, Retrievals.allEnrolments, *, *)
-              .returning(Future.successful(enrolments))
-              .once()
-
-            auth.agentAuthentication(block, "1234567890")(fakeRequest, emptyHeaderCarrier)
-          }
-
-          "has a status of OK" in {
-            status(result) mustBe OK
-          }
-
-          "has the correct body" in {
-            bodyOf(result) mustBe "1234567890 0987654321"
-          }
-        }
       }
       "return an Unauthorised" when {
 
-        "the authorisation service returns an AuthorisationException exception (EMA Secondary Agent Disabled)" in {
+        "the authorisation service returns an AuthorisationException exception " in {
 
           lazy val result = {
-            (() => mockedAppConfig.emaSupportingAgentsEnabled).expects().returning(false)
-            mockAuthReturnException(InsufficientEnrolments())
-            auth.agentAuthentication(block,"1234567890")(fakeRequest, emptyHeaderCarrier)
-          }
-          status(result) mustBe UNAUTHORIZED
-        }
-
-        "the authorisation service returns an AuthorisationException exception on the second call (EMA Secondary Enabled)" in {
-
-          lazy val result = {
-            //Enabled EMA Supporting/Secondary Agent feature
-            (() => mockedAppConfig.emaSupportingAgentsEnabled).expects().returning(true)
 
             //Simulate first & second call failing for Primary Agent check
-            mockAuthReturnException(InsufficientEnrolments()).twice()
+            mockAuthReturnException(InsufficientEnrolments())
 
             auth.agentAuthentication(block, "1234567890")(fakeRequest, emptyHeaderCarrier)
           }
@@ -410,26 +370,7 @@ class AuthorisedActionSpec extends TestUtils {
 
       "return INTERNAL SERVER ERROR" when {
 
-        "results in a non-Auth related Exception to be returned for Primary Agent check" in {
-
-          object NonAuthException extends Exception("Non-authentication related exception")
-
-          lazy val result = {
-            (() => mockedAppConfig.emaSupportingAgentsEnabled).expects().returning(true)
-            mockAuthReturnException(InsufficientEnrolments())
-            (mockAuthConnector.authorise(_: Predicate, _: Retrieval[_])(_: HeaderCarrier, _: ExecutionContext))
-              .expects(*, Retrievals.allEnrolments, *, *)
-              .returning(Future.failed(NonAuthException))
-
-            auth.agentAuthentication(block, "1234567890")(fakeRequest, emptyHeaderCarrier)
-
-          }
-
-          status(result) mustBe INTERNAL_SERVER_ERROR
-
-        }
-
-        "results in a non-Auth related Exception to be returned for Secondary Agent check" in {
+        "results in a non-Auth related Exception to be returned" in {
 
           object NonAuthException extends Exception("Non-authentication related exception")
 

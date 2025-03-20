@@ -23,6 +23,7 @@ import config.{AppConfig, MockAppConfig}
 import controllers.predicates.AuthorisedAction
 import models.{Benefits, Employment, EmploymentBenefits}
 import org.apache.pekko.actor.ActorSystem
+import org.scalamock.handlers.CallHandler4
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.matchers.must.Matchers
@@ -60,7 +61,7 @@ trait TestUtils extends AnyWordSpecLike with Matchers with MockFactory with Befo
   implicit val mockAuthConnector: AuthConnector = mock[AuthConnector]
   implicit val mockAuthService: AuthService = new AuthService(mockAuthConnector)
   val defaultActionBuilder: DefaultActionBuilder = DefaultActionBuilder(mockControllerComponents.parsers.default)
-  val authorisedAction = new AuthorisedAction()(mockAuthConnector, defaultActionBuilder, mockControllerComponents, mockAppConfig)
+  val authorisedAction = new AuthorisedAction()(mockAuthConnector, defaultActionBuilder, mockControllerComponents)
 
 
   def status(awaitable: Future[Result]): Int = await(awaitable).header.status
@@ -75,7 +76,7 @@ trait TestUtils extends AnyWordSpecLike with Matchers with MockFactory with Befo
     Enrolment(EnrolmentKeys.nino, Seq(EnrolmentIdentifier(EnrolmentIdentifiers.nino, "1234567890")), "Activated")))
 
   //noinspection ScalaStyle
-  def mockAuth(enrolments: Enrolments = individualEnrolments) = {
+  def mockAuth(enrolments: Enrolments = individualEnrolments): CallHandler4[Predicate, Retrieval[_], HeaderCarrier, ExecutionContext, Future[Any]] = {
 
     (mockAuthConnector.authorise(_: Predicate, _: Retrieval[_])(_: HeaderCarrier, _: ExecutionContext))
       .expects(*, Retrievals.affinityGroup, *, *)
@@ -93,7 +94,7 @@ trait TestUtils extends AnyWordSpecLike with Matchers with MockFactory with Befo
   ))
 
   //noinspection ScalaStyle
-  def mockAuthAsAgent(enrolments: Enrolments = agentEnrolments) = {
+  def mockAuthAsAgent(enrolments: Enrolments = agentEnrolments): CallHandler4[Predicate, Retrieval[_], HeaderCarrier, ExecutionContext, Future[Any]] = {
 
     (mockAuthConnector.authorise(_: Predicate, _: Retrieval[_])(_: HeaderCarrier, _: ExecutionContext))
       .expects(*, Retrievals.affinityGroup, *, *)
@@ -105,7 +106,7 @@ trait TestUtils extends AnyWordSpecLike with Matchers with MockFactory with Befo
   }
 
   //noinspection ScalaStyle
-  def mockAuthReturnException(exception: Exception) = {
+  def mockAuthReturnException(exception: Exception): CallHandler4[Predicate, Retrieval[_], HeaderCarrier, ExecutionContext, Future[Any]] = {
     (mockAuthConnector.authorise(_: Predicate, _: Retrieval[_])(_: HeaderCarrier, _: ExecutionContext))
       .expects(*, *, *, *)
       .returning(Future.failed(exception))

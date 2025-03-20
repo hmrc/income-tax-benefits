@@ -34,7 +34,6 @@ trait AppConfig {
   val environment: String
   val authorisationToken: String
 
-  def emaSupportingAgentsEnabled: Boolean
 
 }
 
@@ -49,5 +48,4 @@ class BackendAppConfig @Inject() (config: Configuration, servicesConfig: Service
   val environment: String = config.get[String]("microservice.services.des.environment")
   val authorisationToken: String = config.get[String]("microservice.services.des.authorisation-token")
 
-  def emaSupportingAgentsEnabled: Boolean = config.get[Boolean]("feature-switch.ema-supporting-agents-enabled")
 }
