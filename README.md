@@ -7,16 +7,17 @@ sections of their income tax return.
 
 You will need to have the following:
 
-- Installed/configured [service manager](https://github.com/hmrc/service-manager).
+- Installed [MongoDB](https://www.mongodb.com/docs/manual/installation/)
+- Installed/configured [service manager 2](https://github.com/hmrc/sm2).
 
 The service manager profile for this service is:
 
-    sm --start INCOME_TAX_BENEFITS
+    sm2 --start INCOME_TAX_BENEFITS
 
 Run the following command to start the remaining services locally:
 
     sudo mongod (If not already running)
-    sm --start INCOME_TAX_SUBMISSION_ALL -r
+    sm2 --start INCOME_TAX_SUBMISSION_ALL
 
 This service runs on port: `localhost:9319`
 
