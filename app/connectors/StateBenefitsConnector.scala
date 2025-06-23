@@ -65,9 +65,6 @@ class StateBenefitsConnector @Inject() (val http: HttpClientV2, val appConfig: A
         .delete(url"$incomeSourceUri")
         .execute[DeleteStateBenefitsResponse](DeleteStateBenefitsHttpReads, ec)
 
-
-    //    http.DELETE[DeleteStateBenefitsResponse](incomeSourceUri)(DeleteStateBenefitsHttpReads, hc, ec)
-
     desCall(desHeaderCarrier(incomeSourceUri))
 
   }
@@ -82,8 +79,6 @@ class StateBenefitsConnector @Inject() (val http: HttpClientV2, val appConfig: A
       http
         .delete(url"$incomeSourceUri")
         .execute[DeleteStateBenefitOverrideResponse](DeleteOverrideStateBenefitHttpReads, ec)
-
-//    http.DELETE[DeleteStateBenefitOverrideResponse](incomeSourceUri)(DeleteOverrideStateBenefitHttpReads, hc, ec)
 
     desCall(desHeaderCarrier(incomeSourceUri))
   }
@@ -102,13 +97,6 @@ class StateBenefitsConnector @Inject() (val http: HttpClientV2, val appConfig: A
         .put(url"$incomeSourceUri")
         .withBody(Json.toJson(model))
         .execute[CreateUpdateOverrideStateBenefitResponse](CreateUpdateOverrideStateBenefitResponseHttpReads, ec)
-
-    //      http.PUT[CreateUpdateOverrideStateBenefit, CreateUpdateOverrideStateBenefitResponse](incomeSourceUri, model)(
-//        implicitly[Writes[CreateUpdateOverrideStateBenefit]],
-//        CreateUpdateOverrideStateBenefitResponseHttpReads,
-//        hc,
-//        ec
-//      )
 
     desCall(desHeaderCarrier(incomeSourceUri))
   }
@@ -131,13 +119,6 @@ class StateBenefitsConnector @Inject() (val http: HttpClientV2, val appConfig: A
         .withBody(Json.toJson(model))
         .execute[IgnoreStateBenefitResponse](IgnoreStateBenefitResponseHttpReads, ec)
 
-//    http.PUT[IgnoreStateBenefit, IgnoreStateBenefitResponse](incomeSourceUri, model)(
-//        implicitly[Writes[IgnoreStateBenefit]],
-//        IgnoreStateBenefitResponseHttpReads,
-//        hc,
-//        ec
-//      )
-
     desCall(desHeaderCarrier(incomeSourceUri))
   }
 
@@ -152,8 +133,6 @@ class StateBenefitsConnector @Inject() (val http: HttpClientV2, val appConfig: A
       http
         .delete(url"$incomeSourceUri")
         .execute[UnignoreStateBenefitHttpParserResponse](UnignoreStateBenefitHttpReads, ec)
-
-    //      http.DELETE[UnignoreStateBenefitHttpParserResponse](incomeSourceUri)(UnignoreStateBenefitHttpReads, hc, ec)
 
     desCall(desHeaderCarrier(incomeSourceUri))
   }
@@ -170,8 +149,6 @@ class StateBenefitsConnector @Inject() (val http: HttpClientV2, val appConfig: A
         .withBody(Json.toJson(model))
         .execute[AddStateBenefitResponse]
 
-    //      http.POST[AddStateBenefitRequestModel, AddStateBenefitResponse](incomeSourceUri, model)
-
     desCall(desHeaderCarrier(incomeSourceUri))
   }
 
@@ -187,13 +164,6 @@ class StateBenefitsConnector @Inject() (val http: HttpClientV2, val appConfig: A
         .put(url"$uri")
         .withBody(Json.toJson(benefitUpdateData))
         .execute[UpdateStateBenefitResponse](UpdateStateBenefitHttpReads, ec)
-
-    //      http.PUT[UpdateStateBenefitModel, UpdateStateBenefitResponse](uri, benefitUpdateData)(
-//        UpdateStateBenefitModel.format,
-//        UpdateStateBenefitHttpReads,
-//        hc,
-//        ec
-//      )
 
     desCall(desHeaderCarrier(uri))
   }
