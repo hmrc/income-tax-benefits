@@ -49,7 +49,6 @@ lazy val microservice = Project(appName, file("."))
     // ***************
   )
   .settings(PlayKeys.playDefaultPort := 9319)
-  .settings(resolvers += Resolver.jcenterRepo)
   .settings(coverageSettings *)
   .settings(
     // To resolve a bug with version 2.x.x of the scoverage plugin - https://github.com/sbt/sbt/issues/6997
