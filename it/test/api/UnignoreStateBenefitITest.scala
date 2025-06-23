@@ -51,7 +51,7 @@ class UnignoreStateBenefitITest extends PlaySpec with WiremockSpec with ScalaFut
 
       whenReady(buildClient(serviceUrl)
         .withHttpHeaders(mtditidHeader, authorization)
-        .delete) {
+        .delete()) {
         result =>
           result.status mustBe NO_CONTENT
       }

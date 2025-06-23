@@ -18,19 +18,19 @@ import sbt.*
 
 object AppDependencies {
 
-  private val bootstrapVersion = "8.6.0"
+  private val bootstrapVersion = "9.13.0"
 
   val compile: Seq[ModuleID] = Seq(
     "uk.gov.hmrc"                  %% "bootstrap-backend-play-30" % bootstrapVersion,
-    "com.fasterxml.jackson.module" %% "jackson-module-scala"      % "2.14.2"
+    "com.fasterxml.jackson.module" %% "jackson-module-scala"      % "2.19.1"
   )
 
   val test: Seq[ModuleID] = Seq(
     "uk.gov.hmrc"            %% "bootstrap-test-play-30"   % bootstrapVersion,
-    "org.scalatest"          %% "scalatest"                % "3.2.15",
-    "com.vladsch.flexmark"    % "flexmark-all"             % "0.64.6",
-    "org.scalatestplus.play" %% "scalatestplus-play"       % "5.1.0",
-    "com.github.tomakehurst"  % "wiremock-jre8-standalone" % "2.35.1",
-    "org.scalamock"          %% "scalamock"                % "5.2.0"
+    "org.scalatest"          %% "scalatest"                % "3.2.19",
+    "com.vladsch.flexmark"    % "flexmark-all"             % "0.64.8",
+    "org.scalatestplus.play" %% "scalatestplus-play"       % "7.0.1",
+    "com.github.tomakehurst"  % "wiremock-jre8-standalone" % "3.0.1",
+    "org.scalamock"          %% "scalamock"                % "7.3.3"
   ).map(_ % Test)
 }

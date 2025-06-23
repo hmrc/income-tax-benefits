@@ -26,14 +26,15 @@ import connectors.httpParsers.IgnoreStateBenefitHttpParser.{IgnoreStateBenefitRe
 import connectors.httpParsers.UnignoreStateBenefitHttpParser.{UnignoreStateBenefitHttpParserResponse, UnignoreStateBenefitHttpReads}
 import connectors.httpParsers.UpdateStateBenefitHttpParser.{UpdateStateBenefitHttpReads, UpdateStateBenefitResponse}
 import models.{AddStateBenefitRequestModel, CreateUpdateOverrideStateBenefit, IgnoreStateBenefit, UpdateStateBenefitModel}
-import play.api.libs.json.Writes
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
+import play.api.libs.json.Json
+import uk.gov.hmrc.http.client.HttpClientV2
+import uk.gov.hmrc.http.{HeaderCarrier, StringContextOps}
 import utils.DESTaxYearHelper.desTaxYearConverter
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class StateBenefitsConnector @Inject() (val http: HttpClient, val appConfig: AppConfig)(implicit ec: ExecutionContext)
+class StateBenefitsConnector @Inject() (val http: HttpClientV2, val appConfig: AppConfig)(implicit ec: ExecutionContext)
     extends DesConnector {
 
   def getStateBenefits(nino: String, taxYear: Int, benefitId: Option[String])(implicit
@@ -45,7 +46,9 @@ class StateBenefitsConnector @Inject() (val http: HttpClient, val appConfig: App
       appConfig.desBaseUrl + s"/income-tax/income/state-benefits/$nino/${desTaxYearConverter(taxYear)}$queryString"
 
     def desCall(implicit hc: HeaderCarrier): Future[GetStateBenefitsResponse] =
-      http.GET[GetStateBenefitsResponse](incomeSourcesUri)
+      http
+        .get(url"$incomeSourcesUri")
+        .execute[GetStateBenefitsResponse]
 
     desCall(desHeaderCarrier(incomeSourcesUri))
   }
@@ -58,7 +61,12 @@ class StateBenefitsConnector @Inject() (val http: HttpClient, val appConfig: App
       appConfig.desBaseUrl + s"/income-tax/income/state-benefits/$nino/${desTaxYearConverter(taxYear)}/custom/$benefitId"
 
     def desCall(implicit hc: HeaderCarrier): Future[DeleteStateBenefitsResponse] =
-      http.DELETE[DeleteStateBenefitsResponse](incomeSourceUri)(DeleteStateBenefitsHttpReads, hc, ec)
+      http
+        .delete(url"$incomeSourceUri")
+        .execute[DeleteStateBenefitsResponse](DeleteStateBenefitsHttpReads, ec)
+
+
+    //    http.DELETE[DeleteStateBenefitsResponse](incomeSourceUri)(DeleteStateBenefitsHttpReads, hc, ec)
 
     desCall(desHeaderCarrier(incomeSourceUri))
 
@@ -71,7 +79,11 @@ class StateBenefitsConnector @Inject() (val http: HttpClient, val appConfig: App
     val incomeSourceUri: String = overrideStateBenefitUri(nino, taxYear, benefitId)
 
     def desCall(implicit hc: HeaderCarrier): Future[DeleteStateBenefitOverrideResponse] =
-      http.DELETE[DeleteStateBenefitOverrideResponse](incomeSourceUri)(DeleteOverrideStateBenefitHttpReads, hc, ec)
+      http
+        .delete(url"$incomeSourceUri")
+        .execute[DeleteStateBenefitOverrideResponse](DeleteOverrideStateBenefitHttpReads, ec)
+
+//    http.DELETE[DeleteStateBenefitOverrideResponse](incomeSourceUri)(DeleteOverrideStateBenefitHttpReads, hc, ec)
 
     desCall(desHeaderCarrier(incomeSourceUri))
   }
@@ -86,12 +98,17 @@ class StateBenefitsConnector @Inject() (val http: HttpClient, val appConfig: App
     val incomeSourceUri: String = overrideStateBenefitUri(nino, taxYear, benefitId)
 
     def desCall(implicit hc: HeaderCarrier): Future[CreateUpdateOverrideStateBenefitResponse] =
-      http.PUT[CreateUpdateOverrideStateBenefit, CreateUpdateOverrideStateBenefitResponse](incomeSourceUri, model)(
-        implicitly[Writes[CreateUpdateOverrideStateBenefit]],
-        CreateUpdateOverrideStateBenefitResponseHttpReads,
-        hc,
-        ec
-      )
+      http
+        .put(url"$incomeSourceUri")
+        .withBody(Json.toJson(model))
+        .execute[CreateUpdateOverrideStateBenefitResponse](CreateUpdateOverrideStateBenefitResponseHttpReads, ec)
+
+    //      http.PUT[CreateUpdateOverrideStateBenefit, CreateUpdateOverrideStateBenefitResponse](incomeSourceUri, model)(
+//        implicitly[Writes[CreateUpdateOverrideStateBenefit]],
+//        CreateUpdateOverrideStateBenefitResponseHttpReads,
+//        hc,
+//        ec
+//      )
 
     desCall(desHeaderCarrier(incomeSourceUri))
   }
@@ -109,12 +126,17 @@ class StateBenefitsConnector @Inject() (val http: HttpClient, val appConfig: App
     val model = IgnoreStateBenefit(ignoreBenefit)
 
     def desCall(implicit hc: HeaderCarrier): Future[IgnoreStateBenefitResponse] =
-      http.PUT[IgnoreStateBenefit, IgnoreStateBenefitResponse](incomeSourceUri, model)(
-        implicitly[Writes[IgnoreStateBenefit]],
-        IgnoreStateBenefitResponseHttpReads,
-        hc,
-        ec
-      )
+      http
+        .put(url"$incomeSourceUri")
+        .withBody(Json.toJson(model))
+        .execute[IgnoreStateBenefitResponse](IgnoreStateBenefitResponseHttpReads, ec)
+
+//    http.PUT[IgnoreStateBenefit, IgnoreStateBenefitResponse](incomeSourceUri, model)(
+//        implicitly[Writes[IgnoreStateBenefit]],
+//        IgnoreStateBenefitResponseHttpReads,
+//        hc,
+//        ec
+//      )
 
     desCall(desHeaderCarrier(incomeSourceUri))
   }
@@ -127,7 +149,11 @@ class StateBenefitsConnector @Inject() (val http: HttpClient, val appConfig: App
       appConfig.desBaseUrl + s"/income-tax/state-benefits/$nino/${desTaxYearConverter(taxYear)}/ignore/$benefitId"
 
     def desCall(implicit hc: HeaderCarrier): Future[UnignoreStateBenefitHttpParserResponse] =
-      http.DELETE[UnignoreStateBenefitHttpParserResponse](incomeSourceUri)(UnignoreStateBenefitHttpReads, hc, ec)
+      http
+        .delete(url"$incomeSourceUri")
+        .execute[UnignoreStateBenefitHttpParserResponse](UnignoreStateBenefitHttpReads, ec)
+
+    //      http.DELETE[UnignoreStateBenefitHttpParserResponse](incomeSourceUri)(UnignoreStateBenefitHttpReads, hc, ec)
 
     desCall(desHeaderCarrier(incomeSourceUri))
   }
@@ -139,7 +165,12 @@ class StateBenefitsConnector @Inject() (val http: HttpClient, val appConfig: App
       appConfig.desBaseUrl + s"/income-tax/income/state-benefits/$nino/${desTaxYearConverter(taxYear)}/custom"
 
     def desCall(implicit hc: HeaderCarrier): Future[AddStateBenefitResponse] =
-      http.POST[AddStateBenefitRequestModel, AddStateBenefitResponse](incomeSourceUri, model)
+      http
+        .post(url"$incomeSourceUri")
+        .withBody(Json.toJson(model))
+        .execute[AddStateBenefitResponse]
+
+    //      http.POST[AddStateBenefitRequestModel, AddStateBenefitResponse](incomeSourceUri, model)
 
     desCall(desHeaderCarrier(incomeSourceUri))
   }
@@ -152,12 +183,17 @@ class StateBenefitsConnector @Inject() (val http: HttpClient, val appConfig: App
       appConfig.desBaseUrl + s"/income-tax/income/state-benefits/$nino/${desTaxYearConverter(taxYear)}/custom/$benefitId"
 
     def desCall(implicit hc: HeaderCarrier): Future[UpdateStateBenefitResponse] =
-      http.PUT[UpdateStateBenefitModel, UpdateStateBenefitResponse](uri, benefitUpdateData)(
-        UpdateStateBenefitModel.format,
-        UpdateStateBenefitHttpReads,
-        hc,
-        ec
-      )
+      http
+        .put(url"$uri")
+        .withBody(Json.toJson(benefitUpdateData))
+        .execute[UpdateStateBenefitResponse](UpdateStateBenefitHttpReads, ec)
+
+    //      http.PUT[UpdateStateBenefitModel, UpdateStateBenefitResponse](uri, benefitUpdateData)(
+//        UpdateStateBenefitModel.format,
+//        UpdateStateBenefitHttpReads,
+//        hc,
+//        ec
+//      )
 
     desCall(desHeaderCarrier(uri))
   }

@@ -200,7 +200,7 @@ class GetStateBenefitsITest extends PlaySpec with WiremockSpec with ScalaFutures
 
         whenReady(buildClient(serviceUrl)
           .withHttpHeaders(mtditidHeader, authorization)
-          .get) {
+          .get()) {
           result =>
             result.status mustBe OK
             Json.parse(result.body) mustBe Json.parse(GetStateBenefitsDesResponseBody)
@@ -221,7 +221,7 @@ class GetStateBenefitsITest extends PlaySpec with WiremockSpec with ScalaFutures
 
         whenReady(buildClient(serviceUrl)
           .withHttpHeaders(mtditidHeader, authorization)
-          .get) {
+          .get()) {
           result =>
             result.status mustBe BAD_REQUEST
             Json.parse(result.body) mustBe Json.obj(
@@ -243,7 +243,7 @@ class GetStateBenefitsITest extends PlaySpec with WiremockSpec with ScalaFutures
 
         whenReady(buildClient(serviceUrl)
           .withHttpHeaders(mtditidHeader, authorization)
-          .get) {
+          .get()) {
           result =>
             result.status mustBe BAD_REQUEST
             Json.parse(result.body) mustBe Json.obj(
@@ -265,7 +265,7 @@ class GetStateBenefitsITest extends PlaySpec with WiremockSpec with ScalaFutures
 
         whenReady(buildClient(serviceUrl)
           .withHttpHeaders(mtditidHeader, authorization)
-          .get) {
+          .get()) {
           result =>
             result.status mustBe BAD_REQUEST
             Json.parse(result.body) mustBe Json.obj(
@@ -287,7 +287,7 @@ class GetStateBenefitsITest extends PlaySpec with WiremockSpec with ScalaFutures
 
         whenReady(buildClient(serviceUrl)
           .withHttpHeaders(mtditidHeader, authorization)
-          .get) {
+          .get()) {
           result =>
             result.status mustBe BAD_REQUEST
             Json.parse(result.body) mustBe Json.obj(
@@ -310,7 +310,7 @@ class GetStateBenefitsITest extends PlaySpec with WiremockSpec with ScalaFutures
 
         whenReady(buildClient(serviceUrl)
           .withHttpHeaders(mtditidHeader, authorization)
-          .get) {
+          .get()) {
           result =>
             result.status mustBe NOT_FOUND
             result.body mustBe errorResponseBody
@@ -332,7 +332,7 @@ class GetStateBenefitsITest extends PlaySpec with WiremockSpec with ScalaFutures
 
         whenReady(buildClient(serviceUrl)
           .withHttpHeaders(mtditidHeader, authorization)
-          .get) {
+          .get()) {
           result =>
             result.status mustBe SERVICE_UNAVAILABLE
             Json.parse(result.body) mustBe Json.obj("code" -> "SERVICE_UNAVAILABLE", "reason" -> "Dependent systems are currently not responding.")
@@ -354,7 +354,7 @@ class GetStateBenefitsITest extends PlaySpec with WiremockSpec with ScalaFutures
 
         whenReady(buildClient(serviceUrl)
           .withHttpHeaders(mtditidHeader, authorization)
-          .get) {
+          .get()) {
           result =>
             result.status mustBe INTERNAL_SERVER_ERROR
             Json.parse(result.body) mustBe Json.obj(
@@ -377,7 +377,7 @@ class GetStateBenefitsITest extends PlaySpec with WiremockSpec with ScalaFutures
 
         whenReady(buildClient(serviceUrl)
           .withHttpHeaders(mtditidHeader, authorization)
-          .get) {
+          .get()) {
           result =>
             result.status mustBe UNPROCESSABLE_ENTITY
             result.body mustBe errorResponseBody
@@ -399,7 +399,7 @@ class GetStateBenefitsITest extends PlaySpec with WiremockSpec with ScalaFutures
 
         whenReady(buildClient(serviceUrl)
           .withHttpHeaders(mtditidHeader, authorization)
-          .get) {
+          .get()) {
           result =>
             result.status mustBe UNPROCESSABLE_ENTITY
             result.body mustBe errorResponseBody

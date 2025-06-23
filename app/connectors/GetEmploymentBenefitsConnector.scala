@@ -18,13 +18,14 @@ package connectors
 
 import config.AppConfig
 import connectors.httpParsers.GetEmploymentBenefitsHttpParser.{GetEmploymentBenefitsResponse, GetEmploymentExpensesHttpReads}
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
+import uk.gov.hmrc.http.client.HttpClientV2
+import uk.gov.hmrc.http.{HeaderCarrier, StringContextOps}
 import utils.DESTaxYearHelper.desTaxYearConverter
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class GetEmploymentBenefitsConnector @Inject() (val http: HttpClient, val appConfig: AppConfig)(implicit
+class GetEmploymentBenefitsConnector @Inject() (val http: HttpClientV2, val appConfig: AppConfig)(implicit
   ec: ExecutionContext
 ) extends DesConnector {
 
@@ -35,7 +36,9 @@ class GetEmploymentBenefitsConnector @Inject() (val http: HttpClient, val appCon
       appConfig.desBaseUrl + s"/income-tax/income/employments/$nino/${desTaxYearConverter(taxYear)}/$employmentId?view=$view"
 
     def desCall(implicit hc: HeaderCarrier): Future[GetEmploymentBenefitsResponse] =
-      http.GET[GetEmploymentBenefitsResponse](incomeSourcesUri)
+      http
+        .get(url"$incomeSourcesUri")
+        .execute[GetEmploymentBenefitsResponse]
 
     desCall(desHeaderCarrier(incomeSourcesUri))
   }
