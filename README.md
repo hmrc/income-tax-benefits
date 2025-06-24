@@ -8,7 +8,7 @@ sections of their income tax return.
 You will need to have the following:
 
 - Installed [MongoDB](https://www.mongodb.com/docs/manual/installation/)
-- Installed/configured [service manager 2](https://github.com/hmrc/sm2).
+- Installed/configured [service manager 2](https://github.com/hmrc/sm2)
 - This can be found in the [developer handbook](https://docs.tax.service.gov.uk/mdtp-handbook/documentation/developer-set-up/)
 
 The service manager profile for this service is:
@@ -246,8 +246,8 @@ changes (create, update and delete).
     }
   ]
 }
-```
 
+```
 </details>
 
 ### State benefits (HMRC-Held and Customer Data)
