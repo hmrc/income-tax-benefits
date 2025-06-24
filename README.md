@@ -32,7 +32,6 @@ To test the branch you're working on locally. You will need to run `sm2 --stop I
 - Run Unit and Integration Tests with coverage report: `./check.sh`<br/>
   which runs `sbt clean coverage test it/test coverageReport dependencyUpdates`
 
-
 ### Employment benefits endpoints:
 
 - **GET /income-tax/nino/:nino/sources/:employmentId** (Gets either hmrc benefits or customer benefits data for a
