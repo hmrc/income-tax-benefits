@@ -51,7 +51,7 @@ class DeleteStateBenefitITest extends PlaySpec with WiremockSpec with ScalaFutur
 
       whenReady(buildClient(serviceUrl)
         .withHttpHeaders(mtditidHeader, authorization)
-        .delete) {
+        .delete()) {
         result =>
           result.status mustBe NO_CONTENT
       }
