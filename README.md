@@ -9,6 +9,7 @@ You will need to have the following:
 
 - Installed [MongoDB](https://www.mongodb.com/docs/manual/installation/)
 - Installed/configured [service manager 2](https://github.com/hmrc/sm2).
+- This can be found in the [developer handbook](https://docs.tax.service.gov.uk/mdtp-handbook/documentation/developer-set-up/)
 
 The service manager profile for this service is:
 
@@ -16,7 +17,6 @@ The service manager profile for this service is:
 
 Run the following command to start the remaining services locally:
 
-    sudo mongod (If not already running)
     sm2 --start INCOME_TAX_SUBMISSION_ALL
 
 This service runs on port: `localhost:9319`
