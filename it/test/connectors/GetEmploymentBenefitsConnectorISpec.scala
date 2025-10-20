@@ -68,9 +68,9 @@ class GetEmploymentBenefitsConnectorISpec extends PlaySpec with WiremockSpec {
         stubGetWithResponseBody(s"/income-tax/income/employments/$nino/${desTaxYearConverter(taxYear)}/$id\\?view=$view", OK, expectedResponseBody)
 
         implicit val hc: HeaderCarrier = HeaderCarrier()
-        val result = await(connector.getEmploymentBenefits(nino, id, taxYear, view)(hc)).right.get
+        val result = await(connector.getEmploymentBenefits(nino, id, taxYear, view)(hc))
 
-        result mustBe expectedResult
+        result mustBe Right(expectedResult)
         expectedResult mustBe model
       }
       ": nino, employmentId, taxYear & view are present for hmrc held" in {
@@ -79,9 +79,9 @@ class GetEmploymentBenefitsConnectorISpec extends PlaySpec with WiremockSpec {
         stubGetWithResponseBody(s"/income-tax/income/employments/$nino/${desTaxYearConverter(taxYear)}/$id\\?view=HMRC-HELD", OK, expectedResponseBodyHMRC)
 
         implicit val hc: HeaderCarrier = HeaderCarrier()
-        val result = await(connector.getEmploymentBenefits(nino, id, taxYear, "HMRC-HELD")(hc)).right.get
+        val result = await(connector.getEmploymentBenefits(nino, id, taxYear, "HMRC-HELD")(hc))
 
-        result mustBe expectedResult
+        result mustBe Right(expectedResult)
         expectedResult mustBe model.copy(customerAdded = None,source = Some("HMRC-HELD"))
       }
       "all the other data is returned including the benefits" in {
@@ -90,9 +90,9 @@ class GetEmploymentBenefitsConnectorISpec extends PlaySpec with WiremockSpec {
         stubGetWithResponseBody(s"/income-tax/income/employments/$nino/${desTaxYearConverter(taxYear)}/$id\\?view=$view", OK, latestWithAllFields)
 
         implicit val hc: HeaderCarrier = HeaderCarrier()
-        val result = await(connector.getEmploymentBenefits(nino, id, taxYear, view)(hc)).right.get
+        val result = await(connector.getEmploymentBenefits(nino, id, taxYear, view)(hc))
 
-        result mustBe expectedResult
+        result mustBe Right(expectedResult)
         expectedResult.source mustBe Some("CUSTOMER")
         expectedResult.employment.benefitsInKind.get.employerProvidedProfessionalSubscriptions mustBe Some(84.56)
       }
