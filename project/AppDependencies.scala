@@ -22,7 +22,7 @@ object AppDependencies {
 
   val compile: Seq[ModuleID] = Seq(
     "uk.gov.hmrc"                  %% "bootstrap-backend-play-30" % bootstrapVersion,
-    "com.fasterxml.jackson.module" %% "jackson-module-scala"      % "2.20.1"
+    "com.fasterxml.jackson.module" %% "jackson-module-scala"      % "2.21.0"
   )
 
   val test: Seq[ModuleID] = Seq(
@@ -31,6 +31,6 @@ object AppDependencies {
     "com.vladsch.flexmark"    % "flexmark-all"             % "0.64.8",
     "org.scalatestplus.play" %% "scalatestplus-play"       % "7.0.2",
     "com.github.tomakehurst"  % "wiremock-jre8-standalone" % "3.0.1",
-    "org.scalamock"          %% "scalamock"                % "7.5.2"
+    "org.scalamock"          %% "scalamock"                % "7.5.5"
   ).map(_ % Test)
 }
