@@ -18,11 +18,11 @@ import sbt.*
 
 object AppDependencies {
 
-  private val bootstrapVersion = "10.5.0"
+  private val bootstrapVersion = "10.6.0"
 
   val compile: Seq[ModuleID] = Seq(
     "uk.gov.hmrc"                  %% "bootstrap-backend-play-30" % bootstrapVersion,
-    "com.fasterxml.jackson.module" %% "jackson-module-scala"      % "2.21.0"
+    "com.fasterxml.jackson.module" %% "jackson-module-scala"      % "2.21.1"
   )
 
   val test: Seq[ModuleID] = Seq(
