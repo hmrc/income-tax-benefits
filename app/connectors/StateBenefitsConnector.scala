@@ -27,6 +27,7 @@ import connectors.httpParsers.UnignoreStateBenefitHttpParser.{UnignoreStateBenef
 import connectors.httpParsers.UpdateStateBenefitHttpParser.{UpdateStateBenefitHttpReads, UpdateStateBenefitResponse}
 import models.{AddStateBenefitRequestModel, CreateUpdateOverrideStateBenefit, IgnoreStateBenefit, UpdateStateBenefitModel}
 import play.api.libs.json.Json
+import play.api.libs.ws.writeableOf_JsValue
 import uk.gov.hmrc.http.client.HttpClientV2
 import uk.gov.hmrc.http.{HeaderCarrier, StringContextOps}
 import utils.DESTaxYearHelper.desTaxYearConverter

@@ -18,7 +18,8 @@ package controllers
 
 import connectors.httpParsers.GetEmploymentBenefitsHttpParser.GetEmploymentBenefitsResponse
 import models.{DesErrorBodyModel, DesErrorModel}
-import org.scalamock.handlers.CallHandler5
+import org.mockito.ArgumentMatchers.any
+import org.mockito.Mockito.when
 import play.api.http.Status._
 import play.api.libs.json.Json
 import play.api.test.FakeRequest
@@ -43,39 +44,66 @@ class GetEmploymentBenefitsControllerSpec extends TestUtils {
   val serviceUnavailableErrorModel: DesErrorBodyModel = DesErrorBodyModel("SERVICE_UNAVAILABLE", "Service is unavailable")
   private val fakeGetRequest = FakeRequest("GET", "/").withHeaders("MTDITID" -> "1234567890")
 
-  def mockGetEmploymentBenefitsValid(): CallHandler5[String, String, Int, String, HeaderCarrier, Future[GetEmploymentBenefitsResponse]] = {
+  def mockGetEmploymentBenefitsValid(): Unit = {
     val customerExampleResponse: GetEmploymentBenefitsResponse = Right(customerExample)
-    (getEmploymentBenefitsService.getEmploymentBenefits(_: String, _: String, _: Int, _:String)(_: HeaderCarrier))
-      .expects(*, *, *, *, *)
-      .returning(Future.successful(customerExampleResponse))
+    when(
+      getEmploymentBenefitsService.getEmploymentBenefits(
+        any[String](),
+        any[String](),
+        any[Int](),
+        any[String]()
+      )(any[HeaderCarrier]())
+    ).thenReturn(Future.successful(customerExampleResponse))
   }
 
-  def mockGetEmploymentBenefitsBadRequest(): CallHandler5[String, String, Int, String, HeaderCarrier, Future[GetEmploymentBenefitsResponse]] = {
+  def mockGetEmploymentBenefitsBadRequest(): Unit = {
     val invalidEmploymentList: GetEmploymentBenefitsResponse = Left(DesErrorModel(BAD_REQUEST, badRequestModel))
-    (getEmploymentBenefitsService.getEmploymentBenefits(_: String, _:String, _: Int, _:String)(_: HeaderCarrier))
-      .expects(*, *, *, *, *)
-      .returning(Future.successful(invalidEmploymentList))
+    when(
+      getEmploymentBenefitsService.getEmploymentBenefits(
+        any[String](),
+        any[String](),
+        any[Int](),
+        any[String]()
+      )(any[HeaderCarrier]())
+    ).thenReturn(Future.successful(invalidEmploymentList))
   }
 
-  def mockGetEmploymentBenefitsNotFound(): CallHandler5[String, String, Int, String, HeaderCarrier, Future[GetEmploymentBenefitsResponse]] = {
+  def mockGetEmploymentBenefitsNotFound(): Unit = {
     val invalidEmploymentList: GetEmploymentBenefitsResponse = Left(DesErrorModel(NOT_FOUND, notFoundModel))
-    (getEmploymentBenefitsService.getEmploymentBenefits(_: String, _:String, _: Int, _:String)(_: HeaderCarrier))
-      .expects(*, *, *, *, *)
-      .returning(Future.successful(invalidEmploymentList))
+    when(
+      getEmploymentBenefitsService.getEmploymentBenefits(
+        any[String](),
+        any[String](),
+        any[Int](),
+        any[String]()
+      )(any[HeaderCarrier]())
+    ).thenReturn(Future.successful(invalidEmploymentList))
   }
 
-  def mockGetEmploymentBenefitsServerError(): CallHandler5[String, String, Int, String, HeaderCarrier, Future[GetEmploymentBenefitsResponse]] = {
+  def mockGetEmploymentBenefitsServerError(): Unit = {
     val invalidEmploymentList: GetEmploymentBenefitsResponse = Left(DesErrorModel(INTERNAL_SERVER_ERROR, serverErrorModel))
-    (getEmploymentBenefitsService.getEmploymentBenefits(_: String, _:String, _: Int, _:String)(_: HeaderCarrier))
-      .expects(*, *, *, *, *)
-      .returning(Future.successful(invalidEmploymentList))
+    when(
+      getEmploymentBenefitsService.getEmploymentBenefits(
+        any[String](),
+        any[String](),
+        any[Int](),
+        any[String]()
+      )(any[HeaderCarrier]())
+    ).thenReturn(Future.successful(invalidEmploymentList))
   }
 
-  def mockGetEmploymentBenefitsServiceUnavailable(): CallHandler5[String, String, Int, String, HeaderCarrier, Future[GetEmploymentBenefitsResponse]] = {
-    val invalidEmploymentList: GetEmploymentBenefitsResponse = Left(DesErrorModel(SERVICE_UNAVAILABLE, serviceUnavailableErrorModel))
-    (getEmploymentBenefitsService.getEmploymentBenefits(_: String, _:String, _: Int, _:String)(_: HeaderCarrier))
-      .expects(*, *, *, *, *)
-      .returning(Future.successful(invalidEmploymentList))
+  def mockGetEmploymentBenefitsServiceUnavailable(): Unit = {
+    val invalidEmploymentList: GetEmploymentBenefitsResponse =
+      Left(DesErrorModel(SERVICE_UNAVAILABLE, serviceUnavailableErrorModel))
+
+    when(
+      getEmploymentBenefitsService.getEmploymentBenefits(
+        any[String](),
+        any[String](),
+        any[Int](),
+        any[String]()
+      )(any[HeaderCarrier]())
+    ).thenReturn(Future.successful(invalidEmploymentList))
   }
 
   "calling .getEmploymentBenefits" should {
@@ -88,44 +116,46 @@ class GetEmploymentBenefitsControllerSpec extends TestUtils {
           mockGetEmploymentBenefitsValid()
           getEmploymentBenefitsController.getEmploymentBenefits(nino, id, taxYear, view)(fakeGetRequest)
         }
+
         status(result) mustBe OK
         Json.parse(bodyOf(result)) mustBe
-          Json.parse("""{
-            |	"submittedOn": "2020-01-04T05:01:01Z",
-            |	"customerAdded": "2020-04-04T01:01:01Z",
-            |	"employment": {
-            |		"benefitsInKind": {
-            |			"accommodation": 455.67,
-            |			"assets": 435.54,
-            |			"assetTransfer": 24.58,
-            |			"beneficialLoan": 33.89,
-            |			"car": 3434.78,
-            |			"carFuel": 34.56,
-            |			"educationalServices": 445.67,
-            |			"entertaining": 434.45,
-            |			"expenses": 3444.32,
-            |			"medicalInsurance": 4542.47,
-            |			"telephone": 243.43,
-            |			"service": 45.67,
-            |			"taxableExpenses": 24.56,
-            |			"van": 56.29,
-            |			"vanFuel": 14.56,
-            |			"mileage": 34.23,
-            |			"nonQualifyingRelocationExpenses": 54.62,
-            |			"nurseryPlaces": 84.29,
-            |			"otherItems": 67.67,
-            |			"paymentsOnEmployeesBehalf": 67.23,
-            |			"personalIncidentalExpenses": 74.29,
-            |			"qualifyingRelocationExpenses": 78.24,
-            |			"employerProvidedProfessionalSubscriptions": 84.56,
-            |			"employerProvidedServices": 56.34,
-            |			"incomeTaxPaidByDirector": 67.34,
-            |			"travelAndSubsistence": 56.89,
-            |			"vouchersAndCreditCards": 34.9,
-            |			"nonCash": 23.89
-            |		}
-            |	}
-            |}""".stripMargin)
+          Json.parse(
+            """{
+              |	"submittedOn": "2020-01-04T05:01:01Z",
+              |	"customerAdded": "2020-04-04T01:01:01Z",
+              |	"employment": {
+              |		"benefitsInKind": {
+              |			"accommodation": 455.67,
+              |			"assets": 435.54,
+              |			"assetTransfer": 24.58,
+              |			"beneficialLoan": 33.89,
+              |			"car": 3434.78,
+              |			"carFuel": 34.56,
+              |			"educationalServices": 445.67,
+              |			"entertaining": 434.45,
+              |			"expenses": 3444.32,
+              |			"medicalInsurance": 4542.47,
+              |			"telephone": 243.43,
+              |			"service": 45.67,
+              |			"taxableExpenses": 24.56,
+              |			"van": 56.29,
+              |			"vanFuel": 14.56,
+              |			"mileage": 34.23,
+              |			"nonQualifyingRelocationExpenses": 54.62,
+              |			"nurseryPlaces": 84.29,
+              |			"otherItems": 67.67,
+              |			"paymentsOnEmployeesBehalf": 67.23,
+              |			"personalIncidentalExpenses": 74.29,
+              |			"qualifyingRelocationExpenses": 78.24,
+              |			"employerProvidedProfessionalSubscriptions": 84.56,
+              |			"employerProvidedServices": 56.34,
+              |			"incomeTaxPaidByDirector": 67.34,
+              |			"travelAndSubsistence": 56.89,
+              |			"vouchersAndCreditCards": 34.9,
+              |			"nonCash": 23.89
+              |		}
+              |	}
+              |}""".stripMargin)
       }
 
       "return an OK 200 response when called as an agent" in {
@@ -134,44 +164,46 @@ class GetEmploymentBenefitsControllerSpec extends TestUtils {
           mockGetEmploymentBenefitsValid()
           getEmploymentBenefitsController.getEmploymentBenefits(nino, id, taxYear, view)(fakeGetRequest)
         }
+
         status(result) mustBe OK
         Json.parse(bodyOf(result)) mustBe
-          Json.parse("""{
-                       |	"submittedOn": "2020-01-04T05:01:01Z",
-                       |	"customerAdded": "2020-04-04T01:01:01Z",
-                       |	"employment": {
-                       |		"benefitsInKind": {
-                       |			"accommodation": 455.67,
-                       |			"assets": 435.54,
-                       |			"assetTransfer": 24.58,
-                       |			"beneficialLoan": 33.89,
-                       |			"car": 3434.78,
-                       |			"carFuel": 34.56,
-                       |			"educationalServices": 445.67,
-                       |			"entertaining": 434.45,
-                       |			"expenses": 3444.32,
-                       |			"medicalInsurance": 4542.47,
-                       |			"telephone": 243.43,
-                       |			"service": 45.67,
-                       |			"taxableExpenses": 24.56,
-                       |			"van": 56.29,
-                       |			"vanFuel": 14.56,
-                       |			"mileage": 34.23,
-                       |			"nonQualifyingRelocationExpenses": 54.62,
-                       |			"nurseryPlaces": 84.29,
-                       |			"otherItems": 67.67,
-                       |			"paymentsOnEmployeesBehalf": 67.23,
-                       |			"personalIncidentalExpenses": 74.29,
-                       |			"qualifyingRelocationExpenses": 78.24,
-                       |			"employerProvidedProfessionalSubscriptions": 84.56,
-                       |			"employerProvidedServices": 56.34,
-                       |			"incomeTaxPaidByDirector": 67.34,
-                       |			"travelAndSubsistence": 56.89,
-                       |			"vouchersAndCreditCards": 34.9,
-                       |			"nonCash": 23.89
-                       |		}
-                       |	}
-                       |}""".stripMargin)
+          Json.parse(
+            """{
+              |	"submittedOn": "2020-01-04T05:01:01Z",
+              |	"customerAdded": "2020-04-04T01:01:01Z",
+              |	"employment": {
+              |		"benefitsInKind": {
+              |			"accommodation": 455.67,
+              |			"assets": 435.54,
+              |			"assetTransfer": 24.58,
+              |			"beneficialLoan": 33.89,
+              |			"car": 3434.78,
+              |			"carFuel": 34.56,
+              |			"educationalServices": 445.67,
+              |			"entertaining": 434.45,
+              |			"expenses": 3444.32,
+              |			"medicalInsurance": 4542.47,
+              |			"telephone": 243.43,
+              |			"service": 45.67,
+              |			"taxableExpenses": 24.56,
+              |			"van": 56.29,
+              |			"vanFuel": 14.56,
+              |			"mileage": 34.23,
+              |			"nonQualifyingRelocationExpenses": 54.62,
+              |			"nurseryPlaces": 84.29,
+              |			"otherItems": 67.67,
+              |			"paymentsOnEmployeesBehalf": 67.23,
+              |			"personalIncidentalExpenses": 74.29,
+              |			"qualifyingRelocationExpenses": 78.24,
+              |			"employerProvidedProfessionalSubscriptions": 84.56,
+              |			"employerProvidedServices": 56.34,
+              |			"incomeTaxPaidByDirector": 67.34,
+              |			"travelAndSubsistence": 56.89,
+              |			"vouchersAndCreditCards": 34.9,
+              |			"nonCash": 23.89
+              |		}
+              |	}
+              |}""".stripMargin)
       }
     }
 
@@ -183,9 +215,10 @@ class GetEmploymentBenefitsControllerSpec extends TestUtils {
           mockGetEmploymentBenefitsNotFound()
           getEmploymentBenefitsController.getEmploymentBenefits(nino, id, taxYear, view)(fakeGetRequest)
         }
+
         status(result) mustBe NOT_FOUND
         Json.parse(bodyOf(result)) mustBe
-          Json.parse("""{"code":"NOT_FOUND_INCOME_SOURCE","reason":"Can't find income source"}""".stripMargin)
+          Json.parse("""{"code":"NOT_FOUND_INCOME_SOURCE","reason":"Can't find income source"}""")
       }
 
       "return an NotFound response when called as an agent" in {
@@ -194,12 +227,11 @@ class GetEmploymentBenefitsControllerSpec extends TestUtils {
           mockGetEmploymentBenefitsNotFound()
           getEmploymentBenefitsController.getEmploymentBenefits(nino, id, taxYear, view)(fakeGetRequest)
         }
+
         status(result) mustBe NOT_FOUND
         Json.parse(bodyOf(result)) mustBe
-          Json.parse("""{"code":"NOT_FOUND_INCOME_SOURCE","reason":"Can't find income source"}""".stripMargin)
-
+          Json.parse("""{"code":"NOT_FOUND_INCOME_SOURCE","reason":"Can't find income source"}""")
       }
-
     }
 
     "with an invalid NINO" should {
@@ -210,9 +242,10 @@ class GetEmploymentBenefitsControllerSpec extends TestUtils {
           mockGetEmploymentBenefitsBadRequest()
           getEmploymentBenefitsController.getEmploymentBenefits(nino, id, taxYear, view)(fakeGetRequest)
         }
+
         status(result) mustBe BAD_REQUEST
         Json.parse(bodyOf(result)) mustBe
-          Json.parse("""{"code":"INVALID_NINO","reason":"Nino is invalid"}""".stripMargin)
+          Json.parse("""{"code":"INVALID_NINO","reason":"Nino is invalid"}""")
       }
 
       "return an BadRequest response when called as an agent" in {
@@ -221,11 +254,13 @@ class GetEmploymentBenefitsControllerSpec extends TestUtils {
           mockGetEmploymentBenefitsBadRequest()
           getEmploymentBenefitsController.getEmploymentBenefits(nino, id, taxYear, view)(fakeGetRequest)
         }
+
         status(result) mustBe BAD_REQUEST
         Json.parse(bodyOf(result)) mustBe
-          Json.parse("""{"code":"INVALID_NINO","reason":"Nino is invalid"}""".stripMargin)
+          Json.parse("""{"code":"INVALID_NINO","reason":"Nino is invalid"}""")
       }
     }
+
     "with an invalid view" should {
 
       "return an BadRequest response when called as an individual" in {
@@ -233,61 +268,65 @@ class GetEmploymentBenefitsControllerSpec extends TestUtils {
           mockAuth()
           getEmploymentBenefitsController.getEmploymentBenefits(nino, id, taxYear, "view")(fakeGetRequest)
         }
+
         status(result) mustBe BAD_REQUEST
         Json.parse(bodyOf(result)) mustBe
-          Json.parse("""{"code":"INVALID_VIEW","reason":"Submission has not passed validation. Invalid query parameter view."}""".stripMargin)
+          Json.parse("""{"code":"INVALID_VIEW","reason":"Submission has not passed validation. Invalid query parameter view."}""")
       }
     }
 
-    "with something that causes and internal server error in DES" should {
+    "with something that causes an internal server error in DES" should {
 
-      "return an BadRequest response when called as an individual" in {
+      "return an InternalServerError response when called as an individual" in {
         val result = {
           mockAuth()
           mockGetEmploymentBenefitsServerError()
           getEmploymentBenefitsController.getEmploymentBenefits(nino, id, taxYear, view)(fakeGetRequest)
         }
+
         status(result) mustBe INTERNAL_SERVER_ERROR
         Json.parse(bodyOf(result)) mustBe
-          Json.parse("""{"code":"SERVER_ERROR","reason":"Internal server error"}""".stripMargin)
+          Json.parse("""{"code":"SERVER_ERROR","reason":"Internal server error"}""")
       }
 
-      "return an BadRequest response when called as an agent" in {
+      "return an InternalServerError response when called as an agent" in {
         val result = {
           mockAuthAsAgent()
           mockGetEmploymentBenefitsServerError()
           getEmploymentBenefitsController.getEmploymentBenefits(nino, id, taxYear, view)(fakeGetRequest)
         }
+
         status(result) mustBe INTERNAL_SERVER_ERROR
         Json.parse(bodyOf(result)) mustBe
-          Json.parse("""{"code":"SERVER_ERROR","reason":"Internal server error"}""".stripMargin)
+          Json.parse("""{"code":"SERVER_ERROR","reason":"Internal server error"}""")
       }
     }
 
-    "with an unavailable service" should {
+    "with something that causes a service unavailable error in DES" should {
 
-      "return an Service_Unavailable response when called as an individual" in {
+      "return a Service_Unavailable response when called as an individual" in {
         val result = {
           mockAuth()
           mockGetEmploymentBenefitsServiceUnavailable()
           getEmploymentBenefitsController.getEmploymentBenefits(nino, id, taxYear, view)(fakeGetRequest)
         }
+
         status(result) mustBe SERVICE_UNAVAILABLE
         Json.parse(bodyOf(result)) mustBe
-          Json.parse("""{"code":"SERVICE_UNAVAILABLE","reason":"Service is unavailable"}""".stripMargin)
+          Json.parse("""{"code":"SERVICE_UNAVAILABLE","reason":"Service is unavailable"}""")
       }
 
-      "return an Service_Unavailable response when called as an agent" in {
+      "return a Service_Unavailable response when called as an agent" in {
         val result = {
           mockAuthAsAgent()
           mockGetEmploymentBenefitsServiceUnavailable()
           getEmploymentBenefitsController.getEmploymentBenefits(nino, id, taxYear, view)(fakeGetRequest)
         }
+
         status(result) mustBe SERVICE_UNAVAILABLE
         Json.parse(bodyOf(result)) mustBe
-          Json.parse("""{"code":"SERVICE_UNAVAILABLE","reason":"Service is unavailable"}""".stripMargin)
+          Json.parse("""{"code":"SERVICE_UNAVAILABLE","reason":"Service is unavailable"}""")
       }
     }
-
   }
 }

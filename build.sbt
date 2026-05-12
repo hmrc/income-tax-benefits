@@ -2,10 +2,8 @@ import uk.gov.hmrc.DefaultBuildSettings
 
 val appName = "income-tax-benefits"
 
-val silencerVersion = "1.7.19"
-
 ThisBuild / majorVersion := 0
-ThisBuild / scalaVersion := "2.13.18"
+ThisBuild / scalaVersion := "3.3.7"
 
 lazy val coverageSettings: Seq[Setting[?]] = {
   import scoverage.ScoverageKeys
@@ -36,17 +34,11 @@ lazy val microservice = Project(appName, file("."))
   .enablePlugins(play.sbt.PlayScala, SbtDistributablesPlugin)
   .settings(
     libraryDependencies ++= AppDependencies.compile ++ AppDependencies.test,
-    // ***************
-    // Use the silencer plugin to suppress warnings
     scalacOptions ++= Seq(
-      "-P:silencer:pathFilters=routes",
-      "-Xfatal-warnings"
-    ),
-    libraryDependencies ++= Seq(
-      compilerPlugin("com.github.ghik" % "silencer-plugin" % silencerVersion cross CrossVersion.full),
-      "com.github.ghik" % "silencer-lib" % silencerVersion % Provided cross CrossVersion.full
+      "-Wconf:msg=unused import&src=html/.*:s",
+      "-Wconf:msg=unused import&src=.*routes.*:s",
+      "-Wconf:msg=unused.*&src=.*routes.*:s"
     )
-    // ***************
   )
   .settings(PlayKeys.playDefaultPort := 9319)
   .settings(coverageSettings *)
@@ -61,3 +53,4 @@ lazy val it = project
   .enablePlugins(PlayScala)
   .dependsOn(microservice % "test->test") // the "test->test" allows reusing test code and test dependencies
   .settings(DefaultBuildSettings.itSettings())
+  .settings(Seq(Test / parallelExecution := false))
