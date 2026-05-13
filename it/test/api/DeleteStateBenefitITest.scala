@@ -24,6 +24,7 @@ import org.scalatestplus.play.PlaySpec
 import play.api.http.HeaderNames
 import play.api.http.Status._
 import play.api.libs.json.{JsValue, Json}
+import play.api.libs.ws.DefaultBodyReadables.readableAsString
 import test.helpers.{AuthStub, WiremockSpec}
 import utils.DESTaxYearHelper.desTaxYearConverter
 

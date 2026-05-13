@@ -23,7 +23,7 @@ import play.api.libs.json.{JsObject, Json}
 import uk.gov.hmrc.auth.core.AffinityGroup.{Agent, Individual}
 import uk.gov.hmrc.auth.core.{AffinityGroup, ConfidenceLevel}
 
-trait AuthStub extends {
+trait AuthStub {
 
   val otherEnrolment: JsObject = Json.obj(
     "key" -> "HMRC-OTHER-ENROLMENT",
