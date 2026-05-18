@@ -20,6 +20,8 @@ import com.codahale.metrics.SharedMetricRegistries
 import connectors.GetEmploymentBenefitsConnector
 import connectors.httpParsers.GetEmploymentBenefitsHttpParser.GetEmploymentBenefitsResponse
 import models.{DesErrorBodyModel, DesErrorModel}
+import org.mockito.ArgumentMatchers.{any, eq as eqTo}
+import org.mockito.Mockito.when
 import play.api.http.Status._
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.TestUtils
@@ -43,9 +45,14 @@ class GetEmploymentBenefitsServiceSpec extends TestUtils {
       val view = "CUSTOMER"
       val id = "a1e8057e-fbbc-47a8-a8b4-78d9f015c934"
 
-      (connector.getEmploymentBenefits(_: String,_: String, _: Int, _:String)(_: HeaderCarrier))
-        .expects(nino, id, taxYear, view, *)
-        .returning(Future.successful(expectedResult))
+      when(
+        connector.getEmploymentBenefits(
+          eqTo(nino),
+          eqTo(id),
+          eqTo(taxYear),
+          eqTo(view)
+        )(any[HeaderCarrier]())
+      ).thenReturn(Future.successful(expectedResult))
 
       val result = await(service.getEmploymentBenefits(nino, id, taxYear, view))
 
@@ -62,9 +69,14 @@ class GetEmploymentBenefitsServiceSpec extends TestUtils {
 
       val id = "a1e8057e-fbbc-47a8-a8b4-78d9f015c934"
 
-      (connector.getEmploymentBenefits(_: String, _: String, _: Int, _:String)(_: HeaderCarrier))
-        .expects(nino, id, taxYear, view, *)
-        .returning(Future.successful(expectedResult))
+      when(
+        connector.getEmploymentBenefits(
+          eqTo(nino),
+          eqTo(id),
+          eqTo(taxYear),
+          eqTo(view)
+        )(any[HeaderCarrier]())
+      ).thenReturn(Future.successful(expectedResult))
 
       val result = await(service.getEmploymentBenefits(nino, id, taxYear, view))
 
@@ -80,9 +92,14 @@ class GetEmploymentBenefitsServiceSpec extends TestUtils {
       val view = "LATEST"
 
       val id = "a1e8057e-fbbc-47a8-a8b4-78d9f015c934"
-      (connector.getEmploymentBenefits(_: String,_: String, _: Int, _:String)(_: HeaderCarrier))
-        .expects(nino, id, taxYear, view, *)
-        .returning(Future.successful(expectedResult))
+      when(
+        connector.getEmploymentBenefits(
+          eqTo(nino),
+          eqTo(id),
+          eqTo(taxYear),
+          eqTo(view)
+        )(any[HeaderCarrier]())
+      ).thenReturn(Future.successful(expectedResult))
 
       val result = await(service.getEmploymentBenefits(nino, id, taxYear, view))
 
@@ -114,9 +131,14 @@ class GetEmploymentBenefitsServiceSpec extends TestUtils {
           val view = "CUSTOMER"
 
           val id = "a1e8057e-fbbc-47a8-a8b4-78d9f015c934"
-          (connector.getEmploymentBenefits(_: String, _: String, _: Int, _:String)(_: HeaderCarrier))
-            .expects(nino, id, taxYear, view, *)
-            .returning(Future.successful(expectedResult))
+          when(
+            connector.getEmploymentBenefits(
+              eqTo(nino),
+              eqTo(id),
+              eqTo(taxYear),
+              eqTo(view)
+            )(any[HeaderCarrier]())
+          ).thenReturn(Future.successful(expectedResult))
 
           val result = await(service.getEmploymentBenefits(nino, id, taxYear, view))
 

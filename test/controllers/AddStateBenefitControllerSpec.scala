@@ -16,9 +16,9 @@
 
 package controllers
 
-import connectors.httpParsers.AddStateBenefitHttpParser.AddStateBenefitResponse
 import models.{AddStateBenefitRequestModel, AddStateBenefitResponseModel}
-import org.scalamock.handlers.CallHandler4
+import org.mockito.ArgumentMatchers.any
+import org.mockito.Mockito.when
 import play.api.http.Status.{BAD_REQUEST, OK}
 import play.api.libs.json.Json
 import services.StateBenefitsService
@@ -38,10 +38,14 @@ class AddStateBenefitControllerSpec extends TestUtils {
 
   def requestModel(benefitType: String): AddStateBenefitRequestModel = AddStateBenefitRequestModel(benefitType, "2020-01-01", Some("2020-03-01"))
 
-  def mockAddStateBenefitValid(): CallHandler4[String, Int, AddStateBenefitRequestModel, HeaderCarrier, Future[AddStateBenefitResponse]] = {
-    (stateBenefitsService.addStateBenefit(_: String, _: Int, _: AddStateBenefitRequestModel)(_: HeaderCarrier))
-      .expects(*, *, *, *)
-      .returning(Future.successful(Right(responseModel)))
+  def mockAddStateBenefitValid(): Unit = {
+    when(
+      stateBenefitsService.addStateBenefit(
+        any[String](),
+        any[Int](),
+        any[AddStateBenefitRequestModel]()
+      )(any[HeaderCarrier]())
+    ).thenReturn(Future.successful(Right(responseModel)))
   }
 
 

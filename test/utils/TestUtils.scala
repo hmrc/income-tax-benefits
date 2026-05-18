@@ -23,25 +23,25 @@ import config.{AppConfig, MockAppConfig}
 import controllers.predicates.AuthorisedAction
 import models.{Benefits, Employment, EmploymentBenefits}
 import org.apache.pekko.actor.ActorSystem
-import org.scalamock.handlers.CallHandler4
-import org.scalamock.scalatest.MockFactory
+import org.mockito.ArgumentMatchers.any
+import org.mockito.Mockito.when
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.wordspec.AnyWordSpecLike
+import org.scalatestplus.mockito.MockitoSugar
 import play.api.mvc.{AnyContentAsEmpty, ControllerComponents, DefaultActionBuilder, Result}
 import play.api.test.{FakeRequest, Helpers}
 import services.AuthService
 import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.auth.core.authorise.Predicate
 import uk.gov.hmrc.auth.core.retrieve.Retrieval
-import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
 import uk.gov.hmrc.auth.core.syntax.retrieved.authSyntaxForRetrieved
 import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.duration.Duration
 import scala.concurrent.{Await, Awaitable, ExecutionContext, Future}
 
-trait TestUtils extends AnyWordSpecLike with Matchers with MockFactory with BeforeAndAfterEach {
+trait TestUtils extends AnyWordSpecLike with Matchers with MockitoSugar with BeforeAndAfterEach {
   override def beforeEach(): Unit = {
     super.beforeEach()
     SharedMetricRegistries.clear()
@@ -75,41 +75,71 @@ trait TestUtils extends AnyWordSpecLike with Matchers with MockFactory with Befo
     Enrolment(EnrolmentKeys.Individual, Seq(EnrolmentIdentifier(EnrolmentIdentifiers.individualId, "1234567890")), "Activated"),
     Enrolment(EnrolmentKeys.nino, Seq(EnrolmentIdentifier(EnrolmentIdentifiers.nino, "1234567890")), "Activated")))
 
+  // Due to JVM type erasure, Mockito cannot distinguish authorise[A] calls by their
+  // type parameter. All calls match the same erased signature. We must use sequential
+  // stubbing: thenReturn(firstCallResult, secondCallResult) so that the first production
+  // call (affinityGroup) gets the first result and the second call (enrolments) gets the second.
+
+  protected def mockAuthoriseSuccess[A](result: A): Unit =
+    when(
+      mockAuthConnector.authorise[A](
+        any[Predicate](),
+        any[Retrieval[A]]()
+      )(
+        any[HeaderCarrier](),
+        any[ExecutionContext]()
+      )
+    ).thenReturn(Future.successful(result))
+
+  def mockAuthoriseFailure[A](exception: Throwable): Unit =
+    when(
+      mockAuthConnector.authorise[A](
+        any[Predicate](),
+        any[Retrieval[A]]()
+      )(
+        any[HeaderCarrier](),
+        any[ExecutionContext]()
+      )
+    ).thenReturn(Future.failed[A](exception))
+
   //noinspection ScalaStyle
-  def mockAuth(enrolments: Enrolments = individualEnrolments): CallHandler4[Predicate, Retrieval[_], HeaderCarrier, ExecutionContext, Future[Any]] = {
-
-    (mockAuthConnector.authorise(_: Predicate, _: Retrieval[_])(_: HeaderCarrier, _: ExecutionContext))
-      .expects(*, Retrievals.affinityGroup, *, *)
-      .returning(Future.successful(Some(AffinityGroup.Individual)))
-
-    (mockAuthConnector.authorise(_: Predicate, _: Retrieval[_])(_: HeaderCarrier, _: ExecutionContext))
-      .expects(*, Retrievals.allEnrolments and Retrievals.confidenceLevel, *, *)
-      .returning(Future.successful(enrolments and ConfidenceLevel.L250))
+  def mockAuth(enrolments: Enrolments = individualEnrolments): Unit = {
+    val affinityResult: Future[Any] = Future.successful(Some(AffinityGroup.Individual))
+    val enrolmentsResult: Future[Any] = Future.successful(enrolments and ConfidenceLevel.L250)
+    when(
+      mockAuthConnector.authorise(
+        any[Predicate](),
+        any[Retrieval[Any]]()
+      )(
+        any[HeaderCarrier](),
+        any[ExecutionContext]()
+      )
+    ).thenReturn(affinityResult, enrolmentsResult)
   }
 
   val agentEnrolments: Enrolments = Enrolments(Set(
-
     Enrolment(EnrolmentKeys.Individual, Seq(EnrolmentIdentifier(EnrolmentIdentifiers.individualId, "1234567890")), "Activated"),
     Enrolment(EnrolmentKeys.Agent, Seq(EnrolmentIdentifier(EnrolmentIdentifiers.agentReference, "0987654321")), "Activated")
   ))
 
   //noinspection ScalaStyle
-  def mockAuthAsAgent(enrolments: Enrolments = agentEnrolments): CallHandler4[Predicate, Retrieval[_], HeaderCarrier, ExecutionContext, Future[Any]] = {
-
-    (mockAuthConnector.authorise(_: Predicate, _: Retrieval[_])(_: HeaderCarrier, _: ExecutionContext))
-      .expects(*, Retrievals.affinityGroup, *, *)
-      .returning(Future.successful(Some(AffinityGroup.Agent)))
-
-    (mockAuthConnector.authorise(_: Predicate, _: Retrieval[_])(_: HeaderCarrier, _: ExecutionContext))
-      .expects(*, Retrievals.allEnrolments, *, *)
-      .returning(Future.successful(enrolments))
+  def mockAuthAsAgent(enrolments: Enrolments = agentEnrolments): Unit = {
+    val affinityResult: Future[Any] = Future.successful(Some(AffinityGroup.Agent))
+    val enrolmentsResult: Future[Any] = Future.successful(enrolments)
+    when(
+      mockAuthConnector.authorise(
+        any[Predicate](),
+        any[Retrieval[Any]]()
+      )(
+        any[HeaderCarrier](),
+        any[ExecutionContext]()
+      )
+    ).thenReturn(affinityResult, enrolmentsResult)
   }
 
   //noinspection ScalaStyle
-  def mockAuthReturnException(exception: Exception): CallHandler4[Predicate, Retrieval[_], HeaderCarrier, ExecutionContext, Future[Any]] = {
-    (mockAuthConnector.authorise(_: Predicate, _: Retrieval[_])(_: HeaderCarrier, _: ExecutionContext))
-      .expects(*, *, *, *)
-      .returning(Future.failed(exception))
+  def mockAuthReturnException(exception: Exception): Unit = {
+    mockAuthoriseFailure[Any](exception)
   }
 
   val customerExample: EmploymentBenefits = EmploymentBenefits(

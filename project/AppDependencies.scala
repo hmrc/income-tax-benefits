@@ -21,16 +21,12 @@ object AppDependencies {
   private val bootstrapVersion = "10.7.0"
 
   val compile: Seq[ModuleID] = Seq(
-    "uk.gov.hmrc"                  %% "bootstrap-backend-play-30" % bootstrapVersion,
-    "com.fasterxml.jackson.module" %% "jackson-module-scala"      % "2.21.1"
+    "uk.gov.hmrc" %% "bootstrap-backend-play-30" % bootstrapVersion
   )
 
   val test: Seq[ModuleID] = Seq(
-    "uk.gov.hmrc"            %% "bootstrap-test-play-30"   % bootstrapVersion,
-    "org.scalatest"          %% "scalatest"                % "3.2.19",
-    "com.vladsch.flexmark"    % "flexmark-all"             % "0.64.8",
-    "org.scalatestplus.play" %% "scalatestplus-play"       % "7.0.2",
-    "com.github.tomakehurst"  % "wiremock-jre8-standalone" % "3.0.1",
-    "org.scalamock"          %% "scalamock"                % "7.5.5"
+    "uk.gov.hmrc"        %% "bootstrap-test-play-30"  % bootstrapVersion,
+    "org.wiremock"        % "wiremock-standalone"     % "3.9.2",
+    "org.scalamock"      %% "scalamock"               % "6.0.0"
   ).map(_ % Test)
 }
